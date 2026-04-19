@@ -5,9 +5,23 @@ spring:
   application:
     name: backend
 
-  data:
-    mongodb:
-      uri: ${MONGODB_URI}
+  # Supabase PostgreSQL 연결
+  datasource:
+    url: ${SUPABASE_DB_URL}
+    username: ${SUPABASE_DB_USER}
+    password: ${SUPABASE_DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
-jwt:
-  secret: ${JWT_SECRET}
+  jpa:
+    hibernate:
+      ddl-auto: update        # 개발 중: update | 운영: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+# Supabase 설정
+supabase:
+  url: ${SUPABASE_URL}
+  anon-key: ${SUPABASE_ANON_KEY}
