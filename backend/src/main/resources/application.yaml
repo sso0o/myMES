@@ -21,6 +21,15 @@ spring:
         format_sql: true
     show-sql: false
 
+# Swagger / SpringDoc
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
 # Supabase 설정
 supabase:
   url: ${SUPABASE_URL}
