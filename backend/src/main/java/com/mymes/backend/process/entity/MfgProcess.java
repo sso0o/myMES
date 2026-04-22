@@ -1,7 +1,14 @@
 package com.mymes.backend.process.entity;
 
 import com.mymes.backend.common.entity.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +20,7 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLRestriction("deleted_at IS NULL")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Access(AccessType.FIELD)
 public class MfgProcess extends BaseEntity {
 
     @Id
@@ -35,8 +43,7 @@ public class MfgProcess extends BaseEntity {
         this.sequence = sequence;
     }
 
-    public void update(String processCode, String processName, Integer sequence) {
-        this.processCode = processCode;
+    public void update(String processName, Integer sequence) {
         this.processName = processName;
         this.sequence = sequence;
     }

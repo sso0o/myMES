@@ -1,7 +1,14 @@
 package com.mymes.backend.item.entity;
 
 import com.mymes.backend.common.entity.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +20,7 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLRestriction("deleted_at IS NULL")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Access(AccessType.FIELD)
 public class Item extends BaseEntity {
 
     @Id
@@ -35,8 +43,7 @@ public class Item extends BaseEntity {
         this.unit = unit;
     }
 
-    public void update(String itemCode, String itemName, String unit) {
-        this.itemCode = itemCode;
+    public void update(String itemName, String unit) {
         this.itemName = itemName;
         this.unit = unit;
     }

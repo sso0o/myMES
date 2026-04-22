@@ -14,4 +14,6 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
     List<WorkOrder> findByDueDateBeforeAndStatusNotOrderByDueDateAsc(LocalDate today, WorkOrderStatus status);
 
     boolean existsByWorkOrderNo(String workOrderNo);
+
+    WorkOrder findTopByWorkOrderNoStartingWithOrderByWorkOrderNoDesc(String prefix);
 }

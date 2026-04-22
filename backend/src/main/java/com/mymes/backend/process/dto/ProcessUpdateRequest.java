@@ -8,9 +8,6 @@ import lombok.Getter;
 
 @Getter
 public class ProcessUpdateRequest {
-    @NotBlank(message = "공정코드는 필수입니다.")
-    @Size(max = 50)
-    private String processCode;
 
     @NotBlank(message = "공정명은 필수입니다.")
     @Size(max = 100)

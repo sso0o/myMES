@@ -4,22 +4,22 @@ import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
 import com.mymes.backend.item.entity.Item;
 import com.mymes.backend.item.service.ItemService;
-import com.mymes.backend.workorder.entity.WorkOrderStatus;
 import com.mymes.backend.workorder.dto.WorkOrderCreateRequest;
 import com.mymes.backend.workorder.dto.WorkOrderResponse;
 import com.mymes.backend.workorder.dto.WorkOrderUpdateRequest;
 import com.mymes.backend.workorder.entity.WorkOrder;
+import com.mymes.backend.workorder.entity.WorkOrderStatus;
 import com.mymes.backend.workorder.mapper.WorkOrderMapper;
 import com.mymes.backend.workorder.repository.WorkOrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -27,11 +27,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Transactional(readOnly = true)
 public class WorkOrderService {
 
+    private static final DateTimeFormatter WORK_ORDER_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final int MAX_WORK_ORDER_NO_RETRIES = 3;
+
     private final WorkOrderRepository workOrderRepository;
     private final ItemService itemService;
     private final WorkOrderMapper workOrderMapper;
-
-    private final AtomicInteger dailySeq = new AtomicInteger(0);
 
     public List<WorkOrderResponse> findAll() {
         return workOrderRepository.findAll().stream()
@@ -52,21 +53,32 @@ public class WorkOrderService {
     @Transactional
     public WorkOrderResponse create(WorkOrderCreateRequest request) {
         Item item = itemService.getItem(request.getItemId());
-        String workOrderNo = generateWorkOrderNo();
 
-        WorkOrder workOrder = WorkOrder.builder()
-                .workOrderNo(workOrderNo)
-                .item(item)
-                .plannedQty(request.getPlannedQty())
-                .priority(request.getPriority())
-                .lineName(request.getLineName())
-                .workerName(request.getWorkerName())
-                .dueDate(request.getDueDate())
-                .build();
+        for (int attempt = 1; attempt <= MAX_WORK_ORDER_NO_RETRIES; attempt++) {
+            String workOrderNo = generateWorkOrderNo();
+            WorkOrder workOrder = WorkOrder.builder()
+                    .workOrderNo(workOrderNo)
+                    .item(item)
+                    .plannedQty(request.getPlannedQty())
+                    .priority(request.getPriority())
+                    .lineName(request.getLineName())
+                    .workerName(request.getWorkerName())
+                    .dueDate(request.getDueDate())
+                    .build();
 
-        WorkOrder saved = workOrderRepository.save(workOrder);
-        log.info("작업지시 생성 완료: id={}, no={}", saved.getId(), saved.getWorkOrderNo());
-        return workOrderMapper.toResponse(saved);
+            try {
+                WorkOrder saved = workOrderRepository.saveAndFlush(workOrder);
+                log.info("작업지시 생성 완료: id={}, no={}", saved.getId(), saved.getWorkOrderNo());
+                return workOrderMapper.toResponse(saved);
+            } catch (DataIntegrityViolationException e) {
+                log.warn("작업지시 번호 충돌로 재시도합니다. attempt={}, workOrderNo={}", attempt, workOrderNo);
+                if (attempt == MAX_WORK_ORDER_NO_RETRIES) {
+                    throw new BusinessException(ErrorCode.WORK_ORDER_NO_GENERATION_FAILED);
+                }
+            }
+        }
+
+        throw new BusinessException(ErrorCode.WORK_ORDER_NO_GENERATION_FAILED);
     }
 
     @Transactional
@@ -106,11 +118,20 @@ public class WorkOrderService {
     }
 
     private String generateWorkOrderNo() {
-        String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String no;
-        do {
-            no = String.format("WO-%s-%04d", date, dailySeq.incrementAndGet());
-        } while (workOrderRepository.existsByWorkOrderNo(no));
-        return no;
+        String date = LocalDate.now().format(WORK_ORDER_DATE_FORMAT);
+        String prefix = "WO-" + date + "-";
+        WorkOrder latest = workOrderRepository.findTopByWorkOrderNoStartingWithOrderByWorkOrderNoDesc(prefix);
+
+        int nextSequence = 1;
+        if (latest != null) {
+            nextSequence = extractSequence(latest.getWorkOrderNo()) + 1;
+        }
+
+        return prefix + String.format("%04d", nextSequence);
+    }
+
+    private int extractSequence(String workOrderNo) {
+        int separatorIndex = workOrderNo.lastIndexOf('-');
+        return Integer.parseInt(workOrderNo.substring(separatorIndex + 1));
     }
 }
