@@ -2,7 +2,7 @@
 
 This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
-## Sub-directory Instructions
+## Subdirectory Instructions
 
 각 디렉토리별 상세 가이드는 아래 파일을 함께 참조할 것:
 - Backend: [backend/AGENTS.md](backend/AGENTS.md)

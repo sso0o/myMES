@@ -9,4 +9,5 @@ public interface MfgProcessRepository extends JpaRepository<MfgProcess, Long> {
     boolean existsByProcessCode(String processCode);
     boolean existsByProcessCodeAndIdNot(String processCode, Long id);
     List<MfgProcess> findAllByOrderBySequenceAsc();
+    MfgProcess findTopByProcessCodeStartingWithOrderByProcessCodeDesc(String prefix);
 }

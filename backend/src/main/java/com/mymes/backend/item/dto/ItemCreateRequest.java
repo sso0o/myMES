@@ -6,9 +6,6 @@ import lombok.Getter;
 
 @Getter
 public class ItemCreateRequest {
-    @NotBlank(message = "품목코드는 필수입니다.")
-    @Size(max = 50)
-    private String itemCode;
 
     @NotBlank(message = "품목명은 필수입니다.")
     @Size(max = 100)

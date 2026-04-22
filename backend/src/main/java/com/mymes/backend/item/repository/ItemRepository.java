@@ -9,4 +9,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Optional<Item> findByItemCode(String itemCode);
     boolean existsByItemCode(String itemCode);
     boolean existsByItemCodeAndIdNot(String itemCode, Long id);
+    Item findTopByItemCodeStartingWithOrderByItemCodeDesc(String prefix);
 }

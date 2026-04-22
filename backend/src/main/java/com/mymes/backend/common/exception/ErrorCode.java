@@ -25,6 +25,7 @@ public enum ErrorCode {
     WORK_ORDER_INVALID_STATUS_TRANSITION(409, "유효하지 않은 상태 전이입니다."),
     WORK_ORDER_NOT_MODIFIABLE(409, "대기 상태의 작업지시만 수정할 수 있습니다."),
     WORK_ORDER_NOT_DELETABLE(409, "대기 상태의 작업지시만 삭제할 수 있습니다."),
+    WORK_ORDER_NO_GENERATION_FAILED(500, "작업지시 번호 생성에 실패했습니다."),
 
     // 생산실적
     PRODUCTION_NOT_FOUND(404, "생산 실적을 찾을 수 없습니다."),
