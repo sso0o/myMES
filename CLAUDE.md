@@ -2,10 +2,19 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Sub-directory Instructions
+
+각 디렉토리별 상세 가이드는 아래 파일을 함께 참조할 것:
+- Backend: [backend/CLAUDE.md](backend/CLAUDE.md)
+- Frontend: [frontend/CLAUDE.md](frontend/CLAUDE.md)
+
 ## Project Overview
 
 MES (Manufacturing Execution System) — 제조 공정의 생산 계획, 작업 지시, 생산 실적 관리 시스템.  
 Spring Boot 백엔드 + React(Vite) 프론트엔드 풀스택 프로젝트로, Supabase를 Auth/DB/Realtime 플랫폼으로 사용.
+
+## 파일 삭제 규칙
+파일 삭제 전 삭제할 파일을 명시하고 삭제여부 물어볼것.
 
 ## Commands
 
@@ -74,3 +83,5 @@ Supabase Auth가 JWT를 발급하고, 프론트와 백엔드 모두 이 토큰�
 | `backend/.env` | `SUPABASE_DB_URL/USER/PASSWORD` | PostgreSQL JDBC 연결 |
 | `frontend/.env` | `VITE_SUPABASE_URL` | Supabase 프로젝트 URL |
 | `frontend/.env` | `VITE_SUPABASE_ANON_KEY` | anon public key |
+
+

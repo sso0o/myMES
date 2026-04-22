@@ -41,6 +41,12 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // 인증 없이 접근 가능한 엔드포인트
                 .requestMatchers("/api/health").permitAll()
+                // Swagger UI
+                .requestMatchers(
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/v3/api-docs/**"
+                ).permitAll()
                 // 그 외 모든 /api/** 요청은 인증 필요
                 .requestMatchers("/api/**").authenticated()
                 .anyRequest().permitAll()
