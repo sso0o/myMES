@@ -34,7 +34,17 @@ public enum ErrorCode {
 
     // 불량
     DEFECT_NOT_FOUND(404, "불량 기록을 찾을 수 없습니다."),
-    DEFECT_PRODUCTION_RECORD_WORK_ORDER_MISMATCH(400, "선택한 생산실적이 해당 작업지시에 속하지 않습니다.");
+    DEFECT_PRODUCTION_RECORD_WORK_ORDER_MISMATCH(400, "선택한 생산실적이 해당 작업지시에 속하지 않습니다."),
+
+    // 유저
+    USER_NOT_FOUND(404, "유저를 찾을 수 없습니다."),
+    USER_PASSWORD_MISMATCH(400, "현재 비밀번호가 일치하지 않습니다."),
+    USER_EMP_NO_GENERATION_FAILED(500, "사번 생성에 실패했습니다."),
+
+    // Supabase Admin API
+    SUPABASE_USER_CREATE_FAILED(500, "Supabase 계정 생성에 실패했습니다."),
+    SUPABASE_USER_UPDATE_FAILED(500, "Supabase 계정 수정에 실패했습니다."),
+    SUPABASE_USER_DELETE_FAILED(500, "Supabase 계정 삭제에 실패했습니다.");
 
     private final int status;
     private final String message;
