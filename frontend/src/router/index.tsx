@@ -1,7 +1,9 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
-import LoginPage from '@/features/auth/pages/LoginPage'
+import LoginPage from '@/pages/LoginPage'
 import PrivateRoute from './PrivateRoute'
 import MainLayout from '@/common/components/layout/MainLayout'
+import ItemManagementPage from '@/pages/ItemManagementPage'
+import CommonCodeManagementPage from '@/pages/CommonCodeManagementPage'
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
@@ -18,6 +20,8 @@ const router = createBrowserRouter([
           { path: '/planning', element: <div className="text-slate-700">생산 계획 (준비 중)</div> },
           { path: '/quality', element: <div className="text-slate-700">품질 관리 (준비 중)</div> },
           { path: '/equipment', element: <div className="text-slate-700">설비 관리 (준비 중)</div> },
+          { path: '/master/items', element: <ItemManagementPage /> },
+          { path: '/master/common-codes', element: <CommonCodeManagementPage /> },
         ],
       },
     ],

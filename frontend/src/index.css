@@ -1,22 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-primary-soft: #dbeafe;
-  --color-background: #f8fafc;
-  --color-surface: #ffffff;
-  --color-surface-alt: #f1f5f9;
-  --color-border: #cbd5e1;
-  --color-text-strong: #0f172a;
-  --color-text-base: #334155;
-  --color-text-muted: #64748b;
-  --color-success: #15803d;
-  --color-success-soft: #dcfce7;
-  --color-warning: #d97706;
-  --color-warning-soft: #fef3c7;
-  --color-danger: #dc2626;
-  --color-danger-soft: #fee2e2;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #dbeafe;
+
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-alt: #f1f5f9;
+  --overlay: rgb(15 23 42 / 0.45);
+
+  --border: #cbd5e1;
+  --border-strong: #94a3b8;
+
+  --text-strong: #0f172a;
+  --text-base: #334155;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+
+  --success: #15803d;
+  --success-soft: #dcfce7;
+  --warning: #d97706;
+  --warning-soft: #fef3c7;
+  --danger: #dc2626;
+  --danger-soft: #fee2e2;
+
+  --sidebar-bg: #0f172a;
+  --sidebar-border: #334155;
+  --sidebar-text: #94a3b8;
+  --sidebar-text-active: #ffffff;
+  --sidebar-item-hover: #1e293b;
+  --sidebar-item-active: #334155;
+
   --shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.08);
 
   --sans: 'Pretendard', system-ui, sans-serif;
@@ -25,8 +40,8 @@
   font: 16px/1.45 var(--sans);
   letter-spacing: 0.01em;
   color-scheme: light;
-  color: var(--color-text-base);
-  background: var(--color-background);
+  color: var(--text-base);
+  background: var(--background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -45,8 +60,8 @@ body {
 
 body {
   font-family: var(--sans);
-  color: var(--color-text-base);
-  background: var(--color-background);
+  color: var(--text-base);
+  background: var(--background);
 }
 
 p {
@@ -58,12 +73,12 @@ code,
   font-family: var(--mono);
   display: inline-flex;
   border-radius: 4px;
-  color: var(--color-text-strong);
+  color: var(--text-strong);
 }
 
 code {
   font-size: 15px;
   line-height: 1.35;
   padding: 4px 8px;
-  background: var(--color-surface-alt);
+  background: var(--surface-alt);
 }

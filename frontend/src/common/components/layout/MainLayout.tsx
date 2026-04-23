@@ -1,7 +1,7 @@
 import { Outlet } from 'react-router-dom'
-import Sidebar from './Sidebar'
-import { useAuthStore } from '@/store/authStore'
 import { useFeedback } from '@/common/hooks/useFeedback'
+import { useAuthStore } from '@/store/authStore'
+import Sidebar from './Sidebar'
 
 const MainLayout = () => {
   const { user, signOut } = useAuthStore()
@@ -22,17 +22,19 @@ const MainLayout = () => {
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-[var(--background)]">
       <Sidebar />
 
       <div className="ml-60 flex flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex h-14 items-center justify-end gap-4 border-b border-slate-200 bg-white px-6">
-          <span className="text-sm text-slate-600">
-            <span className="font-semibold text-slate-800">{displayName}</span>님 반갑습니다!
+        <header className="sticky top-0 z-10 flex h-14 items-center justify-end gap-4 border-b border-[var(--border)] bg-[var(--surface)] px-6">
+          <span className="text-sm text-[var(--text-base)]">
+            <span className="font-semibold text-[var(--text-strong)]">{displayName}</span>
+            님 반갑습니다!
           </span>
           <button
+            type="button"
             onClick={handleSignOut}
-            className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:border-slate-400 hover:bg-slate-50"
+            className="rounded-md border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-[var(--text-base)] transition-colors hover:border-[var(--border-strong)] hover:bg-[var(--surface-alt)]"
           >
             로그아웃
           </button>

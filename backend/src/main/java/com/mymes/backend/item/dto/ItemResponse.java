@@ -12,5 +12,8 @@ public class ItemResponse {
     private String itemCode;
     private String itemName;
     private String unit;
+    private Long itemTypeId;
+    private String itemTypeCode;
+    private String itemTypeName;
     private LocalDateTime createdAt;
 }
