@@ -43,6 +43,14 @@ public enum ErrorCode {
     COMMON_CODE_DUPLICATED(409, "해당 그룹에 이미 존재하는 코드입니다."),
     COMMON_CODE_NUMBERING_PREFIX_DUPLICATED(409, "해당 그룹에 이미 사용 중인 채번코드입니다."),
 
+    // Production Plan
+    PLAN_NOT_FOUND(404, "생산계획을 찾을 수 없습니다."),
+    PLAN_INVALID_STATUS_TRANSITION(409, "유효하지 않은 상태 전이입니다."),
+    PLAN_NOT_MODIFIABLE(409, "초안 상태의 생산계획만 수정할 수 있습니다."),
+    PLAN_NOT_DELETABLE(409, "초안 상태의 생산계획만 삭제할 수 있습니다."),
+    PLAN_NO_GENERATION_FAILED(500, "생산계획 번호 생성에 실패했습니다."),
+    PLAN_ALREADY_RELEASED(409, "이미 작업지시가 발행된 생산계획입니다."),
+
     // User
     USER_NOT_FOUND(404, "유저를 찾을 수 없습니다."),
     USER_PASSWORD_MISMATCH(400, "현재 비밀번호가 일치하지 않습니다."),

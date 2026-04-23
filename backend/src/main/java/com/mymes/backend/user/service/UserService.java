@@ -36,16 +36,19 @@ public class UserService {
     private final UserMapper userMapper;
     private final SupabaseAdminClient supabaseAdminClient;
 
+    /** 전체 사용자 목록을 조회한다. */
     public List<UserResponse> findAll() {
         return userRepository.findAll().stream()
                 .map(userMapper::toResponse)
                 .toList();
     }
 
+    /** ID로 사용자를 조회한다. */
     public UserResponse findById(Long id) {
         return userMapper.toResponse(getUser(id));
     }
 
+    /** Supabase 사용자 ID로 사용자를 조회한다. */
     public UserResponse findBySupabaseId(String supabaseId) {
         return userMapper.toResponse(
                 userRepository.findBySupabaseId(supabaseId)
@@ -54,10 +57,10 @@ public class UserService {
     }
 
     /**
-     * 유저 등록.
-     * 1) 사번 자동채번
-     * 2) Supabase Auth에 {사번}@{도메인} 계정 생성
-     * 3) 로컬 DB에 프로필 저장
+     * 사용자를 등록한다.
+     * 1) 사번을 자동 채번한다.
+     * 2) Supabase Auth 계정을 생성한다.
+     * 3) 로컬 DB에 사용자 정보를 저장한다.
      */
     @Transactional
     public UserResponse create(UserCreateRequest request) {
@@ -74,20 +77,20 @@ public class UserService {
                 .build();
 
         User saved = userRepository.save(user);
-        log.info("유저 생성 완료: id={}, empNo={}, email={}", saved.getId(), saved.getEmpNo(), email);
+        log.info("사용자 생성 완료: id={}, empNo={}, email={}", saved.getId(), saved.getEmpNo(), email);
         return userMapper.toResponse(saved);
     }
 
-    /** 이름·권한 수정 */
+    /** 사용자 이름과 권한을 수정한다. */
     @Transactional
     public UserResponse update(Long id, UserUpdateRequest request) {
         User user = getUser(id);
         user.update(request.getName(), request.getRole());
-        log.info("유저 수정 완료: id={}, empNo={}", id, user.getEmpNo());
+        log.info("사용자 수정 완료: id={}, empNo={}", id, user.getEmpNo());
         return userMapper.toResponse(user);
     }
 
-    /** 관리자 비밀번호 초기화 — Supabase Auth에 직접 반영 */
+    /** 관리자가 사용자의 비밀번호를 초기화하고 Supabase Auth에도 반영한다. */
     @Transactional
     public void resetPassword(Long id, PasswordResetRequest request) {
         User user = getUser(id);
@@ -96,26 +99,31 @@ public class UserService {
     }
 
     /**
-     * 퇴직 처리.
-     * - DB: active=false + soft delete
-     * - Supabase Auth: 계정 삭제 (재입사 시 새 사번·새 계정)
+     * 퇴사 처리를 등록한다.
+     * 실제 계정 삭제는 스케줄러가 퇴사일 이후에 후속 처리한다.
      */
-    /** 퇴사일 예약 — 당일까지 로그인 가능, 실제 계정 삭제는 스케줄러가 처리 */
     @Transactional
     public void resign(Long id, ResignRequest request) {
         User user = getUser(id);
         user.scheduleResign(request.getResignedAt());
-        log.info("퇴사일 등록 완료: id={}, empNo={}, resignedAt={}", id, user.getEmpNo(), request.getResignedAt());
+        log.info("퇴사 처리 등록 완료: id={}, empNo={}, resignedAt={}", id, user.getEmpNo(), request.getResignedAt());
     }
 
+    /** ID로 사용자 엔티티를 조회한다. */
     public User getUser(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, String.valueOf(id)));
     }
 
+    /** Supabase 사용자 ID로 사용자 엔티티를 조회한다. */
+    public User getUserBySupabaseId(String supabaseId) {
+        return userRepository.findBySupabaseId(supabaseId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND, supabaseId));
+    }
+
     /**
-     * 사번 자동채번.
-     * mes 로 시작하는 마지막 사번 숫자에서 +1 후 zero-padding.
+     * 다음 사번을 자동 채번한다.
+     * mes 접두사의 마지막 번호에서 1 증가시키고 zero-padding을 적용한다.
      */
     private synchronized String generateEmpNo() {
         int next = userRepository.findTopByEmpNoStartingWithOrderByEmpNoDesc(EMP_NO_PREFIX)
@@ -129,7 +137,7 @@ public class UserService {
         return empNo;
     }
 
-    /** 사번으로 Supabase 이메일 변환 */
+    /** 사번을 Supabase 로그인용 이메일 형식으로 변환한다. */
     public String toEmail(String empNo) {
         return empNo + "@" + empEmailDomain;
     }
