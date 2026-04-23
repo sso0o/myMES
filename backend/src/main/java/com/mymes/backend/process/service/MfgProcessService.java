@@ -29,7 +29,7 @@ public class MfgProcessService {
     private final MfgProcessMapper processMapper;
 
     public List<ProcessResponse> findAll() {
-        return processRepository.findAllByOrderBySequenceAsc().stream()
+        return processRepository.findAllByOrderByProcessCodeAsc().stream()
                 .map(processMapper::toResponse)
                 .toList();
     }
@@ -45,7 +45,6 @@ public class MfgProcessService {
             MfgProcess process = MfgProcess.builder()
                     .processCode(processCode)
                     .processName(request.getProcessName())
-                    .sequence(request.getSequence())
                     .build();
 
             try {
@@ -66,7 +65,7 @@ public class MfgProcessService {
     @Transactional
     public ProcessResponse update(Long id, ProcessUpdateRequest request) {
         MfgProcess process = getProcess(id);
-        process.update(request.getProcessName(), request.getSequence());
+        process.update(request.getProcessName());
         log.info("공정 수정 완료: id={}", id);
         return processMapper.toResponse(process);
     }

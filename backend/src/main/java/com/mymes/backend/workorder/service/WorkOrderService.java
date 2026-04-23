@@ -4,6 +4,8 @@ import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
 import com.mymes.backend.item.entity.Item;
 import com.mymes.backend.item.service.ItemService;
+import com.mymes.backend.process.entity.MfgProcess;
+import com.mymes.backend.process.service.MfgProcessService;
 import com.mymes.backend.workorder.dto.WorkOrderCreateRequest;
 import com.mymes.backend.workorder.dto.WorkOrderResponse;
 import com.mymes.backend.workorder.dto.WorkOrderUpdateRequest;
@@ -33,6 +35,7 @@ public class WorkOrderService {
 
     private final WorkOrderRepository workOrderRepository;
     private final ItemService itemService;
+    private final MfgProcessService processService;
     private final WorkOrderMapper workOrderMapper;
 
     public List<WorkOrderResponse> findAll() {
@@ -54,6 +57,8 @@ public class WorkOrderService {
     @Transactional
     public WorkOrderResponse create(WorkOrderCreateRequest request) {
         Item item = itemService.getItem(request.getItemId());
+        MfgProcess process = request.getProcessId() != null
+                ? processService.getProcess(request.getProcessId()) : null;
 
         for (int attempt = 1; attempt <= MAX_WORK_ORDER_NO_RETRIES; attempt++) {
             String workOrderNo = generateWorkOrderNo();
@@ -62,7 +67,7 @@ public class WorkOrderService {
                     .item(item)
                     .plannedQty(request.getPlannedQty())
                     .priority(request.getPriority())
-                    .lineName(request.getLineName())
+                    .process(process)
                     .workerName(request.getWorkerName())
                     .dueDate(request.getDueDate())
                     .build();
@@ -89,8 +94,10 @@ public class WorkOrderService {
             throw new BusinessException(ErrorCode.WORK_ORDER_NOT_MODIFIABLE);
         }
         Item item = itemService.getItem(request.getItemId());
+        MfgProcess process = request.getProcessId() != null
+                ? processService.getProcess(request.getProcessId()) : null;
         workOrder.update(item, request.getPlannedQty(), request.getPriority(),
-                request.getLineName(), request.getWorkerName(), request.getDueDate());
+                process, request.getWorkerName(), request.getDueDate());
         log.info("작업지시 수정 완료: id={}", id);
         return workOrderMapper.toResponse(workOrder);
     }
@@ -114,7 +121,7 @@ public class WorkOrderService {
     }
 
     @Transactional
-    public WorkOrder createForPlan(Item item, Integer plannedQty, LocalDate plannedDate, String lineName) {
+    public WorkOrder createForPlan(Item item, Integer plannedQty, LocalDate plannedDate) {
         for (int attempt = 1; attempt <= MAX_WORK_ORDER_NO_RETRIES; attempt++) {
             String workOrderNo = generateWorkOrderNo();
             WorkOrder workOrder = WorkOrder.builder()
@@ -122,7 +129,6 @@ public class WorkOrderService {
                     .item(item)
                     .plannedQty(plannedQty)
                     .priority(Priority.MEDIUM)
-                    .lineName(lineName)
                     .dueDate(plannedDate)
                     .build();
             try {

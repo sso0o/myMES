@@ -20,6 +20,11 @@ public enum ErrorCode {
     PROCESS_NOT_FOUND(404, "공정을 찾을 수 없습니다."),
     PROCESS_CODE_DUPLICATED(409, "이미 존재하는 공정코드입니다."),
 
+    // Item Process
+    ITEM_PROCESS_NOT_FOUND(404, "품목-공정 매핑을 찾을 수 없습니다."),
+    ITEM_PROCESS_DUPLICATED(409, "해당 품목에 이미 등록된 공정입니다."),
+    ITEM_PROCESS_SEQUENCE_DUPLICATED(409, "해당 품목에 이미 사용 중인 순서입니다."),
+
     // Work Order
     WORK_ORDER_NOT_FOUND(404, "작업 지시를 찾을 수 없습니다."),
     WORK_ORDER_INVALID_STATUS_TRANSITION(409, "유효하지 않은 상태 전이입니다."),

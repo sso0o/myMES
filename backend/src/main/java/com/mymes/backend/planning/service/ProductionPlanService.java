@@ -68,7 +68,6 @@ public class ProductionPlanService {
                     .item(item)
                     .plannedQty(request.getPlannedQty())
                     .plannedDate(request.getPlannedDate())
-                    .lineName(request.getLineName())
                     .createdBy(createdBy)
                     .memo(request.getMemo())
                     .build();
@@ -90,7 +89,7 @@ public class ProductionPlanService {
     public ProductionPlanResponse update(Long id, ProductionPlanUpdateRequest request) {
         ProductionPlan plan = getPlan(id);
         Item item = itemService.getItem(request.getItemId());
-        plan.update(item, request.getPlannedQty(), request.getPlannedDate(), request.getLineName(), request.getMemo());
+        plan.update(item, request.getPlannedQty(), request.getPlannedDate(), request.getMemo());
         log.info("생산계획 수정 완료: id={}", id);
         return productionPlanMapper.toResponse(plan);
     }
@@ -104,7 +103,7 @@ public class ProductionPlanService {
                 throw new BusinessException(ErrorCode.PLAN_ALREADY_RELEASED);
             }
             WorkOrder workOrder = workOrderService.createForPlan(
-                    plan.getItem(), plan.getPlannedQty(), plan.getPlannedDate(), plan.getLineName());
+                    plan.getItem(), plan.getPlannedQty(), plan.getPlannedDate());
             plan.linkWorkOrder(workOrder);
         }
 

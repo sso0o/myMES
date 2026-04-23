@@ -19,7 +19,9 @@ public class WorkOrderResponse {
     private Integer plannedQty;
     private Priority priority;
     private WorkOrderStatus status;
-    private String lineName;
+    private Long processId;
+    private String processCode;
+    private String processName;
     private String workerName;
     private LocalDate dueDate;
     private LocalDateTime createdAt;

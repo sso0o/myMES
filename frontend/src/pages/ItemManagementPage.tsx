@@ -18,9 +18,19 @@ import type {
 const ItemManagementPage = () => {
   const [modalOpen, setModalOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<ItemResponse | null>(null)
+  const [page, setPage] = useState(0)
+  const [size, setSize] = useState(10)
 
   const { showToast, showAlert } = useFeedback()
-  const { data: items = [], isLoading, isError } = useItemList()
+  const { data: response, isLoading, isError } = useItemList(page, size)
+  const items = response?.data ?? []
+  const pagination = response?.pagination
+  const totalPages = pagination ? Math.ceil(pagination.total / pagination.size) : 0
+
+  const handlePageSizeChange = (newSize: number) => {
+    setSize(newSize)
+    setPage(0)
+  }
   const createItem = useCreateItem()
   const updateItem = useUpdateItem()
   const deleteItem = useDeleteItem()
@@ -117,7 +127,17 @@ const ItemManagementPage = () => {
           불러오는 중...
         </div>
       ) : (
-        <ItemTable items={items} onEdit={handleOpenEdit} onDelete={handleDelete} />
+        <ItemTable
+          items={items}
+          onEdit={handleOpenEdit}
+          onDelete={handleDelete}
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={pagination?.total ?? 0}
+          pageSize={size}
+          onPageChange={setPage}
+          onPageSizeChange={handlePageSizeChange}
+        />
       )}
 
       <ItemFormModal

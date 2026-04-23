@@ -4,8 +4,7 @@ import com.mymes.backend.common.entity.BaseEntity;
 import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
 import com.mymes.backend.item.entity.Item;
-import com.mymes.backend.workorder.entity.WorkOrderStatus;
-import com.mymes.backend.workorder.entity.Priority;
+import com.mymes.backend.process.entity.MfgProcess;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -44,8 +43,9 @@ public class WorkOrder extends BaseEntity {
     @Column(nullable = false, length = 20)
     private WorkOrderStatus status;
 
-    @Column(name = "line_name", length = 50)
-    private String lineName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "process_id")
+    private MfgProcess process;
 
     @Column(name = "worker_name", length = 50)
     private String workerName;
@@ -55,23 +55,23 @@ public class WorkOrder extends BaseEntity {
 
     @Builder
     public WorkOrder(String workOrderNo, Item item, Integer plannedQty,
-                     Priority priority, String lineName, String workerName, LocalDate dueDate) {
+                     Priority priority, MfgProcess process, String workerName, LocalDate dueDate) {
         this.workOrderNo = workOrderNo;
         this.item = item;
         this.plannedQty = plannedQty;
         this.priority = priority;
         this.status = WorkOrderStatus.WAITING;
-        this.lineName = lineName;
+        this.process = process;
         this.workerName = workerName;
         this.dueDate = dueDate;
     }
 
     public void update(Item item, Integer plannedQty, Priority priority,
-                       String lineName, String workerName, LocalDate dueDate) {
+                       MfgProcess process, String workerName, LocalDate dueDate) {
         this.item = item;
         this.plannedQty = plannedQty;
         this.priority = priority;
-        this.lineName = lineName;
+        this.process = process;
         this.workerName = workerName;
         this.dueDate = dueDate;
     }

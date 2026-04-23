@@ -7,9 +7,14 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class ProcessResponse {
+public class ItemProcessResponse {
     private Long id;
+    private Long itemId;
+    private String itemCode;
+    private String itemName;
+    private Long processId;
     private String processCode;
     private String processName;
+    private Integer sequence;
     private LocalDateTime createdAt;
 }

@@ -33,18 +33,13 @@ public class MfgProcess extends BaseEntity {
     @Column(name = "process_name", nullable = false, length = 100)
     private String processName;
 
-    @Column(nullable = false)
-    private Integer sequence;
-
     @Builder
-    public MfgProcess(String processCode, String processName, Integer sequence) {
+    public MfgProcess(String processCode, String processName) {
         this.processCode = processCode;
         this.processName = processName;
-        this.sequence = sequence;
     }
 
-    public void update(String processName, Integer sequence) {
+    public void update(String processName) {
         this.processName = processName;
-        this.sequence = sequence;
     }
 }
