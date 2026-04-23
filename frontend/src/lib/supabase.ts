@@ -1,11 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
+import { getRequiredEnv } from './config'
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('VITE_SUPABASE_URL 또는 VITE_SUPABASE_ANON_KEY 환경변수가 설정되지 않았습니다.')
-}
+const supabaseUrl = getRequiredEnv('VITE_SUPABASE_URL')
+const supabaseAnonKey = getRequiredEnv('VITE_SUPABASE_ANON_KEY')
 
 /**
  * Supabase 클라이언트 인스턴스
