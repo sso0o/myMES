@@ -1,5 +1,12 @@
 package com.mymes.backend;
 
+import com.mymes.backend.code.dto.CodeGroupCreateRequest;
+import com.mymes.backend.code.dto.CommonCodeCreateRequest;
+import com.mymes.backend.code.entity.CodeGroup;
+import com.mymes.backend.code.entity.CommonCode;
+import com.mymes.backend.code.repository.CodeGroupRepository;
+import com.mymes.backend.code.repository.CommonCodeRepository;
+import com.mymes.backend.code.service.CodeGroupService;
 import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
 import com.mymes.backend.defect.dto.DefectCreateRequest;
@@ -52,6 +59,12 @@ class BackendRegressionTests {
     private MfgProcessRepository processRepository;
 
     @Autowired
+    private CodeGroupRepository codeGroupRepository;
+
+    @Autowired
+    private CommonCodeRepository commonCodeRepository;
+
+    @Autowired
     private WorkOrderRepository workOrderRepository;
 
     @Autowired
@@ -62,6 +75,9 @@ class BackendRegressionTests {
 
     @Autowired
     private MfgProcessService processService;
+
+    @Autowired
+    private CodeGroupService codeGroupService;
 
     @Autowired
     private DefectService defectService;
@@ -158,6 +174,46 @@ class BackendRegressionTests {
         assertThat(process.getProcessCode()).isEqualTo("PROC-000011");
         assertThat(process.getProcessName()).isEqualTo("수정 후 공정");
         assertThat(process.getSequence()).isEqualTo(3);
+    }
+
+    @Test
+    void commonCodeCreateGeneratesNextCodeFromDatabaseStateAfterDelete() {
+        CodeGroupCreateRequest groupRequest = new CodeGroupCreateRequest();
+        ReflectionTestUtils.setField(groupRequest, "groupId", "ITEM_TYPE");
+        ReflectionTestUtils.setField(groupRequest, "groupName", "Item Type");
+        codeGroupService.create(groupRequest);
+
+        CodeGroup codeGroup = codeGroupRepository.findByGroupId("ITEM_TYPE").orElseThrow();
+        commonCodeRepository.save(CommonCode.builder()
+                .codeGroup(codeGroup)
+                .code("000")
+                .codeName("Raw Material")
+                .sortOrder(1)
+                .build());
+        CommonCode deletedCode = commonCodeRepository.save(CommonCode.builder()
+                .codeGroup(codeGroup)
+                .code("001")
+                .codeName("Semi Finished")
+                .sortOrder(2)
+                .build());
+        commonCodeRepository.save(CommonCode.builder()
+                .codeGroup(codeGroup)
+                .code("002")
+                .codeName("Finished Goods")
+                .sortOrder(3)
+                .build());
+
+        deletedCode.delete();
+        commonCodeRepository.flush();
+        entityManager.clear();
+
+        CommonCodeCreateRequest request = new CommonCodeCreateRequest();
+        ReflectionTestUtils.setField(request, "codeName", "Packaging");
+        ReflectionTestUtils.setField(request, "sortOrder", 4);
+
+        String createdCode = codeGroupService.createCode("ITEM_TYPE", request).getCode();
+
+        assertThat(createdCode).isEqualTo("003");
     }
 
     @Test

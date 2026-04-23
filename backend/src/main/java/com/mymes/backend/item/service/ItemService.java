@@ -1,5 +1,7 @@
 package com.mymes.backend.item.service;
 
+import com.mymes.backend.code.entity.CommonCode;
+import com.mymes.backend.code.repository.CommonCodeRepository;
 import com.mymes.backend.item.dto.ItemCreateRequest;
 import com.mymes.backend.item.dto.ItemResponse;
 import com.mymes.backend.item.dto.ItemUpdateRequest;
@@ -25,6 +27,7 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
     private final ItemMapper itemMapper;
+    private final CommonCodeRepository commonCodeRepository;
 
     public List<ItemResponse> findAll() {
         return itemRepository.findAll().stream()
@@ -38,12 +41,15 @@ public class ItemService {
 
     @Transactional
     public ItemResponse create(ItemCreateRequest request) {
+        CommonCode itemType = resolveItemType(request.getItemTypeId());
+
         for (int attempt = 1; attempt <= MAX_ITEM_CODE_RETRIES; attempt++) {
-            String itemCode = generateItemCode();
+            String itemCode = generateItemCode(itemType);
             Item item = Item.builder()
                     .itemCode(itemCode)
                     .itemName(request.getItemName())
                     .unit(request.getUnit())
+                    .itemType(itemType)
                     .build();
 
             try {
@@ -64,7 +70,8 @@ public class ItemService {
     @Transactional
     public ItemResponse update(Long id, ItemUpdateRequest request) {
         Item item = getItem(id);
-        item.update(request.getItemName(), request.getUnit());
+        CommonCode itemType = resolveItemType(request.getItemTypeId());
+        item.update(request.getItemName(), request.getUnit(), itemType);
         log.info("품목 수정 완료: id={}", id);
         return itemMapper.toResponse(item);
     }
@@ -83,13 +90,31 @@ public class ItemService {
                         String.valueOf(id)));
     }
 
-    private String generateItemCode() {
-        Item latest = itemRepository.findTopByItemCodeStartingWithOrderByItemCodeDesc(ITEM_CODE_PREFIX);
-        int nextSequence = latest == null ? 1 : extractSequence(latest.getItemCode()) + 1;
-        return ITEM_CODE_PREFIX + String.format("%06d", nextSequence);
+    private CommonCode resolveItemType(Long itemTypeId) {
+        if (itemTypeId == null) return null;
+        return commonCodeRepository.findById(itemTypeId)
+                .orElseThrow(() -> new com.mymes.backend.common.exception.BusinessException(
+                        com.mymes.backend.common.exception.ErrorCode.COMMON_CODE_NOT_FOUND,
+                        String.valueOf(itemTypeId)));
     }
 
-    private int extractSequence(String itemCode) {
-        return Integer.parseInt(itemCode.substring(ITEM_CODE_PREFIX.length()));
+    private String generateItemCode(CommonCode itemType) {
+        String prefix = (itemType != null
+                && itemType.getNumberingPrefix() != null
+                && !itemType.getNumberingPrefix().isBlank())
+                ? itemType.getNumberingPrefix().toUpperCase() + "-"
+                : ITEM_CODE_PREFIX;
+        Item latest = itemRepository.findTopByItemCodeStartingWithOrderByItemCodeDesc(prefix);
+        int nextSequence = latest == null ? 1 : extractSequence(latest.getItemCode(), prefix) + 1;
+        return prefix + String.format("%06d", nextSequence);
+    }
+
+    private int extractSequence(String itemCode, String prefix) {
+        try {
+            return Integer.parseInt(itemCode.substring(prefix.length()));
+        } catch (NumberFormatException e) {
+            log.warn("채번 시퀀스 추출 실패, 1부터 시작합니다. itemCode={}", itemCode);
+            return 0;
+        }
     }
 }

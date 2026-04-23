@@ -36,6 +36,12 @@ public enum ErrorCode {
     DEFECT_NOT_FOUND(404, "불량 기록을 찾을 수 없습니다."),
     DEFECT_PRODUCTION_RECORD_WORK_ORDER_MISMATCH(400, "선택한 생산실적이 해당 작업지시에 속하지 않습니다."),
 
+    // 공통코드
+    CODE_GROUP_NOT_FOUND(404, "코드 그룹을 찾을 수 없습니다."),
+    CODE_GROUP_ID_DUPLICATED(409, "이미 존재하는 코드 그룹 ID입니다."),
+    COMMON_CODE_NOT_FOUND(404, "공통 코드를 찾을 수 없습니다."),
+    COMMON_CODE_DUPLICATED(409, "해당 그룹에 이미 존재하는 코드입니다."),
+    COMMON_CODE_NUMBERING_PREFIX_DUPLICATED(409, "해당 그룹에 이미 사용 중인 채번코드입니다.");
     // 유저
     USER_NOT_FOUND(404, "유저를 찾을 수 없습니다."),
     USER_PASSWORD_MISMATCH(400, "현재 비밀번호가 일치하지 않습니다."),

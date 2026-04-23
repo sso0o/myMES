@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(./gradlew compileJava)",
+      "Bash(npm run *)",
+      "Bash(grep -E '\\\\.\\(java|tsx?|ts\\)$')"
+    ]
+  }
+}
