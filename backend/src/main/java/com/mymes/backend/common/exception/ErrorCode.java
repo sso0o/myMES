@@ -42,6 +42,15 @@ public enum ErrorCode {
     COMMON_CODE_NOT_FOUND(404, "공통 코드를 찾을 수 없습니다."),
     COMMON_CODE_DUPLICATED(409, "해당 그룹에 이미 존재하는 코드입니다."),
     COMMON_CODE_NUMBERING_PREFIX_DUPLICATED(409, "해당 그룹에 이미 사용 중인 채번코드입니다.");
+    // 유저
+    USER_NOT_FOUND(404, "유저를 찾을 수 없습니다."),
+    USER_PASSWORD_MISMATCH(400, "현재 비밀번호가 일치하지 않습니다."),
+    USER_EMP_NO_GENERATION_FAILED(500, "사번 생성에 실패했습니다."),
+
+    // Supabase Admin API
+    SUPABASE_USER_CREATE_FAILED(500, "Supabase 계정 생성에 실패했습니다."),
+    SUPABASE_USER_UPDATE_FAILED(500, "Supabase 계정 수정에 실패했습니다."),
+    SUPABASE_USER_DELETE_FAILED(500, "Supabase 계정 삭제에 실패했습니다.");
 
     private final int status;
     private final String message;
