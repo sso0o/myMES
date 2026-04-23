@@ -1,47 +1,48 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useFeedback } from '@/common/hooks/useFeedback'
-import ItemFormModal from '@/features/master/components/ItemFormModal'
-import ItemTable from '@/features/master/components/ItemTable'
+import ProcessTable from '@/features/process/components/ProcessTable'
+import ProcessFormModal from '@/features/process/components/ProcessFormModal'
 import {
-  useCreateItem,
-  useDeleteItem,
-  useItemList,
-  useUpdateItem,
-} from '@/features/master/hooks/useItemQuery'
+  useCreateProcess,
+  useDeleteProcess,
+  useProcessList,
+  useUpdateProcess,
+} from '@/features/process/hooks/useProcessQuery'
 import type {
-  ItemCreateRequest,
-  ItemResponse,
-  ItemUpdateRequest,
-} from '@/features/master/types'
+  ProcessCreateRequest,
+  ProcessResponse,
+  ProcessUpdateRequest,
+} from '@/features/process/types'
 
-const ItemManagementPage = () => {
+const ProcessManagementPage = () => {
   const [modalOpen, setModalOpen] = useState(false)
-  const [editTarget, setEditTarget] = useState<ItemResponse | null>(null)
+  const [editTarget, setEditTarget] = useState<ProcessResponse | null>(null)
   const [page, setPage] = useState(0)
   const [size, setSize] = useState(10)
 
   const { showToast, showAlert } = useFeedback()
-  const { data: response, isLoading, isError } = useItemList(page, size)
-  const items = response?.data ?? []
-  const pagination = response?.pagination
-  const totalPages = pagination ? Math.ceil(pagination.total / pagination.size) : 0
+  const { data: processes = [], isLoading, isError } = useProcessList()
+
+  const totalPages = Math.ceil(processes.length / size)
+  const pagedProcesses = processes.slice(page * size, page * size + size)
+
+  const createProcess = useCreateProcess()
+  const updateProcess = useUpdateProcess()
+  const deleteProcess = useDeleteProcess()
 
   const handlePageSizeChange = (newSize: number) => {
     setSize(newSize)
     setPage(0)
   }
-  const createItem = useCreateItem()
-  const updateItem = useUpdateItem()
-  const deleteItem = useDeleteItem()
 
   const handleOpenCreate = () => {
     setEditTarget(null)
     setModalOpen(true)
   }
 
-  const handleOpenEdit = (item: ItemResponse) => {
-    setEditTarget(item)
+  const handleOpenEdit = (process: ProcessResponse) => {
+    setEditTarget(process)
     setModalOpen(true)
   }
 
@@ -50,13 +51,13 @@ const ItemManagementPage = () => {
     setEditTarget(null)
   }
 
-  const handleSubmit = async (data: ItemCreateRequest | ItemUpdateRequest) => {
+  const handleSubmit = (data: ProcessCreateRequest | ProcessUpdateRequest) => {
     if (editTarget) {
-      updateItem.mutate(
+      updateProcess.mutate(
         { id: editTarget.id, data },
         {
           onSuccess: () => {
-            showToast({ title: '품목을 수정했습니다.', variant: 'success' })
+            showToast({ title: '공정을 수정했습니다.', variant: 'success' })
             handleClose()
           },
           onError: () => {
@@ -67,9 +68,9 @@ const ItemManagementPage = () => {
       return
     }
 
-    createItem.mutate(data as ItemCreateRequest, {
+    createProcess.mutate(data as ProcessCreateRequest, {
       onSuccess: () => {
-        showToast({ title: '품목을 등록했습니다.', variant: 'success' })
+        showToast({ title: '공정을 등록했습니다.', variant: 'success' })
         handleClose()
       },
       onError: () => {
@@ -78,17 +79,17 @@ const ItemManagementPage = () => {
     })
   }
 
-  const handleDelete = async (item: ItemResponse) => {
+  const handleDelete = async (process: ProcessResponse) => {
     const confirmed = await showAlert({
-      title: '품목 삭제',
-      message: `"${item.itemName}" 품목을 삭제하시겠습니까?`,
+      title: '공정 삭제',
+      message: `"${process.processName}" 공정을 삭제하시겠습니까?`,
       confirmText: '삭제',
     })
     if (!confirmed) return
 
-    deleteItem.mutate(item.id, {
+    deleteProcess.mutate(process.id, {
       onSuccess: () => {
-        showToast({ title: '품목을 삭제했습니다.', variant: 'success' })
+        showToast({ title: '공정을 삭제했습니다.', variant: 'success' })
       },
       onError: () => {
         showToast({ title: '삭제 중 오류가 발생했습니다.', variant: 'error' })
@@ -96,15 +97,15 @@ const ItemManagementPage = () => {
     })
   }
 
-  const isMutating = createItem.isPending || updateItem.isPending
+  const isMutating = createProcess.isPending || updateProcess.isPending
 
   return (
     <div className="space-y-5 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-[var(--text-strong)]">품목 관리</h1>
+          <h1 className="text-xl font-semibold text-[var(--text-strong)]">공정 관리</h1>
           <p className="mt-0.5 text-sm text-[var(--text-muted)]">
-            생산에 사용하는 품목을 관리합니다.
+            생산에 사용하는 공정을 관리합니다.
           </p>
         </div>
         <button
@@ -113,35 +114,33 @@ const ItemManagementPage = () => {
           className="flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--text-inverse)] transition-colors hover:bg-[var(--primary-hover)]"
         >
           <Plus size={16} />
-          품목 등록
+          공정 등록
         </button>
       </div>
 
       {isError && (
         <div className="rounded-lg border border-[var(--danger)]/20 bg-[var(--danger-soft)] px-4 py-3 text-sm text-[var(--danger)]">
-          품목 목록을 불러오는 중 오류가 발생했습니다.
+          공정 목록을 불러오는 중 오류가 발생했습니다.
         </div>
       )}
 
       {isLoading ? (
-        <div className="py-20 text-center text-sm text-[var(--text-muted)]">
-          불러오는 중...
-        </div>
+        <div className="py-20 text-center text-sm text-[var(--text-muted)]">불러오는 중...</div>
       ) : (
-        <ItemTable
-          items={items}
+        <ProcessTable
+          processes={pagedProcesses}
           onEdit={handleOpenEdit}
           onDelete={handleDelete}
           currentPage={page}
           totalPages={totalPages}
-          totalItems={pagination?.total ?? 0}
+          totalItems={processes.length}
           pageSize={size}
           onPageChange={setPage}
           onPageSizeChange={handlePageSizeChange}
         />
       )}
 
-      <ItemFormModal
+      <ProcessFormModal
         open={modalOpen}
         editTarget={editTarget}
         onClose={handleClose}
@@ -152,4 +151,4 @@ const ItemManagementPage = () => {
   )
 }
 
-export default ItemManagementPage
+export default ProcessManagementPage

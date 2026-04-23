@@ -7,6 +7,7 @@ import {
   Package,
   ShieldCheck,
   Wrench,
+  GitBranch,
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
@@ -19,6 +20,7 @@ const menuGroups = [
     items: [
       { label: '공통코드 관리', path: '/master/common-codes', icon: ListTree },
       { label: '품목 관리', path: '/master/items', icon: Package },
+      { label: '공정 관리', path: '/master/processes', icon: GitBranch },
       { label: '설비 관리', path: '/equipment', icon: Wrench },
     ],
   },

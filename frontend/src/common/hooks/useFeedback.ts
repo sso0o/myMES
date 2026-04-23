@@ -2,7 +2,7 @@ import { useUiStore, type AlertInput, type ToastInput } from '@/store/uiStore'
 
 interface UseFeedbackResult {
   showToast: (input: ToastInput) => void
-  showAlert: (input: AlertInput) => Promise<void>
+  showAlert: (input: AlertInput) => Promise<boolean>
 }
 
 export function useFeedback(): UseFeedbackResult {

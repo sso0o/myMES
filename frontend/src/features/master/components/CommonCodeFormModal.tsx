@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
+import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import type { CommonCodeCreateRequest, CommonCodeResponse, CommonCodeUpdateRequest } from '../types'
 
 interface CommonCodeFormModalProps {
@@ -124,18 +125,10 @@ const CommonCodeFormModal = ({
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-lg px-4 py-2 text-sm text-[var(--text-base)] transition-colors hover:bg-[var(--surface-alt)]"
-            >
+            <button type="button" onClick={onClose} className={cancelButtonClass}>
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--text-inverse)] transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50"
-            >
+            <button type="submit" disabled={isLoading} className={submitButtonClass}>
               {isLoading ? 'Saving...' : editTarget ? 'Update' : 'Create'}
             </button>
           </div>

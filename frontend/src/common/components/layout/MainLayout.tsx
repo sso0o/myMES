@@ -13,11 +13,12 @@ const MainLayout = () => {
     '사용자'
 
   const handleSignOut = async () => {
-    await showAlert({
+    const confirmed = await showAlert({
       title: '로그아웃',
       message: '로그아웃 하시겠습니까?',
       confirmText: '로그아웃',
     })
+    if (!confirmed) return
     await signOut()
   }
 

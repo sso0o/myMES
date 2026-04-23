@@ -145,12 +145,10 @@ class BackendRegressionTests {
         processRepository.save(MfgProcess.builder()
                 .processCode("PROC-000003")
                 .processName("기존 공정")
-                .sequence(1)
                 .build());
 
         ProcessCreateRequest request = new ProcessCreateRequest();
         ReflectionTestUtils.setField(request, "processName", "신규 공정");
-        ReflectionTestUtils.setField(request, "sequence", 2);
 
         String createdProcessCode = processService.create(request).getProcessCode();
 
@@ -162,18 +160,17 @@ class BackendRegressionTests {
         MfgProcess process = processRepository.save(MfgProcess.builder()
                 .processCode("PROC-000011")
                 .processName("수정 전 공정")
-                .sequence(1)
                 .build());
 
         ProcessUpdateRequest request = new ProcessUpdateRequest();
         ReflectionTestUtils.setField(request, "processName", "수정 후 공정");
-        ReflectionTestUtils.setField(request, "sequence", 3);
+        ReflectionTestUtils.setField(request, "isActive", true);
 
         processService.update(process.getId(), request);
 
         assertThat(process.getProcessCode()).isEqualTo("PROC-000011");
         assertThat(process.getProcessName()).isEqualTo("수정 후 공정");
-        assertThat(process.getSequence()).isEqualTo(3);
+        assertThat(process.isActive()).isTrue();
     }
 
     @Test
@@ -226,14 +223,12 @@ class BackendRegressionTests {
         MfgProcess process = processRepository.save(MfgProcess.builder()
                 .processCode("PROC-000100")
                 .processName("불량 테스트 공정")
-                .sequence(1)
                 .build());
         WorkOrder workOrderA = workOrderRepository.save(WorkOrder.builder()
                 .workOrderNo("WO-20260421-0001")
                 .item(item)
                 .plannedQty(100)
                 .priority(Priority.MEDIUM)
-                .lineName("LINE-A")
                 .workerName("Kim")
                 .dueDate(LocalDate.of(2026, 4, 21))
                 .build());
@@ -242,7 +237,6 @@ class BackendRegressionTests {
                 .item(item)
                 .plannedQty(100)
                 .priority(Priority.MEDIUM)
-                .lineName("LINE-B")
                 .workerName("Lee")
                 .dueDate(LocalDate.of(2026, 4, 22))
                 .build());
@@ -280,7 +274,6 @@ class BackendRegressionTests {
                 .item(item)
                 .plannedQty(50)
                 .priority(Priority.HIGH)
-                .lineName("LINE-A")
                 .workerName("Kim")
                 .dueDate(LocalDate.now().plusDays(1))
                 .build());
@@ -289,7 +282,6 @@ class BackendRegressionTests {
         ReflectionTestUtils.setField(request, "itemId", item.getId());
         ReflectionTestUtils.setField(request, "plannedQty", 70);
         ReflectionTestUtils.setField(request, "priority", Priority.MEDIUM);
-        ReflectionTestUtils.setField(request, "lineName", "LINE-B");
         ReflectionTestUtils.setField(request, "workerName", "Lee");
         ReflectionTestUtils.setField(request, "dueDate", LocalDate.now().plusDays(2));
 
