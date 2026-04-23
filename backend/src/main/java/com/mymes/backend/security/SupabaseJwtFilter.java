@@ -110,8 +110,13 @@ public class SupabaseJwtFilter extends OncePerRequestFilter {
                 log.debug("Supabase JWT 인증 성공: userId={}, email={}", userId, email);
 
             } catch (JwtException e) {
+                SecurityContextHolder.clearContext();
                 log.warn("유효하지 않은 Supabase JWT: {}", e.getMessage());
                 // 토큰 검증 실패 시 필터 체인 계속 진행 (SecurityConfig에서 권한 처리)
+            } catch (Exception e) {
+                SecurityContextHolder.clearContext();
+                log.error("Supabase JWT 처리 중 예상치 못한 오류가 발생했습니다: {}", e.getMessage(), e);
+                // 예외 상황에서도 연결을 끊지 않고 다음 보안 처리로 넘긴다.
             }
         }
 

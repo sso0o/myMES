@@ -6,7 +6,7 @@ const PrivateRoute = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-slate-400 text-sm">
+      <div className="flex min-h-screen items-center justify-center text-sm text-[var(--text-muted)]">
         Loading...
       </div>
     )

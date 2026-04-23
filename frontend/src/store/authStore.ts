@@ -2,6 +2,18 @@ import { create } from 'zustand'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 
+const employeeEmailDomain = import.meta.env.VITE_EMP_EMAIL_DOMAIN || 'mes.local'
+
+function normalizeAuthEmail(identifier: string): string {
+  const normalized = identifier.trim()
+
+  if (!normalized || normalized.includes('@')) {
+    return normalized
+  }
+
+  return `${normalized}@${employeeEmailDomain}`
+}
+
 interface AuthState {
   session: Session | null
   user: User | null
@@ -26,7 +38,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   loading: true,
 
   signIn: async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    const normalizedEmail = normalizeAuthEmail(email)
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: normalizedEmail,
+      password,
+    })
     if (error) throw error
     set({ session: data.session, user: data.user })
   },

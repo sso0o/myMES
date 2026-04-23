@@ -1,13 +1,17 @@
 package com.mymes.backend.item.entity;
 
+import com.mymes.backend.code.entity.CommonCode;
 import com.mymes.backend.common.entity.BaseEntity;
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -36,15 +40,21 @@ public class Item extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String unit;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_type_id")
+    private CommonCode itemType;
+
     @Builder
-    public Item(String itemCode, String itemName, String unit) {
+    public Item(String itemCode, String itemName, String unit, CommonCode itemType) {
         this.itemCode = itemCode;
         this.itemName = itemName;
         this.unit = unit;
+        this.itemType = itemType;
     }
 
-    public void update(String itemName, String unit) {
+    public void update(String itemName, String unit, CommonCode itemType) {
         this.itemName = itemName;
         this.unit = unit;
+        this.itemType = itemType;
     }
 }

@@ -1,6 +1,7 @@
 package com.mymes.backend.item.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
@@ -14,4 +15,7 @@ public class ItemUpdateRequest {
     @NotBlank(message = "단위는 필수입니다.")
     @Size(max = 20)
     private String unit;
+
+    @NotNull(message = "품목구분은 필수입니다.")
+    private Long itemTypeId;
 }
