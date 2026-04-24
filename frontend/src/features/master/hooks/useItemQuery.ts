@@ -17,10 +17,10 @@ export const useItemUnitOptions = () =>
     queryFn: () => commonCodeApi.getCodes('ITEM_UNIT').then((res) => res.data.data ?? []),
   })
 
-export const useItemList = () =>
+export const useItemList = (page: number, size: number = 20) =>
   useQuery({
-    queryKey: [QUERY_KEY],
-    queryFn: () => itemApi.getList().then((res) => res.data.data ?? []),
+    queryKey: [QUERY_KEY, page, size],
+    queryFn: () => itemApi.getList(page, size).then((res) => res.data),
   })
 
 export const useCreateItem = () => {

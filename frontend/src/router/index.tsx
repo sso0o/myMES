@@ -4,6 +4,7 @@ import PrivateRoute from './PrivateRoute'
 import MainLayout from '@/common/components/layout/MainLayout'
 import ItemManagementPage from '@/pages/ItemManagementPage'
 import CommonCodeManagementPage from '@/pages/CommonCodeManagementPage'
+import ProcessManagementPage from '@/pages/ProcessManagementPage'
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
           { path: '/equipment', element: <div className="text-slate-700">설비 관리 (준비 중)</div> },
           { path: '/master/items', element: <ItemManagementPage /> },
           { path: '/master/common-codes', element: <CommonCodeManagementPage /> },
+          { path: '/master/processes', element: <ProcessManagementPage /> },
         ],
       },
     ],

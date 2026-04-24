@@ -1,13 +1,30 @@
 import { Pencil, Trash2 } from 'lucide-react'
+import Pagination from '@/common/components/Pagination'
 import type { ItemResponse } from '../types'
 
 interface ItemTableProps {
   items: ItemResponse[]
   onEdit: (item: ItemResponse) => void
   onDelete: (item: ItemResponse) => void
+  currentPage: number
+  totalPages: number
+  totalItems: number
+  pageSize: number
+  onPageChange: (page: number) => void
+  onPageSizeChange: (size: number) => void
 }
 
-const ItemTable = ({ items, onEdit, onDelete }: ItemTableProps) => {
+const ItemTable = ({
+  items,
+  onEdit,
+  onDelete,
+  currentPage,
+  totalPages,
+  totalItems,
+  pageSize,
+  onPageChange,
+  onPageSizeChange,
+}: ItemTableProps) => {
   return (
     <div className="w-full overflow-x-auto rounded-lg border border-[var(--border)] bg-[var(--surface)]">
       <table className="w-full text-sm">
@@ -71,6 +88,17 @@ const ItemTable = ({ items, onEdit, onDelete }: ItemTableProps) => {
           )}
         </tbody>
       </table>
+
+      <div className="border-t border-[var(--border)]">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={totalItems}
+          pageSize={pageSize}
+          onPageChange={onPageChange}
+          onPageSizeChange={onPageSizeChange}
+        />
+      </div>
     </div>
   )
 }
