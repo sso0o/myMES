@@ -28,6 +28,13 @@ public enum ErrorCode {
     ITEM_PROCESS_COPY_SOURCE_TARGET_SAME(400, "원본 품목과 대상 품목이 같을 수 없습니다."),
     ITEM_PROCESS_COPY_EMPTY_SOURCE(400, "원본 품목에 복사할 공정이 없습니다."),
 
+    // BOM
+    BOM_NOT_FOUND(404, "BOM을 찾을 수 없습니다."),
+    BOM_DUPLICATED(409, "해당 제품에 이미 등록된 자재입니다."),
+    BOM_SEQUENCE_DUPLICATED(409, "해당 제품에 이미 사용 중인 순서입니다."),
+    BOM_SELF_REFERENCE(400, "제품 품목과 자재 품목이 같을 수 없습니다."),
+    BOM_QUANTITY_INVALID(400, "소요수량은 0보다 커야 합니다."),
+
     // Work Order
     WORK_ORDER_NOT_FOUND(404, "작업 지시를 찾을 수 없습니다."),
     WORK_ORDER_INVALID_STATUS_TRANSITION(409, "유효하지 않은 상태 전이입니다."),

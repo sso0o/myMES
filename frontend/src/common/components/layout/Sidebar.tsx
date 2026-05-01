@@ -29,6 +29,7 @@ const menuGroups = [
     group: '생산기초관리',
     items: [
       { label: '품목별 공정 관리', path: '/prod-basic/item-processes', icon: Layers },
+      { label: 'BOM 관리', path: '/prod-basic/boms', icon: Package },
     ],
   },
   {
