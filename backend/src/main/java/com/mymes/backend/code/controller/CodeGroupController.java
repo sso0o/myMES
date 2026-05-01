@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/code-groups")
+@RequestMapping("/api/master/code-groups")
 @RequiredArgsConstructor
 public class CodeGroupController {
 

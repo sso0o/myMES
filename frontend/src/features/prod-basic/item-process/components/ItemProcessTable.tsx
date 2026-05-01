@@ -1,5 +1,21 @@
 import { Check, Pencil, Trash2, X } from 'lucide-react'
-import type { ProcessResponse } from '@/features/master/process/types'
+import {
+  cancelIconButtonClass,
+  deleteIconButtonClass,
+  editIconButtonClass,
+  saveIconButtonClass,
+} from '@/common/styles/button'
+import {
+  tableBodyClass,
+  tableClass,
+  tableEmptyCellClass,
+  tableHeadClass,
+  tableInlineEditRowClass,
+  tableRowClass,
+  tableScrollClass,
+} from '@/common/styles/table'
+import { inlineInputClass } from '@/common/styles/form'
+import type { ProcessResponse } from '@/features/prod-basic/process/types'
 import type { ItemProcessResponse } from '../types'
 
 interface InlineRow {
@@ -26,9 +42,7 @@ interface ItemProcessTableProps {
   onDelete: (ip: ItemProcessResponse) => void
 }
 
-const inputCls =
-  'w-full rounded border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm text-[var(--text-strong)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]'
-const sequenceInputCls = `${inputCls} min-w-20 text-center`
+const sequenceInputCls = `${inlineInputClass} min-w-20 text-center`
 
 const ItemProcessTable = ({
   itemProcesses,
@@ -54,7 +68,7 @@ const ItemProcessTable = ({
   const sortedProcesses = itemProcesses.slice().sort((a, b) => a.sequence - b.sequence)
 
   const inlineAddRow = (
-    <tr className="bg-[var(--primary-soft)]/40">
+    <tr className={tableInlineEditRowClass}>
       <td className="px-4 py-2">
         <input
           className={sequenceInputCls}
@@ -67,7 +81,7 @@ const ItemProcessTable = ({
       </td>
       <td className="px-4 py-2 font-mono text-xs text-[var(--text-muted)]" colSpan={2}>
         <select
-          className={inputCls}
+          className={inlineInputClass}
           value={newRow.processId}
           onChange={(e) => onChangeNewRow({ ...newRow, processId: e.target.value })}
           autoFocus
@@ -95,7 +109,7 @@ const ItemProcessTable = ({
             type="button"
             onClick={onSaveAdd}
             disabled={isCreating}
-            className="rounded p-1.5 text-[var(--success)] transition-colors hover:bg-[var(--success-soft)] disabled:opacity-50"
+            className={saveIconButtonClass}
             title="저장"
           >
             <Check size={15} />
@@ -103,7 +117,7 @@ const ItemProcessTable = ({
           <button
             type="button"
             onClick={onCancelAdd}
-            className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-alt)]"
+            className={cancelIconButtonClass}
             title="취소"
           >
             <X size={15} />
@@ -114,9 +128,9 @@ const ItemProcessTable = ({
   )
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-sm">
-        <thead className="bg-[var(--surface-alt)] text-[var(--text-base)]">
+    <div className={tableScrollClass}>
+      <table className={tableClass}>
+        <thead className={tableHeadClass}>
           <tr>
             <th className="w-24 px-4 py-3 text-center font-medium">순서</th>
             <th className="px-4 py-3 text-left font-medium">공정코드</th>
@@ -128,10 +142,10 @@ const ItemProcessTable = ({
           </tr>
         </thead>
 
-        <tbody className="divide-y divide-[var(--border)]/50">
+        <tbody className={tableBodyClass}>
           {sortedProcesses.length === 0 && !addingRow && (
             <tr>
-              <td colSpan={7} className="px-4 py-10 text-center text-[var(--text-muted)]">
+              <td colSpan={7} className={tableEmptyCellClass}>
                 등록된 공정이 없습니다.
               </td>
             </tr>
@@ -142,7 +156,7 @@ const ItemProcessTable = ({
           {sortedProcesses.map((ip) => {
             const proc = getProcess(ip.processId)
             return editingId === ip.id ? (
-              <tr key={ip.id} className="bg-[var(--primary-soft)]/40">
+              <tr key={ip.id} className={tableInlineEditRowClass}>
                 <td className="px-4 py-2">
                   <input
                     className={sequenceInputCls}
@@ -155,7 +169,7 @@ const ItemProcessTable = ({
                 </td>
                 <td className="px-4 py-2" colSpan={2}>
                   <select
-                    className={inputCls}
+                    className={inlineInputClass}
                     value={editRow.processId}
                     onChange={(e) => onChangeEditRow({ ...editRow, processId: e.target.value })}
                   >
@@ -188,7 +202,7 @@ const ItemProcessTable = ({
                       type="button"
                       onClick={() => onSaveEdit(ip)}
                       disabled={isUpdating}
-                      className="rounded p-1.5 text-[var(--success)] transition-colors hover:bg-[var(--success-soft)] disabled:opacity-50"
+                      className={saveIconButtonClass}
                       title="저장"
                     >
                       <Check size={15} />
@@ -196,7 +210,7 @@ const ItemProcessTable = ({
                     <button
                       type="button"
                       onClick={onCancelEdit}
-                      className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-alt)]"
+                      className={cancelIconButtonClass}
                       title="취소"
                     >
                       <X size={15} />
@@ -205,7 +219,7 @@ const ItemProcessTable = ({
                 </td>
               </tr>
             ) : (
-              <tr key={ip.id} className="transition-colors hover:bg-[var(--surface-alt)]">
+              <tr key={ip.id} className={tableRowClass}>
                 <td className="px-4 py-3 text-center text-[var(--text-base)]">{ip.sequence}</td>
                 <td className="px-4 py-3 font-mono text-[var(--text-base)]">{ip.processCode}</td>
                 <td className="px-4 py-3 text-[var(--text-strong)]">{ip.processName}</td>
@@ -219,7 +233,7 @@ const ItemProcessTable = ({
                     <button
                       type="button"
                       onClick={() => onStartEdit(ip)}
-                      className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--primary-soft)] hover:text-[var(--primary)]"
+                      className={editIconButtonClass}
                       title="수정"
                     >
                       <Pencil size={15} />
@@ -227,7 +241,7 @@ const ItemProcessTable = ({
                     <button
                       type="button"
                       onClick={() => onDelete(ip)}
-                      className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--danger-soft)] hover:text-[var(--danger)]"
+                      className={deleteIconButtonClass}
                       title="삭제"
                     >
                       <Trash2 size={15} />

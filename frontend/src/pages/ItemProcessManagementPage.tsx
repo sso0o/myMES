@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { Copy, Plus } from 'lucide-react'
+import EmptyState from '@/common/components/EmptyState'
+import PageHeader from '@/common/components/PageHeader'
 import { primaryActionButtonClass } from '@/common/styles/button'
 import { useFeedback } from '@/common/hooks/useFeedback'
 import { useItemList } from '@/features/master/item/hooks/useItemQuery'
 import type { ItemResponse } from '@/features/master/item/types'
-import { useProcessList } from '@/features/master/process/hooks/useProcessQuery'
+import { useProcessList } from '@/features/prod-basic/process/hooks/useProcessQuery'
 import {
   useItemProcessList,
   useCreateItemProcess,
@@ -172,12 +174,7 @@ const ItemProcessManagementPage = () => {
   return (
     <>
     <div className="space-y-5 p-6">
-      <div>
-        <h1 className="text-xl font-semibold text-[var(--text-strong)]">품목별 공정 관리</h1>
-        <p className="mt-0.5 text-sm text-[var(--text-muted)]">
-          품목에 적용되는 공정 순서를 관리합니다.
-        </p>
-      </div>
+      <PageHeader title="품목별 공정 관리" description="품목에 적용되는 공정 순서를 관리합니다." />
 
       <div className="flex h-[calc(100vh-16rem)] gap-0">
         {/* 좌측: 품목 목록 */}
@@ -263,13 +260,9 @@ const ItemProcessManagementPage = () => {
           </div>
 
           {!selectedItem ? (
-            <div className="flex flex-1 items-center justify-center text-sm text-[var(--text-muted)]">
-              좌측에서 품목을 선택하세요.
-            </div>
+            <EmptyState message="좌측에서 품목을 선택하세요." fill />
           ) : processesLoading ? (
-            <div className="flex flex-1 items-center justify-center text-sm text-[var(--text-muted)]">
-              불러오는 중...
-            </div>
+            <EmptyState message="불러오는 중..." fill />
           ) : (
             <ItemProcessTable
               itemProcesses={itemProcesses}

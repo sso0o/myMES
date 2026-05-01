@@ -1,5 +1,15 @@
 import { Pencil, Trash2 } from 'lucide-react'
+import Badge from '@/common/components/Badge'
 import Pagination from '@/common/components/Pagination'
+import { deleteIconButtonClass, editIconButtonClass } from '@/common/styles/button'
+import {
+  tableBodyClass,
+  tableClass,
+  tableContainerClass,
+  tableEmptyCellClass,
+  tableHeadClass,
+  tableRowClass,
+} from '@/common/styles/table'
 import type { ProcessResponse } from '../types'
 
 interface ProcessTableProps {
@@ -26,9 +36,9 @@ const ProcessTable = ({
   onPageSizeChange,
 }: ProcessTableProps) => {
   return (
-    <div className="w-full overflow-x-auto rounded-lg border border-[var(--border)] bg-[var(--surface)]">
-      <table className="w-full text-sm">
-        <thead className="bg-[var(--surface-alt)] text-[var(--text-base)]">
+    <div className={tableContainerClass}>
+      <table className={tableClass}>
+        <thead className={tableHeadClass}>
           <tr>
             <th className="px-4 py-3 text-left font-medium">공정코드</th>
             <th className="px-4 py-3 text-left font-medium">공정명</th>
@@ -39,25 +49,23 @@ const ProcessTable = ({
             <th className="px-4 py-3 text-center font-medium">관리</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[var(--border)]/50">
+        <tbody className={tableBodyClass}>
           {processes.length === 0 ? (
             <tr>
-              <td colSpan={7} className="px-4 py-10 text-center text-[var(--text-muted)]">
+              <td colSpan={7} className={tableEmptyCellClass}>
                 등록된 공정이 없습니다.
               </td>
             </tr>
           ) : (
             processes.map((process) => (
-              <tr key={process.id} className="transition-colors hover:bg-[var(--surface-alt)]">
+              <tr key={process.id} className={tableRowClass}>
                 <td className="px-4 py-3 font-mono text-[var(--text-base)]">
                   {process.processCode}
                 </td>
                 <td className="px-4 py-3 text-[var(--text-strong)]">{process.processName}</td>
                 <td className="px-4 py-3">
                   {process.processTypeName ? (
-                    <span className="inline-flex items-center rounded-md bg-[var(--primary-soft)] px-2 py-0.5 text-xs font-medium text-[var(--primary)]">
-                      {process.processTypeName}
-                    </span>
+                    <Badge shape="rounded">{process.processTypeName}</Badge>
                   ) : (
                     <span className="text-[var(--text-muted)]">-</span>
                   )}
@@ -66,15 +74,9 @@ const ProcessTable = ({
                   {process.standardTime != null ? process.standardTime.toLocaleString() : '-'}
                 </td>
                 <td className="px-4 py-3 text-center">
-                  <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                      process.isActive
-                        ? 'bg-green-50 text-green-700'
-                        : 'bg-[var(--surface-alt)] text-[var(--text-muted)]'
-                    }`}
-                  >
+                  <Badge variant={process.isActive ? 'success' : 'muted'}>
                     {process.isActive ? '사용' : '미사용'}
-                  </span>
+                  </Badge>
                 </td>
                 <td className="px-4 py-3 text-[var(--text-muted)]">
                   {new Date(process.createdAt).toLocaleDateString('ko-KR')}
@@ -84,7 +86,7 @@ const ProcessTable = ({
                     <button
                       type="button"
                       onClick={() => onEdit(process)}
-                      className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--primary-soft)] hover:text-[var(--primary)]"
+                      className={editIconButtonClass}
                       title="수정"
                     >
                       <Pencil size={15} />
@@ -92,7 +94,7 @@ const ProcessTable = ({
                     <button
                       type="button"
                       onClick={() => onDelete(process)}
-                      className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--danger-soft)] hover:text-[var(--danger)]"
+                      className={deleteIconButtonClass}
                       title="삭제"
                     >
                       <Trash2 size={15} />

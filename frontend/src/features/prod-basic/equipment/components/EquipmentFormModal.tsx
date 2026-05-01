@@ -1,6 +1,13 @@
-import { useEffect, useState } from 'react'
-import { X } from 'lucide-react'
+import { useState } from 'react'
+import Modal from '@/common/components/Modal'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
+import {
+  formClass,
+  formDisabledInputClass,
+  formInputClass,
+  formLabelClass,
+  formTextareaClass,
+} from '@/common/styles/form'
 import { useEquipmentTypeOptions } from '../hooks/useEquipmentQuery'
 import type { EquipmentCreateRequest, EquipmentResponse, EquipmentUpdateRequest } from '../types'
 
@@ -19,39 +26,18 @@ const EquipmentFormModal = ({
   onSubmit,
   isLoading,
 }: EquipmentFormModalProps) => {
-  const [equipmentName, setEquipmentName] = useState('')
-  const [equipmentTypeId, setEquipmentTypeId] = useState<number | null>(null)
-  const [location, setLocation] = useState('')
-  const [manufacturer, setManufacturer] = useState('')
-  const [modelName, setModelName] = useState('')
-  const [purchaseDate, setPurchaseDate] = useState('')
-  const [description, setDescription] = useState('')
-  const [isActive, setIsActive] = useState(true)
+  const [equipmentName, setEquipmentName] = useState(editTarget?.equipmentName ?? '')
+  const [equipmentTypeId, setEquipmentTypeId] = useState<number | null>(
+    editTarget?.equipmentTypeId ?? null,
+  )
+  const [location, setLocation] = useState(editTarget?.location ?? '')
+  const [manufacturer, setManufacturer] = useState(editTarget?.manufacturer ?? '')
+  const [modelName, setModelName] = useState(editTarget?.modelName ?? '')
+  const [purchaseDate, setPurchaseDate] = useState(editTarget?.purchaseDate ?? '')
+  const [description, setDescription] = useState(editTarget?.description ?? '')
+  const [isActive, setIsActive] = useState(editTarget?.isActive ?? true)
 
   const { data: equipmentTypeOptions = [] } = useEquipmentTypeOptions()
-
-  useEffect(() => {
-    if (editTarget) {
-      setEquipmentName(editTarget.equipmentName)
-      setEquipmentTypeId(editTarget.equipmentTypeId ?? null)
-      setLocation(editTarget.location ?? '')
-      setManufacturer(editTarget.manufacturer ?? '')
-      setModelName(editTarget.modelName ?? '')
-      setPurchaseDate(editTarget.purchaseDate ?? '')
-      setDescription(editTarget.description ?? '')
-      setIsActive(editTarget.isActive)
-      return
-    }
-
-    setEquipmentName('')
-    setEquipmentTypeId(null)
-    setLocation('')
-    setManufacturer('')
-    setModelName('')
-    setPurchaseDate('')
-    setDescription('')
-    setIsActive(true)
-  }, [editTarget, open])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -70,39 +56,24 @@ const EquipmentFormModal = ({
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-[var(--overlay)]" onClick={onClose} />
-      <div className="relative w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm">
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-[var(--text-strong)]">
-            {editTarget ? '설비 수정' : '설비 등록'}
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-alt)] hover:text-[var(--text-base)]"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <Modal title={editTarget ? '설비 수정' : '설비 등록'} onClose={onClose}>
+        <form onSubmit={handleSubmit} className={formClass}>
           {editTarget && (
             <div>
-              <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">
+              <label className={formLabelClass}>
                 설비코드
               </label>
               <input
                 type="text"
                 value={editTarget.equipmentCode}
                 disabled
-                className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-alt)] px-3 py-2 font-mono text-sm text-[var(--text-muted)]"
+                className={formDisabledInputClass}
               />
             </div>
           )}
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">
+            <label className={formLabelClass}>
               설비명 <span className="text-[var(--danger)]">*</span>
             </label>
             <input
@@ -112,18 +83,18 @@ const EquipmentFormModal = ({
               placeholder="설비명을 입력하세요"
               maxLength={100}
               required
-              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className={formInputClass}
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">
+            <label className={formLabelClass}>
               설비유형
             </label>
             <select
               value={equipmentTypeId ?? ''}
               onChange={(e) => setEquipmentTypeId(e.target.value ? Number(e.target.value) : null)}
-              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className={formInputClass}
             >
               <option value="">설비유형 선택</option>
               {equipmentTypeOptions
@@ -138,20 +109,20 @@ const EquipmentFormModal = ({
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">위치</label>
+            <label className={formLabelClass}>위치</label>
             <input
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="설비 위치를 입력하세요"
               maxLength={200}
-              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className={formInputClass}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">
+              <label className={formLabelClass}>
                 제조사
               </label>
               <input
@@ -160,11 +131,11 @@ const EquipmentFormModal = ({
                 onChange={(e) => setManufacturer(e.target.value)}
                 placeholder="제조사"
                 maxLength={100}
-                className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className={formInputClass}
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">
+              <label className={formLabelClass}>
                 모델명
               </label>
               <input
@@ -173,32 +144,32 @@ const EquipmentFormModal = ({
                 onChange={(e) => setModelName(e.target.value)}
                 placeholder="모델명"
                 maxLength={100}
-                className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                className={formInputClass}
               />
             </div>
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">
+            <label className={formLabelClass}>
               구입일
             </label>
             <input
               type="date"
               value={purchaseDate}
               onChange={(e) => setPurchaseDate(e.target.value)}
-              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className={formInputClass}
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">설명</label>
+            <label className={formLabelClass}>설명</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="설비에 대한 설명을 입력하세요"
               rows={3}
               maxLength={500}
-              className="w-full resize-none rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className={formTextareaClass}
             />
           </div>
 
@@ -229,8 +200,7 @@ const EquipmentFormModal = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
