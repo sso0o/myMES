@@ -1,11 +1,37 @@
-# 📌 MES (Manufacturing Execution System)
+# MES (Manufacturing Execution System)
 
 제조 공정에서 생산 계획, 작업 지시, 생산 실적을 관리하는 MES 시스템입니다.  
-Spring Boot 기반 백엔드와 React 기반 프론트엔드로 구성된 풀스택 프로젝트입니다.
+Spring Boot 백엔드와 React(Vite) 프론트엔드로 구성된 풀스택 프로젝트이며, Supabase를 Auth/DB/Realtime 플랫폼으로 사용합니다.
 
 ---
 
-## 🛠 Tech Stack
+## 현재 구현 상태
+
+### 구현된 화면
+
+| 영역 | 경로 | 상태 |
+|---|---|---|
+| 인증 | `/login` | 로그인 화면 |
+| 기준 관리 | `/master/common-codes` | 공통코드 관리 |
+| 기준 관리 | `/master/items` | 품목 관리 |
+| 생산기초관리 | `/prod-basic/processes` | 공정 관리 |
+| 생산기초관리 | `/prod-basic/equipment` | 설비 관리 |
+| 생산기초관리 | `/prod-basic/item-processes` | 품목별 공정 관리, 일괄 복사 |
+| 생산기초관리 | `/prod-basic/boms` | BOM 관리 |
+
+### 준비 중인 화면
+
+| 영역 | 경로 |
+|---|---|
+| 대시보드 | `/dashboard` |
+| 생산 계획 | `/planning` |
+| 작업 지시 | `/work-orders` |
+| 생산 실적 | `/production` |
+| 품질 관리 | `/quality` |
+
+---
+
+## Tech Stack
 
 ### Backend
 - **Java 17** / **Spring Boot 3.5**
@@ -27,7 +53,7 @@ Spring Boot 기반 백엔드와 React 기반 프론트엔드로 구성된 풀스
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```plaintext
 myMES/
@@ -41,21 +67,22 @@ myMES/
 │       │   ├── dto/                      # 요청/응답 DTO
 │       │   └── mapper/                   # MapStruct Mapper
 │       ├── common/
-│       │   ├── response/                 # ApiResponse, PageResponse
-│       │   └── exception/               # BusinessException, ErrorCode, GlobalExceptionHandler
+│       │   ├── config/                   # 공통 설정
+│       │   ├── controller/               # Health check 등 공통 컨트롤러
+│       │   ├── entity/                   # BaseEntity
+│       │   ├── exception/                # BusinessException, ErrorCode, GlobalExceptionHandler
+│       │   └── response/                 # ApiResponse, PageResponse
 │       └── security/
 │           ├── SecurityConfig.java       # CORS, CSRF, Stateless 세션 설정
-│           ├── SupabaseJwtFilter.java    # OncePerRequestFilter — JWT 검증
-│           └── SupabasePrincipal.java   # userId(UUID), email, role 필드
+│           ├── SupabaseJwtFilter.java    # OncePerRequestFilter, JWT 검증
+│           └── SupabasePrincipal.java    # userId(UUID), email, role 필드
 │
 └── frontend/                             # React 클라이언트 (포트: 5173)
     └── src/
         ├── features/                     # 도메인별 기능 (Feature-first)
-        │   ├── workorder/               # 작업 지시
-        │   ├── production/             # 생산 실적
-        │   ├── planning/               # 생산 계획
-        │   ├── quality/                # 품질
-        │   └── equipment/              # 설비
+        │   ├── auth/                     # 인증
+        │   ├── master/                   # 공통코드, 품목
+        │   └── prod-basic/               # 공정, 설비, 품목별 공정, BOM
         ├── common/                      # 공통 컴포넌트 / 훅
         ├── pages/                       # 라우트 단위 페이지
         ├── store/
@@ -63,16 +90,40 @@ myMES/
         ├── lib/
         │   ├── supabase.ts             # Supabase 클라이언트 싱글톤
         │   └── axios.ts                # baseURL /api, 401 자동 로그아웃
-        ├── router/                      # 라우터 설정 및 인증 가드
-        └── hooks/
-            └── useSupabaseRealtime.ts  # PostgreSQL Realtime 구독 훅
+        └── router/                      # 라우터 설정 및 인증 가드
 ```
 
-> 도메인 목록: `workorder` (작업 지시) · `production` (생산 실적) · `planning` (생산 계획) · `quality` (품질) · `equipment` (설비)
+### Backend Domains
+
+| 도메인 | 설명 |
+|---|---|
+| `code` | 공통코드 그룹/코드 관리 |
+| `item` | 품목 관리 |
+| `process` | 제조 공정 관리 |
+| `equipment` | 설비 관리 |
+| `itemprocess` | 품목별 공정 라우팅 관리 |
+| `bom` | BOM 구성 관리 |
+| `planning` | 생산 계획 |
+| `workorder` | 작업 지시 |
+| `production` | 생산 실적 |
+| `defect` | 불량 기록/조치 |
+| `user` | 사용자 관리 |
+
+### Frontend Feature Groups
+
+| 경로 | 설명 |
+|---|---|
+| `features/auth` | 로그인 및 인증 관련 훅/컴포넌트 |
+| `features/master/commonCode` | 공통코드 API, React Query 훅, 폼 |
+| `features/master/item` | 품목 API, React Query 훅, 테이블/폼 |
+| `features/prod-basic/process` | 공정 관리 |
+| `features/prod-basic/equipment` | 설비 관리 |
+| `features/prod-basic/item-process` | 품목별 공정 관리 |
+| `features/prod-basic/bom` | BOM 관리 |
 
 ---
 
-## ⚙️ 실행 방법
+## 실행 방법
 
 ### 1. 환경변수 설정
 
@@ -104,7 +155,7 @@ npm run lint              # ESLint 검사
 
 ---
 
-## 🌐 환경변수 목록
+## 환경변수 목록
 
 ### Backend (`backend/.env`)
 
@@ -126,7 +177,7 @@ npm run lint              # ESLint 검사
 
 ---
 
-## 🔐 인증 흐름
+## 인증 흐름
 
 ```
 [React] supabase.auth.signIn()
@@ -143,9 +194,30 @@ npm run lint              # ESLint 검사
 
 ---
 
-## 📡 API 설계 규칙
+## 주요 API
 
-- URL: 복수형 명사 + 케밥케이스 — `/api/work-orders`, `/api/work-orders/{id}`
+| 영역 | API |
+|---|---|
+| Health | `GET /api/health` |
+| 품목 | `/api/master/items` |
+| 공통코드 그룹 | `/api/master/code-groups` |
+| 공통코드 | `/api/master/code-groups/{groupId}/codes` |
+| 공정 | `/api/prod-basic/processes` |
+| 설비 | `/api/prod-basic/equipment` |
+| 품목별 공정 | `/api/prod-basic/item-processes` |
+| 품목별 공정 복사 | `POST /api/prod-basic/item-processes/copy` |
+| BOM | `/api/prod-basic/boms` |
+| 생산 계획 | `/api/production-plans` |
+| 작업 지시 | `/api/work-orders` |
+| 생산 실적 | `/api/work-orders/{workOrderId}/production-records`, `/api/production-records/{id}` |
+| 불량 기록 | `/api/work-orders/{workOrderId}/defect-records`, `/api/defect-records/{id}` |
+| 사용자 | `/api/users`, `/api/users/me` |
+
+API 문서는 서버 실행 후 [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) 에서 확인할 수 있습니다.
+
+### API 설계 규칙
+
+- URL은 복수형 명사 + 케밥케이스를 기본으로 사용합니다.
 - 모든 응답은 `ApiResponse<T>` 공통 래퍼로 감쌉니다.
 
 ```json
@@ -174,16 +246,29 @@ useSupabaseRealtime({
 })
 ```
 
+현재 백엔드 테스트는 애플리케이션 컨텍스트, 회귀 테스트, JWT 필터, BOM, 설비, 품목별 공정 복사 로직을 포함합니다.
+
 ---
 
-## 📚 상세 개발 가이드
+## 다음 작업 후보
 
-| 영역 | 문서 |
-|---|---|
-| 백엔드 개발 규칙 (레이어 구조, 예외 처리, 테스트 전략 등) | [backend/CLAUDE.md](backend/CLAUDE.md) |
-| 프론트엔드 개발 규칙 허브 | [frontend/CLAUDE.md](frontend/CLAUDE.md) |
+1. 생산 계획 화면 구현
+2. 작업 지시 화면 구현
+3. 생산 실적/불량 관리 화면 구현
+4. 생산 관리 도메인 서비스 테스트 보강
+5. 대시보드 1차 지표 구현
+
+---
+
+## 상세 개발 가이드
+
+| 영역 | 문서                                                                     |
+|---|------------------------------------------------------------------------|
+| 전체 작업 가이드 | [CLAUDE.md](CLAUDE.md)                                                 |
+| 백엔드 개발 규칙 (레이어 구조, 예외 처리, 테스트 전략 등) | [backend/CLAUDE.md](backend/CLAUDE.md)                                 |
+| 프론트엔드 개발 규칙 허브 | [frontend/CLAUDE.md](frontend/CLAUDE.md)                               |
 | 폴더 구조 | [frontend/docs/folder-structure.md](frontend/docs/folder-structure.md) |
 | 상태 관리 (Zustand vs React Query) | [frontend/docs/state-management.md](frontend/docs/state-management.md) |
-| API 호출 규칙 | [frontend/docs/api.md](frontend/docs/api.md) |
-| 라우팅 및 인증 가드 | [frontend/docs/routing.md](frontend/docs/routing.md) |
-| 스타일링 (Tailwind, 디자인 토큰) | [frontend/DESIGN_SYSTEM.md](frontend/DESIGN_SYSTEM.md) |
+| API 호출 규칙 | [frontend/docs/api.md](frontend/docs/api.md)                           |
+| 라우팅 및 인증 가드 | [frontend/docs/routing.md](frontend/docs/routing.md)                   |
+| 스타일링 (Tailwind, 디자인 토큰) | [frontend/DESIGN_SYSTEM.md](frontend/DESIGN_SYSTEM.md)                 |
