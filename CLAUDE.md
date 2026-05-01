@@ -80,13 +80,18 @@ Supabase Auth가 JWT를 발급하고, 프론트와 백엔드 모두 이 토큰�
 
 **기능 기준(Feature-first)** 폴더 구조:
 ```
-features/{domain}/    # 도메인별 컴포넌트, 훅, 타입, API 함수, 페이지
-common/               # 여러 도메인에서 공유하는 컴포넌트·훅
-pages/                # 라우트 단위 진입 컴포넌트 (features로 위임)
-store/                # Zustand 전역 상태 (authStore, uiStore)
-lib/                  # axios, supabase 클라이언트 설정
-router/               # React Router 설정 + PrivateRoute
-types/                # 전역 공통 타입 (ApiResponse<T> 등)
+features/{domain}/
+  api/        # axios 호출 순수 함수
+  components/ # 도메인 전용 컴포넌트
+  hooks/      # React Query 훅
+  schemas/    # zod 폼 유효성 검증 스키마
+  types/      # 도메인 타입 정의
+common/       # 여러 도메인에서 공유하는 컴포넌트·훅
+pages/        # 라우트 단위 진입 컴포넌트 (features로 위임)
+store/        # Zustand 전역 상태 (authStore, uiStore)
+lib/          # axios, supabase 클라이언트 설정
+router/       # React Router 설정 + PrivateRoute
+types/        # 전역 공통 타입 (ApiResponse<T> 등)
 ```
 
 - `lib/axios.ts` — baseURL `/api`, 401 응답 시 자동 로그아웃 및 `/login` 리다이렉트
@@ -96,7 +101,8 @@ types/                # 전역 공통 타입 (ApiResponse<T> 등)
 **핵심 규칙 요약** (상세는 [frontend/docs/](frontend/docs/)):
 - 서버 데이터는 React Query로 관리; Zustand는 인증·UI 클라이언트 상태만 담당
 - API 호출은 `features/{domain}/api/{domain}Api.ts` (순수 axios 함수) → `features/{domain}/hooks/use{Domain}Query.ts` (React Query 훅) 2-레이어 구조; 컴포넌트에서 axios 직접 호출 금지
-- TypeScript `any` 사용 금지 (`unknown` + 타입 가드 사용); enum 대신 `as const` 패턴 사용
+- 폼 유효성 검증은 `react-hook-form` + `zod` + `@hookform/resolvers` 조합; 스키마는 `features/{domain}/schemas/`에 위치; 단일 필드 구독은 `watch()` 대신 `useWatch()` 사용
+- TypeScript `any` 사용 금지 (`unknown` + 타입 가드 사용); enum 대신 `as const` 패턴 사용; zod schema는 `z.input<>`(폼 입력)과 `z.output<>`(변환 후) 타입을 분리해서 사용
 - 스타일링은 Tailwind CSS만 사용; 인라인 `style` 속성 금지; 복잡한 className은 `cn()` (clsx + tailwind-merge) 사용
 
 ### Vite Proxy
