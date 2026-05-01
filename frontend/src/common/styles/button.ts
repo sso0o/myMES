@@ -6,8 +6,29 @@ export const cancelButtonClass =
 export const submitButtonClass =
   'rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--text-inverse)] transition-colors hover:bg-[var(--primary-hover)] disabled:opacity-50'
 
+/** 패널 헤더의 주요 액션 버튼 */
 export const primaryActionButtonClass =
   'flex items-center gap-1 rounded-md bg-[var(--primary)] px-2.5 py-1.5 text-xs font-medium text-[var(--text-inverse)] transition-colors hover:bg-[var(--primary-hover)] disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-[var(--surface-alt)] disabled:text-[var(--text-muted)] disabled:opacity-60'
+
+/** 페이지 헤더의 주요 액션 버튼 */
+export const pagePrimaryActionButtonClass =
+  'flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--text-inverse)] transition-colors hover:bg-[var(--primary-hover)]'
+
+/** 수정 아이콘 버튼 */
+export const editIconButtonClass =
+  'rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--primary-soft)] hover:text-[var(--primary)]'
+
+/** 삭제 아이콘 버튼 */
+export const deleteIconButtonClass =
+  'rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--danger-soft)] hover:text-[var(--danger)]'
+
+/** 저장 아이콘 버튼 */
+export const saveIconButtonClass =
+  'rounded p-1.5 text-[var(--success)] transition-colors hover:bg-[var(--success-soft)] disabled:opacity-50'
+
+/** 취소 아이콘 버튼 */
+export const cancelIconButtonClass =
+  'rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-alt)]'
 
 /** 페이지네이션 이전/다음 아이콘 버튼 */
 export const paginationIconButtonClass =

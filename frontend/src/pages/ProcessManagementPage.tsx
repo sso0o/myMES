@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
+import EmptyState from '@/common/components/EmptyState'
+import InlineAlert from '@/common/components/InlineAlert'
+import PageHeader from '@/common/components/PageHeader'
 import { useFeedback } from '@/common/hooks/useFeedback'
+import { pagePrimaryActionButtonClass } from '@/common/styles/button'
 import ProcessTable from '@/features/master/process/components/ProcessTable'
 import ProcessFormModal from '@/features/master/process/components/ProcessFormModal'
 import {
@@ -101,31 +105,27 @@ const ProcessManagementPage = () => {
 
   return (
     <div className="space-y-5 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-[var(--text-strong)]">공정 관리</h1>
-          <p className="mt-0.5 text-sm text-[var(--text-muted)]">
-            생산에 사용하는 공정을 관리합니다.
-          </p>
-        </div>
+      <PageHeader
+        title="공정 관리"
+        description="생산에 사용하는 공정을 관리합니다."
+        actions={
         <button
           type="button"
           onClick={handleOpenCreate}
-          className="flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--text-inverse)] transition-colors hover:bg-[var(--primary-hover)]"
+          className={pagePrimaryActionButtonClass}
         >
           <Plus size={16} />
           공정 등록
         </button>
-      </div>
+        }
+      />
 
       {isError && (
-        <div className="rounded-lg border border-[var(--danger)]/20 bg-[var(--danger-soft)] px-4 py-3 text-sm text-[var(--danger)]">
-          공정 목록을 불러오는 중 오류가 발생했습니다.
-        </div>
+        <InlineAlert>공정 목록을 불러오는 중 오류가 발생했습니다.</InlineAlert>
       )}
 
       {isLoading ? (
-        <div className="py-20 text-center text-sm text-[var(--text-muted)]">불러오는 중...</div>
+        <EmptyState message="불러오는 중..." />
       ) : (
         <ProcessTable
           processes={pagedProcesses}
@@ -141,6 +141,7 @@ const ProcessManagementPage = () => {
       )}
 
       <ProcessFormModal
+        key={`${modalOpen ? 'open' : 'closed'}-${editTarget?.id ?? 'create'}`}
         open={modalOpen}
         editTarget={editTarget}
         onClose={handleClose}
