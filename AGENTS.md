@@ -55,17 +55,55 @@ Supabase Auth가 JWT를 발급하고, 프론트와 백엔드 모두 이 토큰�
 5. 컨트롤러에서 `@AuthenticationPrincipal SupabasePrincipal`로 인증 사용자 접근
 
 ### 백엔드 구조 (`backend/src/main/java/com/mymes/backend/`)
-- `security/SecurityConfig.java` — CORS(localhost:5173, 3000), CSRF 비활성화, stateless 세션, 필터 체인 설정
+
+**도메인 기준(Domain-first)** 패키지 구조. 각 도메인 패키지 내부는 `controller/`, `service/`, `repository/`, `entity/`, `dto/`, `mapper/` 레이어로 분리.
+
+현재 도메인: `code`, `defect`, `item`, `planning`, `process`, `production`, `user`, `workorder`  
+공통: `common/` (ApiResponse, BusinessException, ErrorCode, GlobalExceptionHandler)  
+인증: `security/` (SecurityConfig, SupabaseJwtFilter, SupabasePrincipal)
+
 - `security/SupabaseJwtFilter.java` — `OncePerRequestFilter`; `supabase.jwt-secret`으로 HMAC 검증
 - `security/SupabasePrincipal.java` — `userId`(UUID), `email`, `role` 필드; `@AuthenticationPrincipal`로 주입
 
 공개 엔드포인트: `/api/health`. 그 외 `/api/**`는 인증 필요.
 
+**핵심 규칙 요약** (상세는 [backend/AGENTS.md](backend/AGENTS.md)):
+- Controller → Service → Repository 흐름 엄수; Controller에서 Repository 직접 접근 금지
+- 모든 API 응답은 `ApiResponse<T>` 래퍼로 감쌈; 에러는 `BusinessException` + `ErrorCode` enum으로 처리
+- Entity ↔ DTO 변환은 MapStruct Mapper 클래스로 분리
+- Service 클래스에 `@Transactional(readOnly = true)` 기본 적용, 변경 메서드만 `@Transactional` 오버라이드
+- Soft Delete 적용: `entity.delete()` 호출 (BaseEntity의 `deletedAt` 세팅); `repository.delete()` 직접 호출 금지
+- 동적 조건 2개 이상이면 QueryDSL 사용 (`@Query` JPQL은 단순 조회만)
+- 모든 `public` 메서드에 Javadoc 작성 필수
+
 ### 프론트엔드 구조 (`frontend/src/`)
-- `lib/supabase.ts` — Supabase 클라이언트 싱글톤
+
+**기능 기준(Feature-first)** 폴더 구조:
+```
+features/{domain}/
+  api/        # axios 호출 순수 함수
+  components/ # 도메인 전용 컴포넌트
+  hooks/      # React Query 훅
+  schemas/    # zod 폼 유효성 검증 스키마
+  types/      # 도메인 타입 정의
+common/       # 여러 도메인에서 공유하는 컴포넌트·훅
+pages/        # 라우트 단위 진입 컴포넌트 (features로 위임)
+store/        # Zustand 전역 상태 (authStore, uiStore)
+lib/          # axios, supabase 클라이언트 설정
+router/       # React Router 설정 + PrivateRoute
+types/        # 전역 공통 타입 (ApiResponse<T> 등)
+```
+
 - `lib/axios.ts` — baseURL `/api`, 401 응답 시 자동 로그아웃 및 `/login` 리다이렉트
 - `store/authStore.ts` — Zustand 스토어; `initialize()` 앱 시작 시 호출 필요
 - `hooks/useSupabaseRealtime.ts` — PostgreSQL 테이블 변경사항 실시간 구독 훅
+
+**핵심 규칙 요약** (상세는 [frontend/docs/](frontend/docs/)):
+- 서버 데이터는 React Query로 관리; Zustand는 인증·UI 클라이언트 상태만 담당
+- API 호출은 `features/{domain}/api/{domain}Api.ts` (순수 axios 함수) → `features/{domain}/hooks/use{Domain}Query.ts` (React Query 훅) 2-레이어 구조; 컴포넌트에서 axios 직접 호출 금지
+- 폼 유효성 검증은 `react-hook-form` + `zod` + `@hookform/resolvers` 조합; 스키마는 `features/{domain}/schemas/`에 위치; 단일 필드 구독은 `watch()` 대신 `useWatch()` 사용
+- TypeScript `any` 사용 금지 (`unknown` + 타입 가드 사용); enum 대신 `as const` 패턴 사용; zod schema는 `z.input<>`(폼 입력)과 `z.output<>`(변환 후) 타입을 분리해서 사용
+- 스타일링은 Tailwind CSS만 사용; 인라인 `style` 속성 금지; 복잡한 className은 `cn()` (clsx + tailwind-merge) 사용
 
 ### Vite Proxy
 `vite.config.ts`에서 `/api` → `http://localhost:8080` 프록시 설정되어 있어 개발 환경에서 CORS 없이 백엔드 호출 가능.
