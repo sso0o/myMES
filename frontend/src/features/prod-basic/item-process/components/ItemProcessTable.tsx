@@ -15,7 +15,7 @@ import {
   tableScrollClass,
 } from '@/common/styles/table'
 import { inlineInputClass } from '@/common/styles/form'
-import type { ProcessResponse } from '@/features/master/process/types'
+import type { ProcessResponse } from '@/features/prod-basic/process/types'
 import type { ItemProcessResponse } from '../types'
 
 interface InlineRow {

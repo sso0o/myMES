@@ -5,19 +5,19 @@ import InlineAlert from '@/common/components/InlineAlert'
 import PageHeader from '@/common/components/PageHeader'
 import { useFeedback } from '@/common/hooks/useFeedback'
 import { pagePrimaryActionButtonClass } from '@/common/styles/button'
-import ProcessTable from '@/features/master/process/components/ProcessTable'
-import ProcessFormModal from '@/features/master/process/components/ProcessFormModal'
+import ProcessTable from '@/features/prod-basic/process/components/ProcessTable'
+import ProcessFormModal from '@/features/prod-basic/process/components/ProcessFormModal'
 import {
   useCreateProcess,
   useDeleteProcess,
   useProcessList,
   useUpdateProcess,
-} from '@/features/master/process/hooks/useProcessQuery'
+} from '@/features/prod-basic/process/hooks/useProcessQuery'
 import type {
   ProcessCreateRequest,
   ProcessResponse,
   ProcessUpdateRequest,
-} from '@/features/master/process/types'
+} from '@/features/prod-basic/process/types'
 
 const ProcessManagementPage = () => {
   const [modalOpen, setModalOpen] = useState(false)

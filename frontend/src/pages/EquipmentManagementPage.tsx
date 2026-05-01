@@ -5,19 +5,19 @@ import InlineAlert from '@/common/components/InlineAlert'
 import PageHeader from '@/common/components/PageHeader'
 import { useFeedback } from '@/common/hooks/useFeedback'
 import { pagePrimaryActionButtonClass } from '@/common/styles/button'
-import EquipmentTable from '@/features/master/equipment/components/EquipmentTable'
-import EquipmentFormModal from '@/features/master/equipment/components/EquipmentFormModal'
+import EquipmentTable from '@/features/prod-basic/equipment/components/EquipmentTable'
+import EquipmentFormModal from '@/features/prod-basic/equipment/components/EquipmentFormModal'
 import {
   useCreateEquipment,
   useDeleteEquipment,
   useEquipmentList,
   useUpdateEquipment,
-} from '@/features/master/equipment/hooks/useEquipmentQuery'
+} from '@/features/prod-basic/equipment/hooks/useEquipmentQuery'
 import type {
   EquipmentCreateRequest,
   EquipmentResponse,
   EquipmentUpdateRequest,
-} from '@/features/master/equipment/types'
+} from '@/features/prod-basic/equipment/types'
 
 const EquipmentManagementPage = () => {
   const [modalOpen, setModalOpen] = useState(false)

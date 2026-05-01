@@ -6,7 +6,7 @@ import { primaryActionButtonClass } from '@/common/styles/button'
 import { useFeedback } from '@/common/hooks/useFeedback'
 import { useItemList } from '@/features/master/item/hooks/useItemQuery'
 import type { ItemResponse } from '@/features/master/item/types'
-import { useProcessList } from '@/features/master/process/hooks/useProcessQuery'
+import { useProcessList } from '@/features/prod-basic/process/hooks/useProcessQuery'
 import {
   useItemProcessList,
   useCreateItemProcess,

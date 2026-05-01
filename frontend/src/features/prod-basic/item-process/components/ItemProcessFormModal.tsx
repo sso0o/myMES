@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Modal from '@/common/components/Modal'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import { formClass, formInputClass, formLabelClass } from '@/common/styles/form'
-import { useProcessList } from '@/features/master/process/hooks/useProcessQuery'
+import { useProcessList } from '@/features/prod-basic/process/hooks/useProcessQuery'
 import type { ItemProcessCreateRequest, ItemProcessResponse, ItemProcessUpdateRequest } from '../types'
 
 interface ItemProcessFormModalProps {

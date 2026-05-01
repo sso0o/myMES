@@ -18,7 +18,12 @@ router/
 /production               # 생산 실적
 /planning                 # 생산 계획
 /quality                  # 품질
-/equipment                # 설비
+/master/items             # 품목 관리
+/master/common-codes      # 공통코드 관리
+/prod-basic/processes     # 공정 관리
+/prod-basic/equipment     # 설비 관리
+/prod-basic/item-processes # 품목별 공정 관리
+/prod-basic/boms          # BOM 관리
 ```
 
 ## 인증 가드
