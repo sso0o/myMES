@@ -1,11 +1,13 @@
-package com.mymes.backend.process.repository;
+package com.mymes.backend.itemprocess.repository;
 
-import com.mymes.backend.process.entity.ItemProcess;
+import com.mymes.backend.itemprocess.entity.ItemProcess;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ItemProcessRepository extends JpaRepository<ItemProcess, Long> {
     List<ItemProcess> findByItemIdOrderBySequenceAsc(Long itemId);
@@ -22,4 +24,19 @@ public interface ItemProcessRepository extends JpaRepository<ItemProcess, Long> 
 
     @Query(value = "SELECT EXISTS(SELECT 1 FROM item_processes WHERE item_id = :itemId AND sequence = :sequence AND id != :id)", nativeQuery = true)
     boolean existsByItemIdAndSequenceAndIdNot(@Param("itemId") Long itemId, @Param("sequence") Integer sequence, @Param("id") Long id);
+
+    /**
+     * 특정 품목의 현재 최대 순서를 반환합니다. (APPEND 모드 offset 계산용)
+     * deleted_at IS NULL 조건은 @SQLRestriction 으로 자동 적용됩니다.
+     */
+    @Query("SELECT MAX(ip.sequence) FROM ItemProcess ip WHERE ip.item.id = :itemId")
+    Optional<Integer> findMaxSequenceByItemId(@Param("itemId") Long itemId);
+
+    /**
+     * 특정 품목의 모든 공정 매핑을 물리 삭제합니다. (REPLACE 모드 전용)
+     * REPLACE 후 재삽입 시 DB unique constraint 충돌을 방지하기 위해 hard delete 를 사용합니다.
+     */
+    @Modifying(clearAutomatically = true)
+    @Query(value = "DELETE FROM item_processes WHERE item_id = :itemId", nativeQuery = true)
+    void hardDeleteAllByItemId(@Param("itemId") Long itemId);
 }

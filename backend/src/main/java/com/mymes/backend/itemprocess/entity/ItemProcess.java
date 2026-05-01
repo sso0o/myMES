@@ -1,7 +1,8 @@
-package com.mymes.backend.process.entity;
+package com.mymes.backend.itemprocess.entity;
 
 import com.mymes.backend.common.entity.BaseEntity;
 import com.mymes.backend.item.entity.Item;
+import com.mymes.backend.process.entity.MfgProcess;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
