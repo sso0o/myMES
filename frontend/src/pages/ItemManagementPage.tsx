@@ -1,19 +1,19 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useFeedback } from '@/common/hooks/useFeedback'
-import ItemFormModal from '@/features/master/components/ItemFormModal'
-import ItemTable from '@/features/master/components/ItemTable'
+import ItemFormModal from '@/features/master/item/components/ItemFormModal'
+import ItemTable from '@/features/master/item/components/ItemTable'
 import {
   useCreateItem,
   useDeleteItem,
   useItemList,
   useUpdateItem,
-} from '@/features/master/hooks/useItemQuery'
+} from '@/features/master/item/hooks/useItemQuery'
 import type {
   ItemCreateRequest,
   ItemResponse,
   ItemUpdateRequest,
-} from '@/features/master/types'
+} from '@/features/master/item/types'
 
 const ItemManagementPage = () => {
   const [modalOpen, setModalOpen] = useState(false)
