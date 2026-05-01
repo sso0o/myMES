@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { itemApi } from '../api/itemApi'
-import { commonCodeApi } from '../api/commonCodeApi'
+import { commonCodeApi } from '../../commonCode/api/commonCodeApi'
 import type { ItemCreateRequest, ItemUpdateRequest } from '../types'
 
 const QUERY_KEY = 'items'

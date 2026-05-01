@@ -1,19 +1,19 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useFeedback } from '@/common/hooks/useFeedback'
-import ProcessTable from '@/features/process/components/ProcessTable'
-import ProcessFormModal from '@/features/process/components/ProcessFormModal'
+import ProcessTable from '@/features/master/process/components/ProcessTable'
+import ProcessFormModal from '@/features/master/process/components/ProcessFormModal'
 import {
   useCreateProcess,
   useDeleteProcess,
   useProcessList,
   useUpdateProcess,
-} from '@/features/process/hooks/useProcessQuery'
+} from '@/features/master/process/hooks/useProcessQuery'
 import type {
   ProcessCreateRequest,
   ProcessResponse,
   ProcessUpdateRequest,
-} from '@/features/process/types'
+} from '@/features/master/process/types'
 
 const ProcessManagementPage = () => {
   const [modalOpen, setModalOpen] = useState(false)

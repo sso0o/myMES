@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { commonCodeApi } from '@/features/master/api/commonCodeApi'
+import { commonCodeApi } from '@/features/master/commonCode/api/commonCodeApi'
 import { processApi } from '../api/processApi'
 import type { ProcessCreateRequest, ProcessUpdateRequest } from '../types'
 

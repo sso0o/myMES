@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Check, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { primaryActionButtonClass } from '@/common/styles/button'
 import { useFeedback } from '@/common/hooks/useFeedback'
-import CodeGroupFormModal from '@/features/master/components/CodeGroupFormModal'
+import CodeGroupFormModal from '@/features/master/commonCode/components/CodeGroupFormModal'
 import {
   useCodeGroupDetail,
   useCodeGroupList,
@@ -12,13 +12,13 @@ import {
   useDeleteCommonCode,
   useUpdateCodeGroup,
   useUpdateCommonCode,
-} from '@/features/master/hooks/useCommonCodeQuery'
+} from '@/features/master/commonCode/hooks/useCommonCodeQuery'
 import type {
   CodeGroupCreateRequest,
   CodeGroupResponse,
   CodeGroupUpdateRequest,
   CommonCodeResponse,
-} from '@/features/master/types'
+} from '@/features/master/commonCode/types'
 
 interface NewCodeRow {
   codeName: string
