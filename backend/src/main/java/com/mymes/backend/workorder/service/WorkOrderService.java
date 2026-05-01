@@ -4,9 +4,12 @@ import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
 import com.mymes.backend.item.entity.Item;
 import com.mymes.backend.item.service.ItemService;
+import com.mymes.backend.process.entity.MfgProcess;
+import com.mymes.backend.process.service.MfgProcessService;
 import com.mymes.backend.workorder.dto.WorkOrderCreateRequest;
 import com.mymes.backend.workorder.dto.WorkOrderResponse;
 import com.mymes.backend.workorder.dto.WorkOrderUpdateRequest;
+import com.mymes.backend.workorder.entity.Priority;
 import com.mymes.backend.workorder.entity.WorkOrder;
 import com.mymes.backend.workorder.entity.WorkOrderStatus;
 import com.mymes.backend.workorder.mapper.WorkOrderMapper;
@@ -32,6 +35,7 @@ public class WorkOrderService {
 
     private final WorkOrderRepository workOrderRepository;
     private final ItemService itemService;
+    private final MfgProcessService processService;
     private final WorkOrderMapper workOrderMapper;
 
     public List<WorkOrderResponse> findAll() {
@@ -53,6 +57,8 @@ public class WorkOrderService {
     @Transactional
     public WorkOrderResponse create(WorkOrderCreateRequest request) {
         Item item = itemService.getItem(request.getItemId());
+        MfgProcess process = request.getProcessId() != null
+                ? processService.getProcess(request.getProcessId()) : null;
 
         for (int attempt = 1; attempt <= MAX_WORK_ORDER_NO_RETRIES; attempt++) {
             String workOrderNo = generateWorkOrderNo();
@@ -61,7 +67,7 @@ public class WorkOrderService {
                     .item(item)
                     .plannedQty(request.getPlannedQty())
                     .priority(request.getPriority())
-                    .lineName(request.getLineName())
+                    .process(process)
                     .workerName(request.getWorkerName())
                     .dueDate(request.getDueDate())
                     .build();
@@ -88,8 +94,10 @@ public class WorkOrderService {
             throw new BusinessException(ErrorCode.WORK_ORDER_NOT_MODIFIABLE);
         }
         Item item = itemService.getItem(request.getItemId());
+        MfgProcess process = request.getProcessId() != null
+                ? processService.getProcess(request.getProcessId()) : null;
         workOrder.update(item, request.getPlannedQty(), request.getPriority(),
-                request.getLineName(), request.getWorkerName(), request.getDueDate());
+                process, request.getWorkerName(), request.getDueDate());
         log.info("작업지시 수정 완료: id={}", id);
         return workOrderMapper.toResponse(workOrder);
     }
@@ -112,6 +120,31 @@ public class WorkOrderService {
         log.info("작업지시 삭제 완료: id={}", id);
     }
 
+    @Transactional
+    public WorkOrder createForPlan(Item item, Integer plannedQty, LocalDate plannedDate) {
+        for (int attempt = 1; attempt <= MAX_WORK_ORDER_NO_RETRIES; attempt++) {
+            String workOrderNo = generateWorkOrderNo();
+            WorkOrder workOrder = WorkOrder.builder()
+                    .workOrderNo(workOrderNo)
+                    .item(item)
+                    .plannedQty(plannedQty)
+                    .priority(Priority.MEDIUM)
+                    .dueDate(plannedDate)
+                    .build();
+            try {
+                WorkOrder saved = workOrderRepository.saveAndFlush(workOrder);
+                log.info("생산계획 발행으로 작업지시 생성 완료: id={}, no={}", saved.getId(), saved.getWorkOrderNo());
+                return saved;
+            } catch (DataIntegrityViolationException e) {
+                log.warn("작업지시 번호 충돌로 재시도합니다. attempt={}", attempt);
+                if (attempt == MAX_WORK_ORDER_NO_RETRIES) {
+                    throw new BusinessException(ErrorCode.WORK_ORDER_NO_GENERATION_FAILED);
+                }
+            }
+        }
+        throw new BusinessException(ErrorCode.WORK_ORDER_NO_GENERATION_FAILED);
+    }
+
     public WorkOrder getWorkOrder(Long id) {
         return workOrderRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.WORK_ORDER_NOT_FOUND, String.valueOf(id)));
@@ -120,12 +153,9 @@ public class WorkOrderService {
     private String generateWorkOrderNo() {
         String date = LocalDate.now().format(WORK_ORDER_DATE_FORMAT);
         String prefix = "WO-" + date + "-";
-        WorkOrder latest = workOrderRepository.findTopByWorkOrderNoStartingWithOrderByWorkOrderNoDesc(prefix);
-
-        int nextSequence = 1;
-        if (latest != null) {
-            nextSequence = extractSequence(latest.getWorkOrderNo()) + 1;
-        }
+        int nextSequence = workOrderRepository.findLatestWorkOrderNoByPrefix(prefix)
+                .map(latestNo -> extractSequence(latestNo) + 1)
+                .orElse(1);
 
         return prefix + String.format("%04d", nextSequence);
     }

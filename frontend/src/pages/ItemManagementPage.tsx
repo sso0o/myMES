@@ -1,26 +1,36 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useFeedback } from '@/common/hooks/useFeedback'
-import ItemFormModal from '@/features/master/components/ItemFormModal'
-import ItemTable from '@/features/master/components/ItemTable'
+import ItemFormModal from '@/features/master/item/components/ItemFormModal'
+import ItemTable from '@/features/master/item/components/ItemTable'
 import {
   useCreateItem,
   useDeleteItem,
   useItemList,
   useUpdateItem,
-} from '@/features/master/hooks/useItemQuery'
+} from '@/features/master/item/hooks/useItemQuery'
 import type {
   ItemCreateRequest,
   ItemResponse,
   ItemUpdateRequest,
-} from '@/features/master/types'
+} from '@/features/master/item/types'
 
 const ItemManagementPage = () => {
   const [modalOpen, setModalOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<ItemResponse | null>(null)
+  const [page, setPage] = useState(0)
+  const [size, setSize] = useState(10)
 
   const { showToast, showAlert } = useFeedback()
-  const { data: items = [], isLoading, isError } = useItemList()
+  const { data: response, isLoading, isError } = useItemList(page, size)
+  const items = response?.data ?? []
+  const pagination = response?.pagination
+  const totalPages = pagination ? Math.ceil(pagination.total / pagination.size) : 0
+
+  const handlePageSizeChange = (newSize: number) => {
+    setSize(newSize)
+    setPage(0)
+  }
   const createItem = useCreateItem()
   const updateItem = useUpdateItem()
   const deleteItem = useDeleteItem()
@@ -69,11 +79,12 @@ const ItemManagementPage = () => {
   }
 
   const handleDelete = async (item: ItemResponse) => {
-    await showAlert({
+    const confirmed = await showAlert({
       title: '품목 삭제',
       message: `"${item.itemName}" 품목을 삭제하시겠습니까?`,
       confirmText: '삭제',
     })
+    if (!confirmed) return
 
     deleteItem.mutate(item.id, {
       onSuccess: () => {
@@ -117,7 +128,17 @@ const ItemManagementPage = () => {
           불러오는 중...
         </div>
       ) : (
-        <ItemTable items={items} onEdit={handleOpenEdit} onDelete={handleDelete} />
+        <ItemTable
+          items={items}
+          onEdit={handleOpenEdit}
+          onDelete={handleDelete}
+          currentPage={page}
+          totalPages={totalPages}
+          totalItems={pagination?.total ?? 0}
+          pageSize={size}
+          onPageChange={setPage}
+          onPageSizeChange={handlePageSizeChange}
+        />
       )}
 
       <ItemFormModal

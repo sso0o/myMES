@@ -20,8 +20,7 @@ public class WorkOrderCreateRequest {
     @NotNull(message = "우선순위는 필수입니다.")
     private Priority priority;
 
-    @Size(max = 50)
-    private String lineName;
+    private Long processId;
 
     @Size(max = 50)
     private String workerName;

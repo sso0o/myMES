@@ -17,3 +17,4 @@ spring:
 supabase:
   url: http://localhost
   anon-key: test-anon-key
+  service-role-key: test-service-role-key

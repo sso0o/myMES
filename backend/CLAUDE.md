@@ -282,6 +282,12 @@ public abstract class BaseEntity {
 - `@SQLRestriction`에 의해 `deletedAt IS NULL`인 데이터만 자동 조회됨
 - 삭제된 데이터를 포함해 조회해야 할 경우 네이티브 쿼리 또는 별도 Repository 메서드로 처리
 
+### 자동채번(Auto Numbering)과 Soft Delete
+- 일련번호·코드 등 자동채번 시 **소프트 삭제된 레코드도 포함**하여 채번해야 함
+- `COUNT`, `MAX(sequence)` 등의 채번 쿼리에서 `deletedAt IS NULL` 조건 적용 금지
+- 이유: 삭제된 번호가 재사용되면 이력 추적 및 감사(Audit)가 불가능해짐
+- 구현 예시: `@Query`나 네이티브 쿼리에서 `@SQLRestriction`을 우회하도록 `allEntries` 전용 Repository 메서드 사용
+
 ---
 
 ## 7. 입력값 검증 (Validation)
@@ -386,7 +392,47 @@ private BooleanExpression statusEq(WorkOrderStatus status) {
 
 ---
 
-## 10. 테스트 전략
+## 10. 주석 규칙
+
+메서드·함수 단위로 역할을 설명하는 주석을 반드시 작성합니다.
+
+**형식**
+```java
+/**
+ * [한 줄 요약 — 이 메서드가 무엇을 하는지]
+ *
+ * @param paramName 파라미터 설명
+ * @return 반환값 설명
+ * @throws BusinessException 예외 발생 조건
+ */
+public WorkOrderResponse getWorkOrder(Long id) { ... }
+```
+
+**규칙**
+- 모든 `public` 메서드에는 Javadoc 주석(`/** */`)을 작성합니다.
+- `private` 메서드는 로직이 자명하지 않은 경우에만 `//` 한 줄 주석으로 설명합니다.
+- 주석은 **무엇을(what)** 하는지 설명합니다. 코드를 그대로 읽는 주석은 금지합니다.
+- 예외 발생 조건이 있으면 `@throws`를 반드시 명시합니다.
+
+```java
+// 좋은 예
+/**
+ * ID로 작업 지시를 단건 조회합니다.
+ *
+ * @param id 작업 지시 ID
+ * @return 작업 지시 응답 DTO
+ * @throws BusinessException 작업 지시가 존재하지 않을 경우 (WORK_ORDER_NOT_FOUND)
+ */
+public WorkOrderResponse getWorkOrder(Long id) { ... }
+
+// 나쁜 예 (코드 반복)
+// repository에서 id로 findById 호출 후 없으면 예외 던짐
+public WorkOrderResponse getWorkOrder(Long id) { ... }
+```
+
+---
+
+## 11. 테스트 전략
 
 Service 단위 테스트 중심으로 작성합니다. Repository는 Mockito로 모킹합니다.
 

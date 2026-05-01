@@ -8,17 +8,22 @@ Spring Boot 기반 백엔드와 React 기반 프론트엔드로 구성된 풀스
 ## 🛠 Tech Stack
 
 ### Backend
-- Java 17
-- Spring Boot 3.x
-- Spring Security (Supabase JWT 인증)
-- Spring Data JPA + PostgreSQL (Supabase)
+- **Java 17** / **Spring Boot 3.5**
+- **Spring Security** — Supabase JWT(HS256) 검증
+- **Spring Data JPA** + **PostgreSQL** (Supabase)
+- **MapStruct** — Entity ↔ DTO 변환
+- **SpringDoc OpenAPI (Swagger UI)** — API 문서 자동화
+- **JJWT 0.12** — JWT 파싱/검증
+- **Lombok**
 
 ### Frontend
-- React (Vite)
-- TypeScript
-- Zustand
-- Axios
-- @supabase/supabase-js
+- **React 19** / **Vite 8** / **TypeScript 6**
+- **TailwindCSS 4**
+- **Zustand 5** — 전역 상태 관리 (인증 등)
+- **TanStack React Query 5** — 서버 상태 / API 캐싱
+- **React Router 7**
+- **Axios** — API 클라이언트 (JWT 인터셉터)
+- **@supabase/supabase-js 2** — Auth & Realtime
 
 ---
 
@@ -26,39 +31,44 @@ Spring Boot 기반 백엔드와 React 기반 프론트엔드로 구성된 풀스
 
 ```plaintext
 myMES/
- ├── backend/   # Spring Boot 서버
- │   └── src/main/java/com/mymes/backend/
- │       └── security/
- │           ├── SecurityConfig.java        # Spring Security 설정
- │           ├── SupabaseJwtFilter.java     # Supabase JWT 검증 필터
- │           └── SupabasePrincipal.java     # 인증 사용자 정보
- └── frontend/  # React 클라이언트
-     └── src/
-         ├── lib/
-         │   ├── supabase.ts               # Supabase 클라이언트
-         │   └── axios.ts                  # API 클라이언트 (JWT 자동 첨부)
-         ├── store/
-         │   └── authStore.ts              # Zustand 인증 상태 관리
-         └── hooks/
-             └── useSupabaseRealtime.ts    # Realtime 구독 훅
+├── backend/                              # Spring Boot 서버 (포트: 8080)
+│   └── src/main/java/com/mymes/backend/
+│       ├── {domain}/                     # 도메인별 패키지 (Domain-first)
+│       │   ├── controller/               # REST 컨트롤러
+│       │   ├── service/                  # 비즈니스 로직
+│       │   ├── repository/               # JPA Repository (+ QueryDSL)
+│       │   ├── entity/                   # JPA 엔티티
+│       │   ├── dto/                      # 요청/응답 DTO
+│       │   └── mapper/                   # MapStruct Mapper
+│       ├── common/
+│       │   ├── response/                 # ApiResponse, PageResponse
+│       │   └── exception/               # BusinessException, ErrorCode, GlobalExceptionHandler
+│       └── security/
+│           ├── SecurityConfig.java       # CORS, CSRF, Stateless 세션 설정
+│           ├── SupabaseJwtFilter.java    # OncePerRequestFilter — JWT 검증
+│           └── SupabasePrincipal.java   # userId(UUID), email, role 필드
+│
+└── frontend/                             # React 클라이언트 (포트: 5173)
+    └── src/
+        ├── features/                     # 도메인별 기능 (Feature-first)
+        │   ├── workorder/               # 작업 지시
+        │   ├── production/             # 생산 실적
+        │   ├── planning/               # 생산 계획
+        │   ├── quality/                # 품질
+        │   └── equipment/              # 설비
+        ├── common/                      # 공통 컴포넌트 / 훅
+        ├── pages/                       # 라우트 단위 페이지
+        ├── store/
+        │   └── authStore.ts            # Zustand 인증 상태
+        ├── lib/
+        │   ├── supabase.ts             # Supabase 클라이언트 싱글톤
+        │   └── axios.ts                # baseURL /api, 401 자동 로그아웃
+        ├── router/                      # 라우터 설정 및 인증 가드
+        └── hooks/
+            └── useSupabaseRealtime.ts  # PostgreSQL Realtime 구독 훅
 ```
 
----
-
-## 🚀 Supabase 프로젝트 설정 (처음 시작 시)
-
-1. [https://supabase.com](https://supabase.com) 에서 새 프로젝트를 생성합니다.
-
-2. **필요한 환경변수 확인 위치** (Supabase 대시보드 → Project Settings → API):
-   - `Project URL` → `SUPABASE_URL` / `VITE_SUPABASE_URL`
-   - `anon public key` → `SUPABASE_ANON_KEY` / `VITE_SUPABASE_ANON_KEY`
-   - `JWT Secret` (JWT Settings 탭) → `SUPABASE_JWT_SECRET`
-
-3. **DB 연결 정보** (Project Settings → Database → Connection String → Direct):
-   - `SUPABASE_DB_URL`, `SUPABASE_DB_USER`, `SUPABASE_DB_PASSWORD`
-
-4. Supabase 대시보드에서 **Authentication → Providers** 설정:
-   - Email 로그인 활성화 (기본값)
+> 도메인 목록: `workorder` (작업 지시) · `production` (생산 실적) · `planning` (생산 계획) · `quality` (품질) · `equipment` (설비)
 
 ---
 
@@ -67,20 +77,17 @@ myMES/
 ### 1. 환경변수 설정
 
 ```bash
-# 백엔드
-cp backend/.env.example backend/.env
-# backend/.env 파일에 Supabase 정보 입력
-
-# 프론트엔드
-cp frontend/.env.example frontend/.env
-# frontend/.env 파일에 Supabase 정보 입력
+cp backend/.env.example backend/.env    # Supabase 정보 입력
+cp frontend/.env.example frontend/.env  # Supabase 정보 입력
 ```
 
 ### 2. Backend
 
 ```bash
 cd backend
-./gradlew bootRun
+./gradlew bootRun         # 서버 시작 (localhost:8080)
+./gradlew build           # 빌드
+./gradlew test            # 전체 테스트
 ```
 
 ### 3. Frontend
@@ -88,8 +95,12 @@ cd backend
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run dev               # 개발 서버 (localhost:5173)
+npm run build             # 프로덕션 빌드
+npm run lint              # ESLint 검사
 ```
+
+> Vite 프록시 설정으로 `/api` → `http://localhost:8080` 자동 연결됩니다. 개발 환경에서 CORS 설정 없이 백엔드 호출 가능합니다.
 
 ---
 
@@ -101,7 +112,7 @@ npm run dev
 |---|---|
 | `SUPABASE_URL` | Supabase 프로젝트 URL |
 | `SUPABASE_ANON_KEY` | Supabase anon public key |
-| `SUPABASE_JWT_SECRET` | JWT 서명 검증용 시크릿 |
+| `SUPABASE_JWT_SECRET` | JWT 서명 검증용 시크릿 (HS256) |
 | `SUPABASE_DB_URL` | PostgreSQL JDBC URL |
 | `SUPABASE_DB_USER` | DB 사용자 (기본: `postgres`) |
 | `SUPABASE_DB_PASSWORD` | DB 비밀번호 |
@@ -119,13 +130,35 @@ npm run dev
 
 ```
 [React] supabase.auth.signIn()
-   → Supabase Auth 서버가 JWT 발급
-   → authStore에 세션 저장
-   → axios 인터셉터가 API 요청마다 Authorization: Bearer <token> 첨부
-   → Spring Boot SupabaseJwtFilter가 JWT 검증
-   → SecurityContext에 사용자 정보 저장
-   → 컨트롤러에서 @AuthenticationPrincipal SupabasePrincipal로 접근 가능
+   → Supabase Auth 서버가 JWT(HS256) 발급
+   → authStore(Zustand)에 세션 저장 / onAuthStateChange 구독
+   → axios 인터셉터가 API 요청마다 Authorization: Bearer <token> 자동 첨부
+   → Spring Boot SupabaseJwtFilter(OncePerRequestFilter)가 JWT 검증
+   → SecurityContext에 SupabasePrincipal(userId, email, role) 저장
+   → 컨트롤러에서 @AuthenticationPrincipal SupabasePrincipal로 접근
 ```
+
+공개 엔드포인트: `GET /api/health`  
+그 외 `/api/**`는 모두 인증 필요
+
+---
+
+## 📡 API 설계 규칙
+
+- URL: 복수형 명사 + 케밥케이스 — `/api/work-orders`, `/api/work-orders/{id}`
+- 모든 응답은 `ApiResponse<T>` 공통 래퍼로 감쌉니다.
+
+```json
+// 성공
+{ "success": true, "data": { ... }, "message": null, "code": null }
+
+// 실패
+{ "success": false, "data": null, "message": "작업 지시를 찾을 수 없습니다.", "code": "WORK_ORDER_NOT_FOUND" }
+```
+
+API 문서는 서버 실행 후 [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) 에서 확인할 수 있습니다.
+
+---
 
 ## ⚡ Realtime 사용 예시
 
@@ -135,8 +168,22 @@ npm run dev
 useSupabaseRealtime({
   table: 'work_orders',
   event: '*',
-  onchange: (payload) => {
+  onChange: (payload) => {
     console.log('변경:', payload.eventType, payload.new)
   }
 })
 ```
+
+---
+
+## 📚 상세 개발 가이드
+
+| 영역 | 문서 |
+|---|---|
+| 백엔드 개발 규칙 (레이어 구조, 예외 처리, 테스트 전략 등) | [backend/CLAUDE.md](backend/CLAUDE.md) |
+| 프론트엔드 개발 규칙 허브 | [frontend/CLAUDE.md](frontend/CLAUDE.md) |
+| 폴더 구조 | [frontend/docs/folder-structure.md](frontend/docs/folder-structure.md) |
+| 상태 관리 (Zustand vs React Query) | [frontend/docs/state-management.md](frontend/docs/state-management.md) |
+| API 호출 규칙 | [frontend/docs/api.md](frontend/docs/api.md) |
+| 라우팅 및 인증 가드 | [frontend/docs/routing.md](frontend/docs/routing.md) |
+| 스타일링 (Tailwind, 디자인 토큰) | [frontend/DESIGN_SYSTEM.md](frontend/DESIGN_SYSTEM.md) |

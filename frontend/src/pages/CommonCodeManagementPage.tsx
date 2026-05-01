@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Check, Pencil, Plus, Trash2, X } from 'lucide-react'
 import { primaryActionButtonClass } from '@/common/styles/button'
 import { useFeedback } from '@/common/hooks/useFeedback'
-import CodeGroupFormModal from '@/features/master/components/CodeGroupFormModal'
+import CodeGroupFormModal from '@/features/master/commonCode/components/CodeGroupFormModal'
 import {
   useCodeGroupDetail,
   useCodeGroupList,
@@ -12,13 +12,13 @@ import {
   useDeleteCommonCode,
   useUpdateCodeGroup,
   useUpdateCommonCode,
-} from '@/features/master/hooks/useCommonCodeQuery'
+} from '@/features/master/commonCode/hooks/useCommonCodeQuery'
 import type {
   CodeGroupCreateRequest,
   CodeGroupResponse,
   CodeGroupUpdateRequest,
   CommonCodeResponse,
-} from '@/features/master/types'
+} from '@/features/master/commonCode/types'
 
 interface NewCodeRow {
   codeName: string
@@ -98,11 +98,12 @@ const CommonCodeManagementPage = () => {
   }
 
   const handleDeleteGroup = async (group: CodeGroupResponse) => {
-    await showAlert({
+    const confirmed = await showAlert({
       title: '코드 그룹 삭제',
       message: `"${group.groupName}" 그룹을 삭제하시겠습니까?`,
       confirmText: '삭제',
     })
+    if (!confirmed) return
 
     deleteGroup.mutate(group.groupId, {
       onSuccess: () => {
@@ -200,11 +201,12 @@ const CommonCodeManagementPage = () => {
   const handleDeleteCode = async (code: CommonCodeResponse) => {
     if (!selectedGroupId) return
 
-    await showAlert({
+    const confirmed = await showAlert({
       title: '코드 삭제',
       message: `"${code.codeName}" 코드를 삭제하시겠습니까?`,
       confirmText: '삭제',
     })
+    if (!confirmed) return
 
     deleteCode.mutate(
       { groupId: selectedGroupId, codeId: code.id },
@@ -220,19 +222,29 @@ const CommonCodeManagementPage = () => {
   const canAddCode = Boolean(selectedGroupId) && !addingRow
 
   return (
-    <div className="flex h-full gap-0 p-6">
-      <div className="flex w-80 shrink-0 flex-col rounded-l-lg border border-[var(--border)] bg-[var(--surface)]">
-        <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
-          <span className="text-sm font-semibold text-[var(--text-strong)]">코드 그룹</span>
-          <button
-            type="button"
-            onClick={handleOpenCreateGroup}
-            className={primaryActionButtonClass}
-          >
-            <Plus size={13} />
-            그룹 추가
-          </button>
+    <div className="space-y-5 p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-[var(--text-strong)]">공통코드 관리</h1>
+          <p className="mt-0.5 text-sm text-[var(--text-muted)]">
+            시스템에서 사용하는 기준 코드를 관리합니다.
+          </p>
         </div>
+      </div>
+
+      <div className="flex h-[calc(100vh-16rem)] gap-0">
+        <div className="flex w-80 shrink-0 flex-col rounded-l-lg border border-[var(--border)] bg-[var(--surface)]">
+          <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
+            <span className="text-sm font-semibold text-[var(--text-strong)]">코드 그룹</span>
+            <button
+              type="button"
+              onClick={handleOpenCreateGroup}
+              className={primaryActionButtonClass}
+            >
+              <Plus size={13} />
+              그룹 추가
+            </button>
+          </div>
 
         {groupsError && (
           <p className="px-4 py-3 text-xs text-[var(--danger)]">그룹 목록을 불러오지 못했습니다.</p>
@@ -293,36 +305,36 @@ const CommonCodeManagementPage = () => {
         </ul>
       </div>
 
-      <div className="flex flex-1 flex-col rounded-r-lg border border-l-0 border-[var(--border)] bg-[var(--surface)]">
-        <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-3">
-          <div>
-            <span className="text-sm font-semibold text-[var(--text-strong)]">
-              {selectedGroup ? selectedGroup.groupName : '코드 항목'}
-            </span>
-            {selectedGroup && (
-              <span className="ml-2 font-mono text-xs text-[var(--text-muted)]">
-                {selectedGroup.groupId}
+        <div className="flex flex-1 flex-col rounded-r-lg border border-l-0 border-[var(--border)] bg-[var(--surface)]">
+          <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-3">
+            <div>
+              <span className="text-sm font-semibold text-[var(--text-strong)]">
+                {selectedGroup ? selectedGroup.groupName : '코드 항목'}
               </span>
-            )}
+              {selectedGroup && (
+                <span className="ml-2 font-mono text-xs text-[var(--text-muted)]">
+                  {selectedGroup.groupId}
+                </span>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleStartAdd}
+              disabled={!canAddCode}
+              className={primaryActionButtonClass}
+            >
+              <Plus size={13} />
+              코드 추가
+            </button>
           </div>
 
-          <button
-            type="button"
-            onClick={handleStartAdd}
-            disabled={!canAddCode}
-            className={primaryActionButtonClass}
-          >
-            <Plus size={13} />
-            코드 추가
-          </button>
-        </div>
-
-        {!selectedGroupId ? (
-          <div className="flex flex-1 items-center justify-center text-sm text-[var(--text-muted)]">
-            좌측에서 코드 그룹을 선택하세요.
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
+          {!selectedGroupId ? (
+            <div className="flex flex-1 items-center justify-center text-sm text-[var(--text-muted)]">
+              좌측에서 코드 그룹을 선택하세요.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-[var(--surface-alt)] text-[var(--text-base)]">
                 <tr>
@@ -520,8 +532,9 @@ const CommonCodeManagementPage = () => {
                 )}
               </tbody>
             </table>
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
 
       <CodeGroupFormModal

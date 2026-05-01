@@ -11,10 +11,10 @@ import com.mymes.backend.item.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -29,10 +29,15 @@ public class ItemService {
     private final ItemMapper itemMapper;
     private final CommonCodeRepository commonCodeRepository;
 
-    public List<ItemResponse> findAll() {
-        return itemRepository.findAll().stream()
-                .map(itemMapper::toResponse)
-                .toList();
+    /**
+     * 품목 목록을 페이지 단위로 조회합니다.
+     *
+     * @param pageable 페이지 번호, 크기, 정렬 정보
+     * @return 페이지 단위 품목 응답 목록
+     */
+    public Page<ItemResponse> findAll(Pageable pageable) {
+        return itemRepository.findAll(pageable)
+                .map(itemMapper::toResponse);
     }
 
     public ItemResponse findById(Long id) {

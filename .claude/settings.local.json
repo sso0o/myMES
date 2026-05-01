@@ -5,7 +5,12 @@
       "Bash(npx tsc *)",
       "Bash(./gradlew compileJava)",
       "Bash(npm run *)",
-      "Bash(grep -E '\\\\.\\(java|tsx?|ts\\)$')"
+      "Bash(grep -E '\\\\.\\(java|tsx?|ts\\)$')",
+      "Bash(find \"C:\\\\IDEAWorkspace\\\\SYCHOI\\\\myMES\\\\backend\\\\src\\\\main\\\\java\\\\com\\\\mymes\\\\backend\" -type f -name \"*.java\" -exec grep -l \"PlanningRecord\\\\|ProductionPlan\\\\|Plan\\\\|Schedule\" {} \\\\;)",
+      "Bash(./gradlew test *)",
+      "Bash(xargs -I{} cat {})",
+      "Bash(xargs cat *)",
+      "Bash(./gradlew compileJava --no-daemon -q)"
     ]
   }
 }

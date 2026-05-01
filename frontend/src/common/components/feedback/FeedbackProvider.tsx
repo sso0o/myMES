@@ -1,4 +1,5 @@
 import { useEffect, type PropsWithChildren } from 'react'
+import { cancelButtonClass } from '@/common/styles/button'
 import { useUiStore, type ToastVariant } from '@/store/uiStore'
 
 const toastToneClass: Record<ToastVariant, string> = {
@@ -11,7 +12,8 @@ export function FeedbackProvider({ children }: PropsWithChildren) {
   const toasts = useUiStore((state) => state.toasts)
   const alertState = useUiStore((state) => state.alertState)
   const dismissToast = useUiStore((state) => state.dismissToast)
-  const closeAlert = useUiStore((state) => state.closeAlert)
+  const confirmAlert = useUiStore((state) => state.confirmAlert)
+  const cancelAlert = useUiStore((state) => state.cancelAlert)
 
   useEffect(() => {
     if (toasts.length === 0) {
@@ -65,20 +67,20 @@ export function FeedbackProvider({ children }: PropsWithChildren) {
       {alertState?.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--overlay)] px-4">
           <div className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--danger)]">
-              Alert
-            </p>
-            <h2 className="mt-3 text-xl font-semibold text-[var(--text-strong)]">
+            <h2 className="text-base font-semibold text-[var(--text-strong)]">
               {alertState.title}
             </h2>
-            <p className="mt-3 text-sm leading-6 text-[var(--text-base)]">
+            <p className="mt-2 text-sm leading-6 text-[var(--text-base)]">
               {alertState.message}
             </p>
-            <div className="mt-6 flex justify-end">
+            <div className="mt-6 flex justify-end gap-2">
+              <button type="button" onClick={cancelAlert} className={cancelButtonClass}>
+                취소
+              </button>
               <button
                 type="button"
-                onClick={closeAlert}
-                className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--text-inverse)] transition hover:bg-[var(--primary-hover)]"
+                onClick={confirmAlert}
+                className="rounded-lg bg-[var(--danger)] px-4 py-2 text-sm font-medium text-white transition hover:bg-[var(--danger)]/90"
               >
                 {alertState.confirmText}
               </button>

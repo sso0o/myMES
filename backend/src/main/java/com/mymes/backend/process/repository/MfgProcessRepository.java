@@ -6,8 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MfgProcessRepository extends JpaRepository<MfgProcess, Long> {
-    boolean existsByProcessCode(String processCode);
-    boolean existsByProcessCodeAndIdNot(String processCode, Long id);
-    List<MfgProcess> findAllByOrderBySequenceAsc();
+    List<MfgProcess> findAllByOrderByProcessCodeAsc();
     MfgProcess findTopByProcessCodeStartingWithOrderByProcessCodeDesc(String prefix);
 }

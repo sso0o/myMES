@@ -34,11 +34,12 @@ interface UiState {
   toasts: ToastItem[]
   alertState: AlertState | null
   nextToastId: number
-  alertResolver: (() => void) | null
+  alertResolver: ((confirmed: boolean) => void) | null
   showToast: (input: ToastInput) => void
   dismissToast: (id: number) => void
-  showAlert: (input: AlertInput) => Promise<void>
-  closeAlert: () => void
+  showAlert: (input: AlertInput) => Promise<boolean>
+  confirmAlert: () => void
+  cancelAlert: () => void
 }
 
 export const useUiStore = create<UiState>((set, get) => ({
@@ -69,7 +70,7 @@ export const useUiStore = create<UiState>((set, get) => ({
     })),
 
   showAlert: (input) =>
-    new Promise<void>((resolve) => {
+    new Promise<boolean>((resolve) => {
       set({
         alertState: {
           open: true,
@@ -81,12 +82,15 @@ export const useUiStore = create<UiState>((set, get) => ({
       })
     }),
 
-  closeAlert: () => {
+  confirmAlert: () => {
     const resolver = get().alertResolver
-    set({
-      alertState: null,
-      alertResolver: null,
-    })
-    resolver?.()
+    set({ alertState: null, alertResolver: null })
+    resolver?.(true)
+  },
+
+  cancelAlert: () => {
+    const resolver = get().alertResolver
+    set({ alertState: null, alertResolver: null })
+    resolver?.(false)
   },
 }))
