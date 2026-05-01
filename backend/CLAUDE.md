@@ -282,6 +282,12 @@ public abstract class BaseEntity {
 - `@SQLRestriction`에 의해 `deletedAt IS NULL`인 데이터만 자동 조회됨
 - 삭제된 데이터를 포함해 조회해야 할 경우 네이티브 쿼리 또는 별도 Repository 메서드로 처리
 
+### 자동채번(Auto Numbering)과 Soft Delete
+- 일련번호·코드 등 자동채번 시 **소프트 삭제된 레코드도 포함**하여 채번해야 함
+- `COUNT`, `MAX(sequence)` 등의 채번 쿼리에서 `deletedAt IS NULL` 조건 적용 금지
+- 이유: 삭제된 번호가 재사용되면 이력 추적 및 감사(Audit)가 불가능해짐
+- 구현 예시: `@Query`나 네이티브 쿼리에서 `@SQLRestriction`을 우회하도록 `allEntries` 전용 Repository 메서드 사용
+
 ---
 
 ## 7. 입력값 검증 (Validation)
