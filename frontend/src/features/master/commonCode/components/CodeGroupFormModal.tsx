@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import Modal from '@/common/components/Modal'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import {
@@ -7,6 +9,11 @@ import {
   formLabelClass,
   formMonoInputClass,
 } from '@/common/styles/form'
+import {
+  codeGroupFormSchema,
+  type CodeGroupFormInput,
+  type CodeGroupFormValues,
+} from '../schemas/commonCodeSchema'
 import type { CodeGroupCreateRequest, CodeGroupResponse, CodeGroupUpdateRequest } from '../types'
 
 interface CodeGroupFormModalProps {
@@ -17,6 +24,14 @@ interface CodeGroupFormModalProps {
   isLoading: boolean
 }
 
+const formErrorClass = 'mt-1 text-xs text-[var(--danger)]'
+
+const getDefaultValues = (editTarget: CodeGroupResponse | null): CodeGroupFormInput => ({
+  groupId: editTarget?.groupId ?? '',
+  groupName: editTarget?.groupName ?? '',
+  description: editTarget?.description ?? '',
+})
+
 const CodeGroupFormModal = ({
   open,
   editTarget,
@@ -24,19 +39,31 @@ const CodeGroupFormModal = ({
   onSubmit,
   isLoading,
 }: CodeGroupFormModalProps) => {
-  const [groupId, setGroupId] = useState(editTarget?.groupId ?? '')
-  const [groupName, setGroupName] = useState(editTarget?.groupName ?? '')
-  const [description, setDescription] = useState(editTarget?.description ?? '')
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CodeGroupFormInput, unknown, CodeGroupFormValues>({
+    resolver: zodResolver(codeGroupFormSchema),
+    defaultValues: getDefaultValues(editTarget),
+  })
+  const groupIdField = register('groupId')
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  useEffect(() => {
+    if (open) {
+      reset(getDefaultValues(editTarget))
+    }
+  }, [editTarget, open, reset])
+
+  const handleFormSubmit = (values: CodeGroupFormValues) => {
     if (editTarget) {
-      onSubmit({ groupName: groupName.trim(), description: description.trim() || undefined })
+      onSubmit({ groupName: values.groupName, description: values.description })
     } else {
       onSubmit({
-        groupId: groupId.trim(),
-        groupName: groupName.trim(),
-        description: description.trim() || undefined,
+        groupId: values.groupId,
+        groupName: values.groupName,
+        description: values.description,
       })
     }
   }
@@ -45,21 +72,26 @@ const CodeGroupFormModal = ({
 
   return (
     <Modal title={editTarget ? '코드 그룹 수정' : '코드 그룹 등록'} onClose={onClose}>
-        <form onSubmit={handleSubmit} className={formClass}>
+        <form onSubmit={handleSubmit(handleFormSubmit)} className={formClass}>
           <div>
             <label className={formLabelClass}>
               그룹 ID <span className="text-[var(--danger)]">*</span>
             </label>
             <input
               type="text"
-              value={groupId}
-              onChange={(e) => setGroupId(e.target.value.toUpperCase())}
+              {...groupIdField}
+              onChange={(event) => {
+                event.target.value = event.target.value.toUpperCase()
+                void groupIdField.onChange(event)
+              }}
               placeholder="예: WORK_STATUS"
               maxLength={50}
-              required
-              disabled={!!editTarget}
-              className={`${formMonoInputClass} bg-[var(--surface)] disabled:bg-[var(--surface-alt)] disabled:text-[var(--text-muted)]`}
+              readOnly={!!editTarget}
+              className={`${formMonoInputClass} bg-[var(--surface)] ${
+                editTarget ? 'bg-[var(--surface-alt)] text-[var(--text-muted)]' : ''
+              }`}
             />
+            {errors.groupId && <p className={formErrorClass}>{errors.groupId.message}</p>}
           </div>
 
           <div>
@@ -68,13 +100,12 @@ const CodeGroupFormModal = ({
             </label>
             <input
               type="text"
-              value={groupName}
-              onChange={(e) => setGroupName(e.target.value)}
+              {...register('groupName')}
               placeholder="예: 작업 상태"
               maxLength={100}
-              required
               className={formInputClass}
             />
+            {errors.groupName && <p className={formErrorClass}>{errors.groupName.message}</p>}
           </div>
 
           <div>
@@ -83,12 +114,12 @@ const CodeGroupFormModal = ({
             </label>
             <input
               type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              {...register('description')}
               placeholder="코드 그룹에 대한 설명"
               maxLength={255}
               className={formInputClass}
             />
+            {errors.description && <p className={formErrorClass}>{errors.description.message}</p>}
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

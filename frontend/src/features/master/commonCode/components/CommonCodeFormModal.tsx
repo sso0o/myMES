@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import Modal from '@/common/components/Modal'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import {
@@ -7,6 +9,11 @@ import {
   formLabelClass,
   formMonoInputClass,
 } from '@/common/styles/form'
+import {
+  commonCodeFormSchema,
+  type CommonCodeFormInput,
+  type CommonCodeFormValues,
+} from '../schemas/commonCodeSchema'
 import type { CommonCodeCreateRequest, CommonCodeResponse, CommonCodeUpdateRequest } from '../types'
 
 interface CommonCodeFormModalProps {
@@ -17,6 +24,14 @@ interface CommonCodeFormModalProps {
   isLoading: boolean
 }
 
+const formErrorClass = 'mt-1 text-xs text-[var(--danger)]'
+
+const getDefaultValues = (editTarget: CommonCodeResponse | null): CommonCodeFormInput => ({
+  codeName: editTarget?.codeName ?? '',
+  sortOrder: editTarget ? String(editTarget.sortOrder) : '',
+  numberingPrefix: editTarget?.numberingPrefix ?? '',
+})
+
 const CommonCodeFormModal = ({
   open,
   editTarget,
@@ -24,23 +39,36 @@ const CommonCodeFormModal = ({
   onSubmit,
   isLoading,
 }: CommonCodeFormModalProps) => {
-  const [codeName, setCodeName] = useState(editTarget?.codeName ?? '')
-  const [sortOrder, setSortOrder] = useState(editTarget ? String(editTarget.sortOrder) : '')
-  const [numberingPrefix, setNumberingPrefix] = useState(editTarget?.numberingPrefix ?? '')
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CommonCodeFormInput, unknown, CommonCodeFormValues>({
+    resolver: zodResolver(commonCodeFormSchema),
+    defaultValues: getDefaultValues(editTarget),
+  })
+  const numberingPrefixField = register('numberingPrefix')
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault()
+  useEffect(() => {
+    if (open) {
+      reset(getDefaultValues(editTarget))
+    }
+  }, [editTarget, open, reset])
 
-    const order = parseInt(sortOrder, 10)
-    const prefix = numberingPrefix.trim().toUpperCase() || undefined
-    onSubmit({ codeName: codeName.trim(), sortOrder: order, numberingPrefix: prefix })
+  const handleFormSubmit = (values: CommonCodeFormValues) => {
+    onSubmit({
+      codeName: values.codeName,
+      sortOrder: values.sortOrder,
+      numberingPrefix: values.numberingPrefix,
+    })
   }
 
   if (!open) return null
 
   return (
     <Modal title={editTarget ? 'Edit Code' : 'Create Code'} onClose={onClose}>
-        <form onSubmit={handleSubmit} className={formClass}>
+        <form onSubmit={handleSubmit(handleFormSubmit)} className={formClass}>
           <div>
             <label className={formLabelClass}>
               Code
@@ -61,13 +89,12 @@ const CommonCodeFormModal = ({
             </label>
             <input
               type="text"
-              value={codeName}
-              onChange={(event) => setCodeName(event.target.value)}
+              {...register('codeName')}
               placeholder="e.g. Waiting"
               maxLength={100}
-              required
               className={formInputClass}
             />
+            {errors.codeName && <p className={formErrorClass}>{errors.codeName.message}</p>}
           </div>
 
           <div>
@@ -76,13 +103,12 @@ const CommonCodeFormModal = ({
             </label>
             <input
               type="number"
-              value={sortOrder}
-              onChange={(event) => setSortOrder(event.target.value)}
+              {...register('sortOrder')}
               placeholder="1"
               min={1}
-              required
               className={formInputClass}
             />
+            {errors.sortOrder && <p className={formErrorClass}>{errors.sortOrder.message}</p>}
           </div>
 
           <div>
@@ -91,12 +117,18 @@ const CommonCodeFormModal = ({
             </label>
             <input
               type="text"
-              value={numberingPrefix}
-              onChange={(event) => setNumberingPrefix(event.target.value.toUpperCase())}
+              {...numberingPrefixField}
+              onChange={(event) => {
+                event.target.value = event.target.value.toUpperCase()
+                void numberingPrefixField.onChange(event)
+              }}
               placeholder="e.g. RM, FG, WIP"
               maxLength={20}
               className={formMonoInputClass}
             />
+            {errors.numberingPrefix && (
+              <p className={formErrorClass}>{errors.numberingPrefix.message}</p>
+            )}
             <p className="mt-1 text-xs text-[var(--text-muted)]">
               Used for downstream numbering, for example `RM-000001`.
             </p>

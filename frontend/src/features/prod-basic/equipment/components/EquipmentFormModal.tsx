@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm, useWatch } from 'react-hook-form'
 import Modal from '@/common/components/Modal'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import {
@@ -9,6 +11,11 @@ import {
   formTextareaClass,
 } from '@/common/styles/form'
 import { useEquipmentTypeOptions } from '../hooks/useEquipmentQuery'
+import {
+  equipmentFormSchema,
+  type EquipmentFormInput,
+  type EquipmentFormValues,
+} from '../schemas/equipmentSchema'
 import type { EquipmentCreateRequest, EquipmentResponse, EquipmentUpdateRequest } from '../types'
 
 interface EquipmentFormModalProps {
@@ -19,6 +26,19 @@ interface EquipmentFormModalProps {
   isLoading: boolean
 }
 
+const formErrorClass = 'mt-1 text-xs text-[var(--danger)]'
+
+const getDefaultValues = (editTarget: EquipmentResponse | null): EquipmentFormInput => ({
+  equipmentName: editTarget?.equipmentName ?? '',
+  equipmentTypeId: editTarget?.equipmentTypeId ?? '',
+  location: editTarget?.location ?? '',
+  manufacturer: editTarget?.manufacturer ?? '',
+  modelName: editTarget?.modelName ?? '',
+  purchaseDate: editTarget?.purchaseDate ?? '',
+  description: editTarget?.description ?? '',
+  isActive: editTarget?.isActive ?? true,
+})
+
 const EquipmentFormModal = ({
   open,
   editTarget,
@@ -26,30 +46,37 @@ const EquipmentFormModal = ({
   onSubmit,
   isLoading,
 }: EquipmentFormModalProps) => {
-  const [equipmentName, setEquipmentName] = useState(editTarget?.equipmentName ?? '')
-  const [equipmentTypeId, setEquipmentTypeId] = useState<number | null>(
-    editTarget?.equipmentTypeId ?? null,
-  )
-  const [location, setLocation] = useState(editTarget?.location ?? '')
-  const [manufacturer, setManufacturer] = useState(editTarget?.manufacturer ?? '')
-  const [modelName, setModelName] = useState(editTarget?.modelName ?? '')
-  const [purchaseDate, setPurchaseDate] = useState(editTarget?.purchaseDate ?? '')
-  const [description, setDescription] = useState(editTarget?.description ?? '')
-  const [isActive, setIsActive] = useState(editTarget?.isActive ?? true)
-
   const { data: equipmentTypeOptions = [] } = useEquipmentTypeOptions()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    control,
+    formState: { errors },
+  } = useForm<EquipmentFormInput, unknown, EquipmentFormValues>({
+    resolver: zodResolver(equipmentFormSchema),
+    defaultValues: getDefaultValues(editTarget),
+  })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const isActive = useWatch({ control, name: 'isActive' }) ?? true
+
+  useEffect(() => {
+    if (open) {
+      reset(getDefaultValues(editTarget))
+    }
+  }, [editTarget, open, reset])
+
+  const handleFormSubmit = (values: EquipmentFormValues) => {
     onSubmit({
-      equipmentName: equipmentName.trim(),
-      equipmentTypeId: equipmentTypeId ?? undefined,
-      location: location.trim() || undefined,
-      manufacturer: manufacturer.trim() || undefined,
-      modelName: modelName.trim() || undefined,
-      purchaseDate: purchaseDate || undefined,
-      description: description.trim() || undefined,
-      isActive,
+      equipmentName: values.equipmentName,
+      equipmentTypeId: values.equipmentTypeId,
+      location: values.location,
+      manufacturer: values.manufacturer,
+      modelName: values.modelName,
+      purchaseDate: values.purchaseDate,
+      description: values.description,
+      isActive: values.isActive,
     })
   }
 
@@ -57,7 +84,7 @@ const EquipmentFormModal = ({
 
   return (
     <Modal title={editTarget ? '설비 수정' : '설비 등록'} onClose={onClose}>
-        <form onSubmit={handleSubmit} className={formClass}>
+        <form onSubmit={handleSubmit(handleFormSubmit)} className={formClass}>
           {editTarget && (
             <div>
               <label className={formLabelClass}>
@@ -78,13 +105,14 @@ const EquipmentFormModal = ({
             </label>
             <input
               type="text"
-              value={equipmentName}
-              onChange={(e) => setEquipmentName(e.target.value)}
+              {...register('equipmentName')}
               placeholder="설비명을 입력하세요"
               maxLength={100}
-              required
               className={formInputClass}
             />
+            {errors.equipmentName && (
+              <p className={formErrorClass}>{errors.equipmentName.message}</p>
+            )}
           </div>
 
           <div>
@@ -92,8 +120,7 @@ const EquipmentFormModal = ({
               설비유형
             </label>
             <select
-              value={equipmentTypeId ?? ''}
-              onChange={(e) => setEquipmentTypeId(e.target.value ? Number(e.target.value) : null)}
+              {...register('equipmentTypeId')}
               className={formInputClass}
             >
               <option value="">설비유형 선택</option>
@@ -106,18 +133,21 @@ const EquipmentFormModal = ({
                   </option>
                 ))}
             </select>
+            {errors.equipmentTypeId && (
+              <p className={formErrorClass}>{errors.equipmentTypeId.message}</p>
+            )}
           </div>
 
           <div>
             <label className={formLabelClass}>위치</label>
             <input
               type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              {...register('location')}
               placeholder="설비 위치를 입력하세요"
               maxLength={200}
               className={formInputClass}
             />
+            {errors.location && <p className={formErrorClass}>{errors.location.message}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -127,12 +157,14 @@ const EquipmentFormModal = ({
               </label>
               <input
                 type="text"
-                value={manufacturer}
-                onChange={(e) => setManufacturer(e.target.value)}
+                {...register('manufacturer')}
                 placeholder="제조사"
                 maxLength={100}
                 className={formInputClass}
               />
+              {errors.manufacturer && (
+                <p className={formErrorClass}>{errors.manufacturer.message}</p>
+              )}
             </div>
             <div>
               <label className={formLabelClass}>
@@ -140,12 +172,12 @@ const EquipmentFormModal = ({
               </label>
               <input
                 type="text"
-                value={modelName}
-                onChange={(e) => setModelName(e.target.value)}
+                {...register('modelName')}
                 placeholder="모델명"
                 maxLength={100}
                 className={formInputClass}
               />
+              {errors.modelName && <p className={formErrorClass}>{errors.modelName.message}</p>}
             </div>
           </div>
 
@@ -155,29 +187,31 @@ const EquipmentFormModal = ({
             </label>
             <input
               type="date"
-              value={purchaseDate}
-              onChange={(e) => setPurchaseDate(e.target.value)}
+              {...register('purchaseDate')}
               className={formInputClass}
             />
+            {errors.purchaseDate && (
+              <p className={formErrorClass}>{errors.purchaseDate.message}</p>
+            )}
           </div>
 
           <div>
             <label className={formLabelClass}>설명</label>
             <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              {...register('description')}
               placeholder="설비에 대한 설명을 입력하세요"
               rows={3}
               maxLength={500}
               className={formTextareaClass}
             />
+            {errors.description && <p className={formErrorClass}>{errors.description.message}</p>}
           </div>
 
           <div className="flex items-center gap-3">
             <label className="text-sm font-medium text-[var(--text-base)]">사용여부</label>
             <button
               type="button"
-              onClick={() => setIsActive(!isActive)}
+              onClick={() => setValue('isActive', !isActive, { shouldDirty: true })}
               className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none ${
                 isActive ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'
               }`}
