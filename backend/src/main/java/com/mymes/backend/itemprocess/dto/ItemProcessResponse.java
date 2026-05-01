@@ -1,4 +1,4 @@
-package com.mymes.backend.process.dto;
+package com.mymes.backend.itemprocess.dto;
 
 import lombok.Builder;
 import lombok.Getter;
