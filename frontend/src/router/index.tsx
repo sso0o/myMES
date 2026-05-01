@@ -7,6 +7,7 @@ import CommonCodeManagementPage from '@/pages/CommonCodeManagementPage'
 import ProcessManagementPage from '@/pages/ProcessManagementPage'
 import EquipmentManagementPage from '@/pages/EquipmentManagementPage'
 import ItemProcessManagementPage from '@/pages/ItemProcessManagementPage'
+import BomManagementPage from '@/pages/BomManagementPage'
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
           { path: '/master/common-codes', element: <CommonCodeManagementPage /> },
           { path: '/master/processes', element: <ProcessManagementPage /> },
           { path: '/prod-basic/item-processes', element: <ItemProcessManagementPage /> },
+          { path: '/prod-basic/boms', element: <BomManagementPage /> },
         ],
       },
     ],
