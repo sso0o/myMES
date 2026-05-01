@@ -1,4 +1,4 @@
-package com.mymes.backend.process.dto;
+package com.mymes.backend.itemprocess.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

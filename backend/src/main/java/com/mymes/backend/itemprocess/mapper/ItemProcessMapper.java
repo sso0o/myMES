@@ -1,7 +1,7 @@
-package com.mymes.backend.process.mapper;
+package com.mymes.backend.itemprocess.mapper;
 
-import com.mymes.backend.process.dto.ItemProcessResponse;
-import com.mymes.backend.process.entity.ItemProcess;
+import com.mymes.backend.itemprocess.dto.ItemProcessResponse;
+import com.mymes.backend.itemprocess.entity.ItemProcess;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

@@ -6,7 +6,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 각 디렉토리별 상세 가이드는 아래 파일을 함께 참조할 것:
 - Backend: [backend/AGENTS.md](backend/AGENTS.md)
-- Frontend: [frontend/AGENTS.md](frontend/AGENTS.md)
+- Frontend: [frontend/AGENTS.md](frontend/AGENTS.md) → [docs/](frontend/docs/) 내 각 주제별 문서로 분리됨
 
 ## Project Overview
 

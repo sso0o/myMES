@@ -24,6 +24,9 @@ public enum ErrorCode {
     ITEM_PROCESS_NOT_FOUND(404, "품목-공정 매핑을 찾을 수 없습니다."),
     ITEM_PROCESS_DUPLICATED(409, "해당 품목에 이미 등록된 공정입니다."),
     ITEM_PROCESS_SEQUENCE_DUPLICATED(409, "해당 품목에 이미 사용 중인 순서입니다."),
+    ITEM_PROCESS_COPY_TARGET_EMPTY(400, "대상 품목은 1개 이상이어야 합니다."),
+    ITEM_PROCESS_COPY_SOURCE_TARGET_SAME(400, "원본 품목과 대상 품목이 같을 수 없습니다."),
+    ITEM_PROCESS_COPY_EMPTY_SOURCE(400, "원본 품목에 복사할 공정이 없습니다."),
 
     // Work Order
     WORK_ORDER_NOT_FOUND(404, "작업 지시를 찾을 수 없습니다."),

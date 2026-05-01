@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   Wrench,
   GitBranch,
+  Layers,
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
@@ -22,6 +23,12 @@ const menuGroups = [
       { label: '품목 관리', path: '/master/items', icon: Package },
       { label: '공정 관리', path: '/master/processes', icon: GitBranch },
       { label: '설비 관리', path: '/master/equipment', icon: Wrench },
+    ],
+  },
+  {
+    group: '생산기초관리',
+    items: [
+      { label: '품목별 공정 관리', path: '/prod-basic/item-processes', icon: Layers },
     ],
   },
   {
