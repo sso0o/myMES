@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm, useWatch } from 'react-hook-form'
 import Modal from '@/common/components/Modal'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import {
@@ -9,6 +11,11 @@ import {
   formTextareaClass,
 } from '@/common/styles/form'
 import { useProcessTypeOptions } from '../hooks/useProcessQuery'
+import {
+  processFormSchema,
+  type ProcessFormInput,
+  type ProcessFormValues,
+} from '../schemas/processSchema'
 import type { ProcessCreateRequest, ProcessResponse, ProcessUpdateRequest } from '../types'
 
 interface ProcessFormModalProps {
@@ -19,6 +26,16 @@ interface ProcessFormModalProps {
   isLoading: boolean
 }
 
+const formErrorClass = 'mt-1 text-xs text-[var(--danger)]'
+
+const getDefaultValues = (editTarget: ProcessResponse | null): ProcessFormInput => ({
+  processName: editTarget?.processName ?? '',
+  processTypeId: editTarget?.processTypeId ?? '',
+  standardTime: editTarget?.standardTime ?? '',
+  description: editTarget?.description ?? '',
+  isActive: editTarget?.isActive ?? true,
+})
+
 const ProcessFormModal = ({
   open,
   editTarget,
@@ -26,24 +43,34 @@ const ProcessFormModal = ({
   onSubmit,
   isLoading,
 }: ProcessFormModalProps) => {
-  const [processName, setProcessName] = useState(editTarget?.processName ?? '')
-  const [processTypeId, setProcessTypeId] = useState<number | null>(
-    editTarget?.processTypeId ?? null,
-  )
-  const [standardTime, setStandardTime] = useState<number>(editTarget?.standardTime ?? 0)
-  const [description, setDescription] = useState(editTarget?.description ?? '')
-  const [isActive, setIsActive] = useState(editTarget?.isActive ?? true)
-
   const { data: processTypeOptions = [] } = useProcessTypeOptions()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    control,
+    formState: { errors },
+  } = useForm<ProcessFormInput, unknown, ProcessFormValues>({
+    resolver: zodResolver(processFormSchema),
+    defaultValues: getDefaultValues(editTarget),
+  })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const isActive = useWatch({ control, name: 'isActive' }) ?? true
+
+  useEffect(() => {
+    if (open) {
+      reset(getDefaultValues(editTarget))
+    }
+  }, [editTarget, open, reset])
+
+  const handleFormSubmit = (values: ProcessFormValues) => {
     onSubmit({
-      processName: processName.trim(),
-      processTypeId: processTypeId ?? undefined,
-      standardTime: standardTime || undefined,
-      description: description.trim() || undefined,
-      isActive,
+      processName: values.processName,
+      processTypeId: values.processTypeId,
+      standardTime: values.standardTime || undefined,
+      description: values.description,
+      isActive: values.isActive,
     })
   }
 
@@ -51,7 +78,7 @@ const ProcessFormModal = ({
 
   return (
     <Modal title={editTarget ? '공정 수정' : '공정 등록'} onClose={onClose}>
-        <form onSubmit={handleSubmit} className={formClass}>
+        <form onSubmit={handleSubmit(handleFormSubmit)} className={formClass}>
           {editTarget && (
             <div>
               <label className={formLabelClass}>
@@ -72,13 +99,12 @@ const ProcessFormModal = ({
             </label>
             <input
               type="text"
-              value={processName}
-              onChange={(e) => setProcessName(e.target.value)}
+              {...register('processName')}
               placeholder="공정명을 입력하세요"
               maxLength={100}
-              required
               className={formInputClass}
             />
+            {errors.processName && <p className={formErrorClass}>{errors.processName.message}</p>}
           </div>
 
           <div>
@@ -86,8 +112,7 @@ const ProcessFormModal = ({
               공정유형
             </label>
             <select
-              value={processTypeId ?? ''}
-              onChange={(e) => setProcessTypeId(e.target.value ? Number(e.target.value) : null)}
+              {...register('processTypeId')}
               className={formInputClass}
             >
               <option value="">공정유형 선택</option>
@@ -100,6 +125,9 @@ const ProcessFormModal = ({
                   </option>
                 ))}
             </select>
+            {errors.processTypeId && (
+              <p className={formErrorClass}>{errors.processTypeId.message}</p>
+            )}
           </div>
 
           <div>
@@ -108,31 +136,33 @@ const ProcessFormModal = ({
             </label>
             <input
               type="number"
-              value={standardTime}
-              onChange={(e) => setStandardTime(Number(e.target.value))}
+              {...register('standardTime')}
               min={0}
               placeholder="0"
               className={formInputClass}
             />
+            {errors.standardTime && (
+              <p className={formErrorClass}>{errors.standardTime.message}</p>
+            )}
           </div>
 
           <div>
             <label className={formLabelClass}>설명</label>
             <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              {...register('description')}
               placeholder="공정에 대한 설명을 입력하세요"
               rows={3}
               maxLength={500}
               className={formTextareaClass}
             />
+            {errors.description && <p className={formErrorClass}>{errors.description.message}</p>}
           </div>
 
           <div className="flex items-center gap-3">
             <label className="text-sm font-medium text-[var(--text-base)]">사용여부</label>
             <button
               type="button"
-              onClick={() => setIsActive(!isActive)}
+              onClick={() => setValue('isActive', !isActive, { shouldDirty: true })}
               className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none ${
                 isActive ? 'bg-[var(--primary)]' : 'bg-[var(--border)]'
               }`}
