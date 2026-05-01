@@ -1,6 +1,25 @@
 import { useState } from 'react'
 import { Check, Pencil, Plus, Trash2, X } from 'lucide-react'
-import { primaryActionButtonClass } from '@/common/styles/button'
+import Badge from '@/common/components/Badge'
+import EmptyState from '@/common/components/EmptyState'
+import PageHeader from '@/common/components/PageHeader'
+import {
+  cancelIconButtonClass,
+  deleteIconButtonClass,
+  editIconButtonClass,
+  primaryActionButtonClass,
+  saveIconButtonClass,
+} from '@/common/styles/button'
+import { inlineInputClass } from '@/common/styles/form'
+import {
+  tableBodyClass,
+  tableClass,
+  tableEmptyCellClass,
+  tableHeadClass,
+  tableInlineEditRowClass,
+  tableRowClass,
+  tableScrollClass,
+} from '@/common/styles/table'
 import { useFeedback } from '@/common/hooks/useFeedback'
 import CodeGroupFormModal from '@/features/master/commonCode/components/CodeGroupFormModal'
 import {
@@ -31,9 +50,6 @@ interface EditCodeRow {
   sortOrder: string
   numberingPrefix: string
 }
-
-const inputCls =
-  'w-full rounded border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm text-[var(--text-strong)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]'
 
 const CommonCodeManagementPage = () => {
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
@@ -223,16 +239,10 @@ const CommonCodeManagementPage = () => {
 
   return (
     <div className="space-y-5 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-[var(--text-strong)]">공통코드 관리</h1>
-          <p className="mt-0.5 text-sm text-[var(--text-muted)]">
-            시스템에서 사용하는 기준 코드를 관리합니다.
-          </p>
-        </div>
-      </div>
+      <PageHeader title="공통코드 관리" description="시스템에서 사용하는 기준 코드를 관리합니다." />
 
       <div className="flex h-[calc(100vh-16rem)] gap-0">
+        {/* 좌측: 코드 그룹 목록 */}
         <div className="flex w-80 shrink-0 flex-col rounded-l-lg border border-[var(--border)] bg-[var(--surface)]">
           <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
             <span className="text-sm font-semibold text-[var(--text-strong)]">코드 그룹</span>
@@ -305,6 +315,7 @@ const CommonCodeManagementPage = () => {
         </ul>
       </div>
 
+        {/* 우측: 선택한 그룹의 코드 항목 */}
         <div className="flex flex-1 flex-col rounded-r-lg border border-l-0 border-[var(--border)] bg-[var(--surface)]">
           <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-3">
             <div>
@@ -330,13 +341,11 @@ const CommonCodeManagementPage = () => {
           </div>
 
           {!selectedGroupId ? (
-            <div className="flex flex-1 items-center justify-center text-sm text-[var(--text-muted)]">
-              좌측에서 코드 그룹을 선택하세요.
-            </div>
+            <EmptyState message="좌측에서 코드 그룹을 선택하세요." fill />
           ) : (
-            <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-[var(--surface-alt)] text-[var(--text-base)]">
+            <div className={tableScrollClass}>
+            <table className={tableClass}>
+              <thead className={tableHeadClass}>
                 <tr>
                   <th className="px-5 py-3 text-left font-medium">코드값</th>
                   <th className="px-5 py-3 text-left font-medium">코드명</th>
@@ -347,10 +356,10 @@ const CommonCodeManagementPage = () => {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-[var(--border)]/50">
+              <tbody className={tableBodyClass}>
                 {codes.length === 0 && !addingRow && (
                   <tr>
-                    <td colSpan={6} className="px-5 py-10 text-center text-[var(--text-muted)]">
+                    <td colSpan={6} className={`${tableEmptyCellClass} px-5`}>
                       등록된 코드가 없습니다.
                     </td>
                   </tr>
@@ -358,11 +367,11 @@ const CommonCodeManagementPage = () => {
 
                 {codes.map((code) =>
                   editingId === code.id ? (
-                    <tr key={code.id} className="bg-[var(--primary-soft)]/40">
+                    <tr key={code.id} className={tableInlineEditRowClass}>
                       <td className="px-5 py-2 font-mono text-[var(--text-muted)]">{code.code}</td>
                       <td className="px-5 py-2">
                         <input
-                          className={inputCls}
+                          className={inlineInputClass}
                           value={editRow.codeName}
                           onChange={(event) => setEditRow((row) => ({ ...row, codeName: event.target.value }))}
                           autoFocus
@@ -371,7 +380,7 @@ const CommonCodeManagementPage = () => {
                       </td>
                       <td className="px-5 py-2">
                         <input
-                          className={`${inputCls} font-mono text-center`}
+                          className={`${inlineInputClass} font-mono text-center`}
                           value={editRow.numberingPrefix}
                           onChange={(event) =>
                             setEditRow((row) => ({ ...row, numberingPrefix: event.target.value.toUpperCase() }))
@@ -382,7 +391,7 @@ const CommonCodeManagementPage = () => {
                       </td>
                       <td className="px-5 py-2">
                         <input
-                          className={`${inputCls} text-center`}
+                          className={`${inlineInputClass} text-center`}
                           type="number"
                           min={1}
                           value={editRow.sortOrder}
@@ -390,15 +399,9 @@ const CommonCodeManagementPage = () => {
                         />
                       </td>
                       <td className="px-5 py-2 text-center">
-                        <span
-                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                            code.isActive
-                              ? 'bg-[var(--success-soft)] text-[var(--success)]'
-                              : 'bg-[var(--surface-alt)] text-[var(--text-muted)]'
-                          }`}
-                        >
+                        <Badge variant={code.isActive ? 'success' : 'muted'}>
                           {code.isActive ? '활성' : '비활성'}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="px-5 py-2">
                         <div className="flex justify-center gap-1">
@@ -406,7 +409,7 @@ const CommonCodeManagementPage = () => {
                             type="button"
                             onClick={() => handleSaveEdit(code.id)}
                             disabled={updateCode.isPending}
-                            className="rounded p-1.5 text-[var(--success)] transition-colors hover:bg-[var(--success-soft)] disabled:opacity-50"
+                            className={saveIconButtonClass}
                             title="저장"
                           >
                             <Check size={15} />
@@ -414,7 +417,7 @@ const CommonCodeManagementPage = () => {
                           <button
                             type="button"
                             onClick={handleCancelEdit}
-                            className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-alt)]"
+                            className={cancelIconButtonClass}
                             title="취소"
                           >
                             <X size={15} />
@@ -423,7 +426,7 @@ const CommonCodeManagementPage = () => {
                       </td>
                     </tr>
                   ) : (
-                    <tr key={code.id} className="transition-colors hover:bg-[var(--surface-alt)]">
+                    <tr key={code.id} className={tableRowClass}>
                       <td className="px-5 py-3 font-mono text-[var(--text-base)]">{code.code}</td>
                       <td className="px-5 py-3 text-[var(--text-strong)]">{code.codeName}</td>
                       <td className="px-5 py-3 text-center font-mono text-[var(--text-muted)]">
@@ -431,22 +434,16 @@ const CommonCodeManagementPage = () => {
                       </td>
                       <td className="px-5 py-3 text-center text-[var(--text-muted)]">{code.sortOrder}</td>
                       <td className="px-5 py-3 text-center">
-                        <span
-                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                            code.isActive
-                              ? 'bg-[var(--success-soft)] text-[var(--success)]'
-                              : 'bg-[var(--surface-alt)] text-[var(--text-muted)]'
-                          }`}
-                        >
+                        <Badge variant={code.isActive ? 'success' : 'muted'}>
                           {code.isActive ? '활성' : '비활성'}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="px-5 py-3">
                         <div className="flex justify-center gap-2">
                           <button
                             type="button"
                             onClick={() => handleStartEdit(code)}
-                            className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--primary-soft)] hover:text-[var(--primary)]"
+                            className={editIconButtonClass}
                             title="수정"
                           >
                             <Pencil size={15} />
@@ -454,7 +451,7 @@ const CommonCodeManagementPage = () => {
                           <button
                             type="button"
                             onClick={() => handleDeleteCode(code)}
-                            className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--danger-soft)] hover:text-[var(--danger)]"
+                            className={deleteIconButtonClass}
                             title="삭제"
                           >
                             <Trash2 size={15} />
@@ -466,10 +463,10 @@ const CommonCodeManagementPage = () => {
                 )}
 
                 {addingRow && (
-                  <tr className="bg-[var(--primary-soft)]/40">
+                  <tr className={tableInlineEditRowClass}>
                     <td className="px-5 py-2">
                       <input
-                        className={`${inputCls} font-mono bg-[var(--surface-alt)] text-[var(--text-muted)]`}
+                        className={`${inlineInputClass} font-mono bg-[var(--surface-alt)] text-[var(--text-muted)]`}
                         value=""
                         placeholder="저장 시 자동 채번"
                         readOnly
@@ -477,7 +474,7 @@ const CommonCodeManagementPage = () => {
                     </td>
                     <td className="px-5 py-2">
                       <input
-                        className={inputCls}
+                        className={inlineInputClass}
                         value={newRow.codeName}
                         onChange={(event) => setNewRow((row) => ({ ...row, codeName: event.target.value }))}
                         placeholder="예: 대기"
@@ -487,7 +484,7 @@ const CommonCodeManagementPage = () => {
                     </td>
                     <td className="px-5 py-2">
                       <input
-                        className={`${inputCls} font-mono text-center`}
+                        className={`${inlineInputClass} font-mono text-center`}
                         value={newRow.numberingPrefix}
                         onChange={(event) =>
                           setNewRow((row) => ({ ...row, numberingPrefix: event.target.value.toUpperCase() }))
@@ -498,7 +495,7 @@ const CommonCodeManagementPage = () => {
                     </td>
                     <td className="px-5 py-2">
                       <input
-                        className={`${inputCls} text-center`}
+                        className={`${inlineInputClass} text-center`}
                         type="number"
                         min={1}
                         value={newRow.sortOrder}
@@ -513,7 +510,7 @@ const CommonCodeManagementPage = () => {
                           type="button"
                           onClick={handleSaveAdd}
                           disabled={createCode.isPending}
-                          className="rounded p-1.5 text-[var(--success)] transition-colors hover:bg-[var(--success-soft)] disabled:opacity-50"
+                          className={saveIconButtonClass}
                           title="저장"
                         >
                           <Check size={15} />
@@ -521,7 +518,7 @@ const CommonCodeManagementPage = () => {
                         <button
                           type="button"
                           onClick={handleCancelAdd}
-                          className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-alt)]"
+                          className={cancelIconButtonClass}
                           title="취소"
                         >
                           <X size={15} />
@@ -538,6 +535,7 @@ const CommonCodeManagementPage = () => {
       </div>
 
       <CodeGroupFormModal
+        key={`${groupModalOpen ? 'open' : 'closed'}-${editGroup?.groupId ?? 'create'}`}
         open={groupModalOpen}
         editTarget={editGroup}
         onClose={() => {

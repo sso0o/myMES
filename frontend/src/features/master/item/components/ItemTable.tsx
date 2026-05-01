@@ -1,5 +1,14 @@
 import { Pencil, Trash2 } from 'lucide-react'
 import Pagination from '@/common/components/Pagination'
+import { deleteIconButtonClass, editIconButtonClass } from '@/common/styles/button'
+import {
+  tableBodyClass,
+  tableClass,
+  tableContainerClass,
+  tableEmptyCellClass,
+  tableHeadClass,
+  tableRowClass,
+} from '@/common/styles/table'
 import type { ItemResponse } from '../types'
 
 interface ItemTableProps {
@@ -26,9 +35,9 @@ const ItemTable = ({
   onPageSizeChange,
 }: ItemTableProps) => {
   return (
-    <div className="w-full overflow-x-auto rounded-lg border border-[var(--border)] bg-[var(--surface)]">
-      <table className="w-full text-sm">
-        <thead className="bg-[var(--surface-alt)] text-[var(--text-base)]">
+    <div className={tableContainerClass}>
+      <table className={tableClass}>
+        <thead className={tableHeadClass}>
           <tr>
             <th className="px-4 py-3 text-left font-medium">품목코드</th>
             <th className="px-4 py-3 text-left font-medium">품목명</th>
@@ -37,12 +46,12 @@ const ItemTable = ({
             <th className="px-4 py-3 text-center font-medium">관리</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[var(--border)]/50">
+        <tbody className={tableBodyClass}>
           {items.length === 0 ? (
             <tr>
               <td
                 colSpan={5}
-                className="px-4 py-10 text-center text-[var(--text-muted)]"
+                className={tableEmptyCellClass}
               >
                 등록된 품목이 없습니다.
               </td>
@@ -51,7 +60,7 @@ const ItemTable = ({
             items.map((item) => (
               <tr
                 key={item.id}
-                className="transition-colors hover:bg-[var(--surface-alt)]"
+                className={tableRowClass}
               >
                 <td className="px-4 py-3 font-mono text-[var(--text-base)]">
                   {item.itemCode}
@@ -68,7 +77,7 @@ const ItemTable = ({
                     <button
                       type="button"
                       onClick={() => onEdit(item)}
-                      className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--primary-soft)] hover:text-[var(--primary)]"
+                      className={editIconButtonClass}
                       title="수정"
                     >
                       <Pencil size={15} />
@@ -76,7 +85,7 @@ const ItemTable = ({
                     <button
                       type="button"
                       onClick={() => onDelete(item)}
-                      className="rounded p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--danger-soft)] hover:text-[var(--danger)]"
+                      className={deleteIconButtonClass}
                       title="삭제"
                     >
                       <Trash2 size={15} />

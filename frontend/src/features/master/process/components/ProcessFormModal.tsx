@@ -1,6 +1,13 @@
-import { useEffect, useState } from 'react'
-import { X } from 'lucide-react'
+import { useState } from 'react'
+import Modal from '@/common/components/Modal'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
+import {
+  formClass,
+  formDisabledInputClass,
+  formInputClass,
+  formLabelClass,
+  formTextareaClass,
+} from '@/common/styles/form'
 import { useProcessTypeOptions } from '../hooks/useProcessQuery'
 import type { ProcessCreateRequest, ProcessResponse, ProcessUpdateRequest } from '../types'
 
@@ -19,30 +26,15 @@ const ProcessFormModal = ({
   onSubmit,
   isLoading,
 }: ProcessFormModalProps) => {
-  const [processName, setProcessName] = useState('')
-  const [processTypeId, setProcessTypeId] = useState<number | null>(null)
-  const [standardTime, setStandardTime] = useState<number>(0)
-  const [description, setDescription] = useState('')
-  const [isActive, setIsActive] = useState(true)
+  const [processName, setProcessName] = useState(editTarget?.processName ?? '')
+  const [processTypeId, setProcessTypeId] = useState<number | null>(
+    editTarget?.processTypeId ?? null,
+  )
+  const [standardTime, setStandardTime] = useState<number>(editTarget?.standardTime ?? 0)
+  const [description, setDescription] = useState(editTarget?.description ?? '')
+  const [isActive, setIsActive] = useState(editTarget?.isActive ?? true)
 
   const { data: processTypeOptions = [] } = useProcessTypeOptions()
-
-  useEffect(() => {
-    if (editTarget) {
-      setProcessName(editTarget.processName)
-      setProcessTypeId(editTarget.processTypeId ?? null)
-      setStandardTime(editTarget.standardTime ?? 0)
-      setDescription(editTarget.description ?? '')
-      setIsActive(editTarget.isActive)
-      return
-    }
-
-    setProcessName('')
-    setProcessTypeId(null)
-    setStandardTime(0)
-    setDescription('')
-    setIsActive(true)
-  }, [editTarget, open])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,39 +50,24 @@ const ProcessFormModal = ({
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      <div className="absolute inset-0 bg-[var(--overlay)]" onClick={onClose} />
-      <div className="relative w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm">
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-[var(--text-strong)]">
-            {editTarget ? '공정 수정' : '공정 등록'}
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-alt)] hover:text-[var(--text-base)]"
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <Modal title={editTarget ? '공정 수정' : '공정 등록'} onClose={onClose}>
+        <form onSubmit={handleSubmit} className={formClass}>
           {editTarget && (
             <div>
-              <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">
+              <label className={formLabelClass}>
                 공정코드
               </label>
               <input
                 type="text"
                 value={editTarget.processCode}
                 disabled
-                className="w-full rounded-lg border border-[var(--border)] bg-[var(--surface-alt)] px-3 py-2 font-mono text-sm text-[var(--text-muted)]"
+                className={formDisabledInputClass}
               />
             </div>
           )}
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">
+            <label className={formLabelClass}>
               공정명 <span className="text-[var(--danger)]">*</span>
             </label>
             <input
@@ -100,18 +77,18 @@ const ProcessFormModal = ({
               placeholder="공정명을 입력하세요"
               maxLength={100}
               required
-              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className={formInputClass}
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">
+            <label className={formLabelClass}>
               공정유형
             </label>
             <select
               value={processTypeId ?? ''}
               onChange={(e) => setProcessTypeId(e.target.value ? Number(e.target.value) : null)}
-              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className={formInputClass}
             >
               <option value="">공정유형 선택</option>
               {processTypeOptions
@@ -126,7 +103,7 @@ const ProcessFormModal = ({
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">
+            <label className={formLabelClass}>
               표준시간(분)
             </label>
             <input
@@ -135,19 +112,19 @@ const ProcessFormModal = ({
               onChange={(e) => setStandardTime(Number(e.target.value))}
               min={0}
               placeholder="0"
-              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className={formInputClass}
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-[var(--text-base)]">설명</label>
+            <label className={formLabelClass}>설명</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="공정에 대한 설명을 입력하세요"
               rows={3}
               maxLength={500}
-              className="w-full resize-none rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className={formTextareaClass}
             />
           </div>
 
@@ -178,8 +155,7 @@ const ProcessFormModal = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   )
 }
 
