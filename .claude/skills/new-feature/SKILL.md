@@ -341,7 +341,7 @@ const WorkOrderManagementPage = () => {
             showToast({ title: '작업지시를 수정했습니다.', variant: 'success' })
             handleClose()
           },
-          onError: () => showToast({ title: '수정 중 오류가 발생했습니다.', variant: 'error' }),
+          onError: () => showToast({ title: '처리 중 오류가 발생했습니다.', variant: 'error' }),
         },
       )
       return
@@ -352,7 +352,7 @@ const WorkOrderManagementPage = () => {
         showToast({ title: '작업지시를 등록했습니다.', variant: 'success' })
         handleClose()
       },
-      onError: () => showToast({ title: '등록 중 오류가 발생했습니다.', variant: 'error' }),
+      onError: () => showToast({ title: '처리 중 오류가 발생했습니다.', variant: 'error' }),
     })
   }
 
@@ -366,7 +366,7 @@ const WorkOrderManagementPage = () => {
 
     deleteWorkOrder.mutate(workOrder.id, {
       onSuccess: () => showToast({ title: '작업지시를 삭제했습니다.', variant: 'success' }),
-      onError: () => showToast({ title: '삭제 중 오류가 발생했습니다.', variant: 'error' }),
+      onError: () => showToast({ title: '처리 중 오류가 발생했습니다.', variant: 'error' }),
     })
   }
 

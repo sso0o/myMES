@@ -21,27 +21,32 @@ const toastSeverity: Record<ToastVariant, AlertColor> = {
 
 const toastSxByVariant: Record<ToastVariant, SystemStyleObject<Theme>> = {
   success: {
-    borderColor: 'color-mix(in srgb, var(--success) 20%, transparent)',
-    bgcolor: 'var(--success-soft)',
+    '& .MuiAlert-icon': {
+      color: 'var(--success)',
+    },
   },
   error: {
-    borderColor: 'color-mix(in srgb, var(--danger) 20%, transparent)',
-    bgcolor: 'var(--danger-soft)',
+    '& .MuiAlert-icon': {
+      color: 'var(--danger)',
+    },
   },
   info: {
-    borderColor: 'color-mix(in srgb, var(--primary) 20%, transparent)',
-    bgcolor: 'var(--primary-soft)',
+    '& .MuiAlert-icon': {
+      color: 'var(--primary)',
+    },
   },
 }
 
 const toastBaseSx: SystemStyleObject<Theme> = {
   width: 'min(24rem, calc(100vw - 2rem))',
   border: '1px solid',
+  borderColor: 'var(--border)',
   borderRadius: '0.75rem',
+  bgcolor: 'var(--surface)',
   color: 'var(--text-strong)',
   boxShadow: '0 10px 30px color-mix(in srgb, var(--text-strong) 10%, transparent)',
   '& .MuiAlert-icon': {
-    color: 'var(--text-base)',
+    alignItems: 'center',
   },
   '& .MuiAlert-message': {
     width: '100%',
@@ -149,7 +154,7 @@ export function FeedbackProvider({ children }: PropsWithChildren) {
         >
           <Alert
             severity={toastSeverity[toast.variant]}
-            variant="filled"
+            variant="standard"
             onClose={() => handleToastClose(toast.id)}
             sx={[toastBaseSx, toastSxByVariant[toast.variant]]}
           >
