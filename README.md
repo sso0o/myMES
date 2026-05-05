@@ -1,6 +1,6 @@
 # MES (Manufacturing Execution System)
 
-제조 공정에서 생산 계획, 작업 지시, 생산 실적을 관리하는 MES 시스템입니다.  
+제조 공정에서 생산 계획, 작업 지시, 생산 실적, 품질검사와 불량 조치를 관리하는 MES 시스템입니다.  
 Spring Boot 백엔드와 React(Vite) 프론트엔드로 구성된 풀스택 프로젝트이며, Supabase를 Auth/DB/Realtime 플랫폼으로 사용합니다.
 
 ---
@@ -18,16 +18,19 @@ Spring Boot 백엔드와 React(Vite) 프론트엔드로 구성된 풀스택 프�
 | 생산기초관리 | `/prod-basic/equipment` | 설비 관리 |
 | 생산기초관리 | `/prod-basic/item-processes` | 품목별 공정 관리, 일괄 복사 |
 | 생산기초관리 | `/prod-basic/boms` | BOM 관리 |
+| 생산기초관리 | `/prod-basic/process-equipment` | 공정별 설비 관리 |
+| 생산 관리 | `/planning` | 생산 계획 관리 |
+| 생산 관리 | `/work-orders` | 작업 지시 타임라인/설비 배정 |
+| 생산 관리 | `/production` | 생산 실적 관리 |
+| 품질관리 | `/quality/inspections` | 품질검사 목록, 등록/수정/삭제 |
+| 품질관리 | `/quality/defects` | 불량관리 화면 준비 중 |
+| 운영 관리 | `/operation/workers` | 작업자 관리 |
 
-### 준비 중인 화면
+### 기능 구현 예정 화면
 
 | 영역 | 경로 |
 |---|---|
-| 대시보드 | `/dashboard` |
-| 생산 계획 | `/planning` |
-| 작업 지시 | `/work-orders` |
-| 생산 실적 | `/production` |
-| 품질 관리 | `/quality` |
+| 품질관리 | `/quality/defects` |
 
 ---
 
@@ -82,7 +85,10 @@ myMES/
         ├── features/                     # 도메인별 기능 (Feature-first)
         │   ├── auth/                     # 인증
         │   ├── master/                   # 공통코드, 품목
-        │   └── prod-basic/               # 공정, 설비, 품목별 공정, BOM
+        │   ├── prod-basic/               # 공정, 설비, 품목별 공정, BOM
+        │   ├── prod-management/          # 생산계획, 작업지시, 생산실적
+        │   ├── quality/                  # 품질검사, 불량관리
+        │   └── operation/                # 작업자 관리
         ├── common/                      # 공통 컴포넌트 / 훅
         ├── pages/                       # 라우트 단위 페이지
         ├── store/
@@ -107,7 +113,9 @@ myMES/
 | `workorder` | 작업 지시 |
 | `production` | 생산 실적 |
 | `defect` | 불량 기록/조치 |
+| `quality` | 품질검사 |
 | `user` | 사용자 관리 |
+| `worker` | 작업자 관리 |
 
 ### Frontend Feature Groups
 
@@ -120,6 +128,42 @@ myMES/
 | `features/prod-basic/equipment` | 설비 관리 |
 | `features/prod-basic/item-process` | 품목별 공정 관리 |
 | `features/prod-basic/bom` | BOM 관리 |
+| `features/prod-basic/process-equipment` | 공정별 설비 관리 |
+| `features/prod-management/planning` | 생산 계획 관리 |
+| `features/prod-management/work-order` | 작업 지시 관리 |
+| `features/prod-management/production-record` | 생산 실적 관리 |
+| `features/quality/inspection` | 품질검사 관리 |
+| `features/operation/worker` | 작업자 관리 |
+
+---
+
+## 품질관리 MVP
+
+품질관리는 사이드바에서 `품질관리` 독립 그룹으로 분리했습니다.
+
+| 메뉴 | 경로 | 설명 |
+|---|---|---|
+| 품질검사 | `/quality/inspections` | 작업지시, 품목, 공정 기준 검사 결과와 판정 관리 |
+| 불량관리 | `/quality/defects` | 검사/생산 과정의 불량 원인과 조치 상태 관리 |
+
+### 품질검사
+
+- 검사번호 자동 채번: `QI-yyyyMMdd-0001`
+- 검사유형: `INCOMING`, `IN_PROCESS`, `FINAL`
+- 검사상태: `WAITING`, `IN_PROGRESS`, `COMPLETED`
+- 판정결과: `PASS`, `FAIL`, `HOLD`
+- 작업지시 선택 시 품목/공정 연결
+- 검사수량, 합격수량, 불량수량 검증
+- 목록 상단 KPI: 검사 건수, 완료 건수, 합격률, 불량수량
+
+### 불량관리
+
+기존 `defect` 도메인을 품질관리 흐름에 맞춰 확장했습니다.
+
+- 작업지시 기준 불량 등록 유지
+- 품질검사 기준 불량 등록 추가
+- 품질검사, 품목, 공정 정보 응답 포함
+- 불량 상세, 원인분류, 조치내용, 처리방식, 담당자 필드 추가
 
 ---
 
@@ -210,8 +254,10 @@ npm run lint              # ESLint 검사
 | 생산 계획 | `/api/production-plans` |
 | 작업 지시 | `/api/work-orders` |
 | 생산 실적 | `/api/work-orders/{workOrderId}/production-records`, `/api/production-records/{id}` |
-| 불량 기록 | `/api/work-orders/{workOrderId}/defect-records`, `/api/defect-records/{id}` |
+| 품질검사 | `/api/quality-inspections` |
+| 불량 기록 | `/api/defect-records`, `/api/work-orders/{workOrderId}/defect-records`, `/api/quality-inspections/{inspectionId}/defect-records`, `/api/defect-records/{id}` |
 | 사용자 | `/api/users`, `/api/users/me` |
+| 작업자 | `/api/workers` |
 
 API 문서는 서버 실행 후 [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) 에서 확인할 수 있습니다.
 
@@ -227,8 +273,6 @@ API 문서는 서버 실행 후 [http://localhost:8080/swagger-ui/index.html](ht
 // 실패
 { "success": false, "data": null, "message": "작업 지시를 찾을 수 없습니다.", "code": "WORK_ORDER_NOT_FOUND" }
 ```
-
-API 문서는 서버 실행 후 [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) 에서 확인할 수 있습니다.
 
 ---
 
@@ -246,17 +290,17 @@ useSupabaseRealtime({
 })
 ```
 
-현재 백엔드 테스트는 애플리케이션 컨텍스트, 회귀 테스트, JWT 필터, BOM, 설비, 품목별 공정 복사 로직을 포함합니다.
+현재 백엔드 테스트는 애플리케이션 컨텍스트, 회귀 테스트, JWT 필터, BOM, 설비, 품목별 공정 복사, 품질검사, 불량관리 로직을 포함합니다.
 
 ---
 
 ## 다음 작업 후보
 
-1. 생산 계획 화면 구현
-2. 작업 지시 화면 구현
-3. 생산 실적/불량 관리 화면 구현
-4. 생산 관리 도메인 서비스 테스트 보강
-5. 대시보드 1차 지표 구현
+1. 불량관리 프론트 화면 구현
+2. 품질검사에서 불합격/불량수량 발생 시 불량 등록 흐름 연결
+3. 검사 기준 관리 도메인 설계
+4. 부적합품 처리/승인 흐름 설계
+5. 품질 대시보드 지표 보강
 
 ---
 
