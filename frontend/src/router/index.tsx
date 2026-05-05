@@ -2,6 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom'
 import LoginPage from '@/pages/LoginPage'
 import PrivateRoute from './PrivateRoute'
 import MainLayout from '@/common/components/layout/MainLayout'
+import RouteErrorScreen from '@/common/components/error/RouteErrorScreen'
 import ItemManagementPage from '@/pages/ItemManagementPage'
 import CommonCodeManagementPage from '@/pages/CommonCodeManagementPage'
 import ProcessManagementPage from '@/pages/ProcessManagementPage'
@@ -10,12 +11,14 @@ import ItemProcessManagementPage from '@/pages/ItemProcessManagementPage'
 import BomManagementPage from '@/pages/BomManagementPage'
 
 const router = createBrowserRouter([
-  { path: '/login', element: <LoginPage /> },
+  { path: '/login', element: <LoginPage />, errorElement: <RouteErrorScreen /> },
   {
     element: <PrivateRoute />,
+    errorElement: <RouteErrorScreen />,
     children: [
       {
         element: <MainLayout />,
+        errorElement: <RouteErrorScreen />,
         children: [
           { path: '/', element: <Navigate to="/dashboard" replace /> },
           { path: '/dashboard', element: <div className="text-slate-700">대시보드 (준비 중)</div> },
@@ -33,7 +36,7 @@ const router = createBrowserRouter([
       },
     ],
   },
-  { path: '*', element: <Navigate to="/login" replace /> },
+  { path: '*', element: <Navigate to="/login" replace />, errorElement: <RouteErrorScreen /> },
 ])
 
 export default router

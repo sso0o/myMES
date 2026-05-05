@@ -1,11 +1,122 @@
-import { useEffect, type PropsWithChildren } from 'react'
-import { cancelButtonClass } from '@/common/styles/button'
+import type { PropsWithChildren } from 'react'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import Snackbar from '@mui/material/Snackbar'
+import type { AlertColor, SnackbarCloseReason } from '@mui/material'
+import type { Theme } from '@mui/material/styles'
+import type { SystemStyleObject } from '@mui/system'
 import { useUiStore, type ToastVariant } from '@/store/uiStore'
 
-const toastToneClass: Record<ToastVariant, string> = {
-  success: 'border-[var(--success)]/20 bg-[var(--success-soft)] text-[var(--text-strong)]',
-  error: 'border-[var(--danger)]/20 bg-[var(--danger-soft)] text-[var(--text-strong)]',
-  info: 'border-[var(--primary)]/20 bg-[var(--primary-soft)] text-[var(--text-strong)]',
+const toastSeverity: Record<ToastVariant, AlertColor> = {
+  success: 'success',
+  error: 'error',
+  info: 'info',
+}
+
+const toastSxByVariant: Record<ToastVariant, SystemStyleObject<Theme>> = {
+  success: {
+    borderColor: 'color-mix(in srgb, var(--success) 20%, transparent)',
+    bgcolor: 'var(--success-soft)',
+  },
+  error: {
+    borderColor: 'color-mix(in srgb, var(--danger) 20%, transparent)',
+    bgcolor: 'var(--danger-soft)',
+  },
+  info: {
+    borderColor: 'color-mix(in srgb, var(--primary) 20%, transparent)',
+    bgcolor: 'var(--primary-soft)',
+  },
+}
+
+const toastBaseSx: SystemStyleObject<Theme> = {
+  width: 'min(24rem, calc(100vw - 2rem))',
+  border: '1px solid',
+  borderRadius: '0.75rem',
+  color: 'var(--text-strong)',
+  boxShadow: '0 10px 30px color-mix(in srgb, var(--text-strong) 10%, transparent)',
+  '& .MuiAlert-icon': {
+    color: 'var(--text-base)',
+  },
+  '& .MuiAlert-message': {
+    width: '100%',
+    color: 'var(--text-base)',
+  },
+  '& .MuiAlertTitle-root': {
+    mb: 0.25,
+    color: 'var(--text-strong)',
+    fontSize: '0.875rem',
+    fontWeight: 700,
+  },
+  '& .MuiAlert-action': {
+    color: 'var(--text-muted)',
+  },
+}
+
+const dialogPaperSx: SystemStyleObject<Theme> = {
+  width: 'min(28rem, calc(100vw - 2rem))',
+  m: 2,
+  border: '1px solid var(--border)',
+  borderRadius: '0.75rem',
+  bgcolor: 'var(--surface)',
+  color: 'var(--text-base)',
+  boxShadow: '0 20px 50px color-mix(in srgb, var(--text-strong) 14%, transparent)',
+}
+
+const dialogTitleSx: SystemStyleObject<Theme> = {
+  px: 3,
+  pt: 3,
+  pb: 0,
+  color: 'var(--text-strong)',
+  fontSize: '1rem',
+  fontWeight: 700,
+}
+
+const dialogContentSx: SystemStyleObject<Theme> = {
+  px: 3,
+  pt: 1.25,
+  pb: 0,
+}
+
+const dialogTextSx: SystemStyleObject<Theme> = {
+  color: 'var(--text-base)',
+  fontSize: '0.875rem',
+  lineHeight: 1.6,
+}
+
+const dialogActionsSx: SystemStyleObject<Theme> = {
+  gap: 1,
+  px: 3,
+  pt: 3,
+  pb: 3,
+}
+
+const cancelButtonSx: SystemStyleObject<Theme> = {
+  borderColor: 'var(--border)',
+  color: 'var(--text-base)',
+  fontSize: '0.875rem',
+  fontWeight: 600,
+  textTransform: 'none',
+  '&:hover': {
+    borderColor: 'var(--border)',
+    bgcolor: 'var(--surface-alt)',
+  },
+}
+
+const confirmButtonSx: SystemStyleObject<Theme> = {
+  bgcolor: 'var(--danger)',
+  color: 'white',
+  fontSize: '0.875rem',
+  fontWeight: 600,
+  textTransform: 'none',
+  '&:hover': {
+    bgcolor: 'color-mix(in srgb, var(--danger) 90%, black)',
+  },
 }
 
 export function FeedbackProvider({ children }: PropsWithChildren) {
@@ -15,79 +126,72 @@ export function FeedbackProvider({ children }: PropsWithChildren) {
   const confirmAlert = useUiStore((state) => state.confirmAlert)
   const cancelAlert = useUiStore((state) => state.cancelAlert)
 
-  useEffect(() => {
-    if (toasts.length === 0) {
-      return undefined
+  const handleToastClose = (id: number, reason?: SnackbarCloseReason) => {
+    if (reason === 'clickaway') {
+      return
     }
 
-    const timers = toasts.map((toast) =>
-      window.setTimeout(() => dismissToast(toast.id), toast.duration),
-    )
-
-    return () => {
-      timers.forEach((timer) => window.clearTimeout(timer))
-    }
-  }, [dismissToast, toasts])
+    dismissToast(id)
+  }
 
   return (
     <>
       {children}
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex items-center px-4">
-        <div className="flex w-full justify-center">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            className={`pointer-events-auto w-[min(24rem,calc(100vw-2rem))] rounded-2xl border px-4 py-3 shadow-sm ${toastToneClass[toast.variant]}`}
-            role="status"
-            aria-live="polite"
+      {toasts.map((toast, index) => (
+        <Snackbar
+          key={toast.id}
+          open
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          autoHideDuration={toast.duration}
+          onClose={(_, reason) => handleToastClose(toast.id, reason)}
+          sx={{ bottom: `${1.5 + index * 5.5}rem` }}
+        >
+          <Alert
+            severity={toastSeverity[toast.variant]}
+            variant="filled"
+            onClose={() => handleToastClose(toast.id)}
+            sx={[toastBaseSx, toastSxByVariant[toast.variant]]}
           >
-            <div className="flex items-start justify-between gap-3">
-              <div className="space-y-1">
-                <p className="text-sm font-semibold text-[var(--text-strong)]">
-                  {toast.title}
-                </p>
-                {toast.message && (
-                  <p className="text-sm text-[var(--text-base)]">{toast.message}</p>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={() => dismissToast(toast.id)}
-                className="rounded-full px-2 py-1 text-xs font-medium text-[var(--text-muted)] transition hover:bg-[var(--text-strong)]/5 hover:text-[var(--text-base)]"
-              >
-                닫기
-              </button>
-            </div>
-          </div>
-        ))}
-        </div>
-      </div>
+            <AlertTitle>{toast.title}</AlertTitle>
+            {toast.message}
+          </Alert>
+        </Snackbar>
+      ))}
 
-      {alertState?.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--overlay)] px-4">
-          <div className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm">
-            <h2 className="text-base font-semibold text-[var(--text-strong)]">
-              {alertState.title}
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--text-base)]">
-              {alertState.message}
-            </p>
-            <div className="mt-6 flex justify-end gap-2">
-              <button type="button" onClick={cancelAlert} className={cancelButtonClass}>
-                취소
-              </button>
-              <button
-                type="button"
-                onClick={confirmAlert}
-                className="rounded-lg bg-[var(--danger)] px-4 py-2 text-sm font-medium text-white transition hover:bg-[var(--danger)]/90"
-              >
-                {alertState.confirmText}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog
+        open={Boolean(alertState?.open)}
+        onClose={cancelAlert}
+        aria-labelledby="feedback-alert-title"
+        aria-describedby="feedback-alert-description"
+        slotProps={{
+          backdrop: {
+            sx: {
+              bgcolor: 'var(--overlay)',
+            },
+          },
+          paper: {
+            sx: dialogPaperSx,
+          },
+        }}
+      >
+        <DialogTitle id="feedback-alert-title" sx={dialogTitleSx}>
+          {alertState?.title}
+        </DialogTitle>
+        <DialogContent sx={dialogContentSx}>
+          <DialogContentText id="feedback-alert-description" sx={dialogTextSx}>
+            {alertState?.message}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={dialogActionsSx}>
+          <Button type="button" variant="outlined" onClick={cancelAlert} sx={cancelButtonSx}>
+            취소
+          </Button>
+          <Button type="button" variant="contained" onClick={confirmAlert} sx={confirmButtonSx}>
+            {alertState?.confirmText ?? '확인'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
