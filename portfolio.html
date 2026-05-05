@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MES 포트폴리오</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --black: #0a0a0a;
+      --dark: #1a1a1a;
+      --mid: #555;
+      --light: #999;
+      --border: #d0d0d0;
+      --bg-light: #f5f5f5;
+      --bg-mid: #ebebeb;
+      --white: #ffffff;
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #e8e8e8;
+      color: var(--black);
+    }
+
+    /* ── A4 페이지 ── */
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      background: var(--white);
+      margin: 0 auto 12mm;
+      padding: 18mm 20mm 16mm;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media print {
+      body { background: white; }
+      .page {
+        margin: 0;
+        padding: 16mm 20mm 14mm;
+        page-break-after: always;
+        box-shadow: none;
+      }
+    }
+
+    /* ── 공통 타이포 ── */
+    h1, h2, h3, h4 { font-weight: 700; line-height: 1.3; }
+
+    .section-title {
+      font-size: 11pt;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--black);
+      border-bottom: 2px solid var(--black);
+      padding-bottom: 4px;
+      margin-bottom: 14px;
+    }
+
+    p {
+      font-size: 9.5pt;
+      line-height: 1.75;
+      color: var(--dark);
+    }
+
+    /* ═══════════════════════════════
+       PAGE 1 — 표지
+    ═══════════════════════════════ */
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 265mm;
+    }
+
+    .cover-top {
+      border-top: 4px solid var(--black);
+      padding-top: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .cover-label {
+      font-size: 8pt;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--light);
+      font-weight: 500;
+    }
+
+    .cover-date {
+      font-size: 8pt;
+      color: var(--light);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .cover-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 30px 0;
+    }
+
+    .cover-subtitle {
+      font-size: 10pt;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--light);
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+
+    .cover-title {
+      font-size: 38pt;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      color: var(--black);
+      margin-bottom: 6px;
+    }
+
+    .cover-title span {
+      display: block;
+      font-size: 14pt;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      color: var(--mid);
+      margin-top: 8px;
+    }
+
+    .cover-desc {
+      margin-top: 24px;
+      font-size: 10.5pt;
+      color: var(--mid);
+      line-height: 1.7;
+      max-width: 120mm;
+    }
+
+    /* 스택 배지 */
+    .badge-group {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      font-weight: 500;
+      padding: 4px 9px;
+      border: 1.5px solid var(--black);
+      letter-spacing: 0.03em;
+    }
+
+    .badge.filled {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .cover-image-placeholder {
+      width: 100%;
+      height: 52mm;
+      background: var(--bg-light);
+      border: 1.5px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    .placeholder-label {
+      font-size: 8.5pt;
+      color: var(--light);
+      letter-spacing: 0.08em;
+      text-align: center;
+    }
+
+    .cover-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cover-info {
+      font-size: 8pt;
+      color: var(--light);
+    }
+
+    .cover-info strong {
+      color: var(--mid);
+      font-weight: 500;
+    }
+
+    /* ═══════════════════════════════
+       PAGE 2 — 프로젝트 개요
+    ═══════════════════════════════ */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 22px;
+    }
+
+    .page-header-title {
+      font-size: 8.5pt;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--black);
+    }
+
+    .page-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      color: var(--light);
+    }
+
+    /* 개요 그리드 */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .overview-card {
+      background: var(--bg-light);
+      padding: 14px 16px;
+    }
+
+    .overview-card-title {
+      font-size: 7.5pt;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--light);
+      margin-bottom: 8px;
+    }
+
+    .overview-card p {
+      font-size: 9pt;
+      line-height: 1.65;
+    }
+
+    /* 구현 기능 테이블 */
+    .feature-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8.5pt;
+    }
+
+    .feature-table th {
+      background: var(--black);
+      color: var(--white);
+      padding: 7px 10px;
+      text-align: left;
+      font-weight: 500;
+      font-size: 8pt;
+      letter-spacing: 0.05em;
+    }
+
+    .feature-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--dark);
+      line-height: 1.5;
+    }
+
+    .feature-table tr:nth-child(even) td {
+      background: var(--bg-light);
+    }
+
+    .status-done {
+      display: inline-block;
+      padding: 2px 7px;
+      background: var(--black);
+      color: var(--white);
+      font-size: 7pt;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    .status-wip {
+      display: inline-block;
+      padding: 2px 7px;
+      border: 1px solid var(--border);
+      color: var(--light);
+      font-size: 7pt;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+    }
+
+    /* ═══════════════════════════════
+       PAGE 3 — 시스템 아키텍처
+    ═══════════════════════════════ */
+    .arch-image-placeholder {
+      width: 100%;
+      height: 66mm;
+      background: var(--bg-light);
+      border: 1.5px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    /* 인증 흐름 */
+    .flow-container {
+      margin-bottom: 20px;
+    }
+
+    .flow-steps {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin-top: 12px;
+    }
+
+    .flow-step {
+      flex: 1;
+      background: var(--bg-light);
+      padding: 10px 8px;
+      text-align: center;
+      position: relative;
+    }
+
+    .flow-step::after {
+      content: '→';
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12pt;
+      color: var(--light);
+      z-index: 1;
+    }
+
+    .flow-step:last-child::after { display: none; }
+
+    .flow-step-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7pt;
+      color: var(--light);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .flow-step-label {
+      font-size: 7.5pt;
+      font-weight: 700;
+      color: var(--black);
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .flow-step-desc {
+      font-size: 6.5pt;
+      color: var(--mid);
+      line-height: 1.4;
+    }
+
+    /* 구조 2컬럼 */
+    .arch-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .arch-col-title {
+      font-size: 9pt;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .arch-item {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 6px;
+      align-items: flex-start;
+    }
+
+    .arch-item-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      color: var(--black);
+      background: var(--bg-mid);
+      padding: 2px 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+
+    .arch-item-val {
+      font-size: 8pt;
+      color: var(--mid);
+      line-height: 1.5;
+      padding-top: 2px;
+    }
+
+    /* ═══════════════════════════════
+       PAGE 4 — 기술적 도전 & 해결
+    ═══════════════════════════════ */
+    .challenge-block {
+      margin-bottom: 20px;
+      border-left: 3px solid var(--black);
+      padding-left: 14px;
+    }
+
+    .challenge-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      color: var(--light);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .challenge-title {
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 8px;
+    }
+
+    .challenge-row {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 8px;
+      margin-bottom: 5px;
+      align-items: flex-start;
+    }
+
+    .challenge-tag {
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--white);
+      background: var(--dark);
+      padding: 2px 7px;
+      display: inline-block;
+      align-self: start;
+      margin-top: 2px;
+    }
+
+    .challenge-tag.solution {
+      background: var(--black);
+    }
+
+    .challenge-tag.result {
+      background: var(--mid);
+    }
+
+    .challenge-content {
+      font-size: 8.5pt;
+      color: var(--dark);
+      line-height: 1.65;
+    }
+
+    .code-inline {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      background: var(--bg-mid);
+      padding: 1px 5px;
+      color: var(--dark);
+    }
+
+    /* ═══════════════════════════════
+       PAGE 5 — 설계 원칙 & 회고
+    ═══════════════════════════════ */
+    .design-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .design-card {
+      border: 1.5px solid var(--border);
+      padding: 13px 14px;
+    }
+
+    .design-card-title {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .design-icon {
+      width: 18px;
+      height: 18px;
+      background: var(--black);
+      color: var(--white);
+      font-size: 9pt;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .design-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .design-list li {
+      font-size: 8pt;
+      color: var(--mid);
+      line-height: 1.6;
+      padding-left: 10px;
+      position: relative;
+      margin-bottom: 2px;
+    }
+
+    .design-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--border);
+    }
+
+    /* 회고 */
+    .retro-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .retro-box {
+      padding: 13px 14px;
+    }
+
+    .retro-box.good {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .retro-box.improve {
+      background: var(--bg-light);
+    }
+
+    .retro-box-title {
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .retro-box.good .retro-box-title { color: var(--bg-mid); }
+    .retro-box.improve .retro-box-title { color: var(--black); }
+
+    .retro-item {
+      font-size: 8.5pt;
+      line-height: 1.65;
+      margin-bottom: 6px;
+      padding-left: 12px;
+      position: relative;
+    }
+
+    .retro-box.good .retro-item { color: #ccc; }
+    .retro-box.improve .retro-item { color: var(--mid); }
+
+    .retro-item::before {
+      content: '·';
+      position: absolute;
+      left: 3px;
+      font-size: 12pt;
+      line-height: 1.2;
+    }
+
+    .retro-box.good .retro-item::before { color: #888; }
+    .retro-box.improve .retro-item::before { color: var(--border); }
+
+    /* 페이지 하단 구분선 */
+    .page-footer {
+      position: absolute;
+      bottom: 12mm;
+      left: 20mm;
+      right: 20mm;
+      border-top: 1px solid var(--border);
+      padding-top: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .page-footer span {
+      font-size: 7pt;
+      color: var(--light);
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     PAGE 1 · 표지
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="cover">
+    <div class="cover-top">
+      <span class="cover-label">Portfolio · Project</span>
+      <span class="cover-date">2025</span>
+    </div>
+
+    <div class="cover-main">
+      <p class="cover-subtitle">Manufacturing Execution System</p>
+      <h1 class="cover-title">
+        myMES
+        <span>제조 실행 시스템</span>
+      </h1>
+      <p class="cover-desc">
+        제조 현장의 생산 계획 수립부터 작업 지시 발행, 실적 집계, 품질 불량 관리까지를
+        하나의 시스템으로 통합한 풀스택 MES 프로젝트입니다.
+        Spring Boot 백엔드와 React 프론트엔드를 분리하고,
+        Supabase를 인증·데이터베이스·실시간 플랫폼으로 활용했습니다.
+      </p>
+
+      <div class="badge-group">
+        <span class="badge filled">Java 17</span>
+        <span class="badge filled">Spring Boot 3.5</span>
+        <span class="badge filled">Spring Security</span>
+        <span class="badge filled">JPA / QueryDSL</span>
+        <span class="badge">React 19</span>
+        <span class="badge">TypeScript 6</span>
+        <span class="badge">Vite 8</span>
+        <span class="badge">TailwindCSS 4</span>
+        <span class="badge">Zustand 5</span>
+        <span class="badge">React Query 5</span>
+        <span class="badge">Supabase</span>
+        <span class="badge">PostgreSQL</span>
+        <span class="badge">MapStruct</span>
+        <span class="badge">Swagger UI</span>
+      </div>
+    </div>
+
+    <div class="cover-image-placeholder">
+      <p class="placeholder-label">[ 메인 화면 스크린샷 ]<br/>전체 대시보드 또는 주요 기능 화면</p>
+    </div>
+
+    <div class="cover-bottom">
+      <div>
+        <p class="cover-info"><strong>개발 유형</strong> &nbsp;개인 프로젝트 (풀스택)</p>
+        <p class="cover-info" style="margin-top:3px;"><strong>GitHub</strong> &nbsp;github.com/sychoi/myMES</p>
+      </div>
+      <p class="cover-info">Backend · Frontend · DB · Auth · Realtime</p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>myMES · Portfolio</span>
+    <span>01 / 05</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 2 · 프로젝트 개요
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-title">Project Overview</span>
+    <span class="page-num">02</span>
+  </div>
+
+  <div class="section-title">배경 및 목적</div>
+  <div class="overview-grid" style="margin-top:12px;">
+    <div class="overview-card">
+      <p class="overview-card-title">Problem</p>
+      <p>
+        중소 제조업 현장에서는 생산 계획, 작업 지시, 실적 집계가 엑셀 등
+        수작업으로 관리되어 데이터 정합성 문제와 실시간 현황 파악의
+        어려움이 빈번하게 발생합니다.
+      </p>
+    </div>
+    <div class="overview-card">
+      <p class="overview-card-title">Goal</p>
+      <p>
+        제조 공정 전반을 체계적으로 관리할 수 있는 웹 기반 MES를 직접
+        설계·구현함으로써, 풀스택 아키텍처 설계 능력과 실무 수준의
+        도메인 모델링 역량을 검증합니다.
+      </p>
+    </div>
+  </div>
+
+  <div class="section-title">핵심 도메인 구성</div>
+  <table class="feature-table" style="margin-bottom: 20px;">
+    <thead>
+      <tr>
+        <th style="width:24%">도메인</th>
+        <th style="width:46%">주요 기능</th>
+        <th style="width:14%">상태</th>
+        <th style="width:16%">API 경로</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>공통코드 관리</td>
+        <td>코드 그룹 / 개별 코드 CRUD, 계층형 코드 체계</td>
+        <td><span class="status-done">완료</span></td>
+        <td><span class="code-inline">/master/code-groups</span></td>
+      </tr>
+      <tr>
+        <td>품목 관리</td>
+        <td>원자재·반제품·완제품 품목 등록, 공통코드 연계</td>
+        <td><span class="status-done">완료</span></td>
+        <td><span class="code-inline">/master/items</span></td>
+      </tr>
+      <tr>
+        <td>공정 관리</td>
+        <td>공정 단계 CRUD, 순서 정의</td>
+        <td><span class="status-done">완료</span></td>
+        <td><span class="code-inline">/prod-basic/processes</span></td>
+      </tr>
+      <tr>
+        <td>설비 관리</td>
+        <td>설비 등록·수정·비활성화, 공정 연결</td>
+        <td><span class="status-done">완료</span></td>
+        <td><span class="code-inline">/prod-basic/equipment</span></td>
+      </tr>
+      <tr>
+        <td>품목별 공정</td>
+        <td>품목 라우팅 정의, 공정 일괄 복사 기능</td>
+        <td><span class="status-done">완료</span></td>
+        <td><span class="code-inline">/prod-basic/item-processes</span></td>
+      </tr>
+      <tr>
+        <td>BOM 관리</td>
+        <td>자재 명세서 구성, 재귀적 BOM 트리</td>
+        <td><span class="status-done">완료</span></td>
+        <td><span class="code-inline">/prod-basic/boms</span></td>
+      </tr>
+      <tr>
+        <td>생산 계획</td>
+        <td>계획 수립, 수량·일정 관리</td>
+        <td><span class="status-wip">개발 중</span></td>
+        <td><span class="code-inline">/production-plans</span></td>
+      </tr>
+      <tr>
+        <td>작업 지시</td>
+        <td>작업 지시 발행, 상태 흐름 관리</td>
+        <td><span class="status-wip">개발 중</span></td>
+        <td><span class="code-inline">/work-orders</span></td>
+      </tr>
+      <tr>
+        <td>생산 실적 / 불량</td>
+        <td>실적 집계, 불량 기록 및 조치 관리</td>
+        <td><span class="status-wip">개발 중</span></td>
+        <td><span class="code-inline">/production-records</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">화면 구성</div>
+  <div style="display:flex; gap:12px;">
+    <div class="cover-image-placeholder" style="height:40mm; flex:1; margin-top:0;">
+      <p class="placeholder-label">[ 공통코드 / 품목 관리 화면 ]</p>
+    </div>
+    <div class="cover-image-placeholder" style="height:40mm; flex:1; margin-top:0;">
+      <p class="placeholder-label">[ BOM / 품목별 공정 관리 화면 ]</p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>myMES · Portfolio</span>
+    <span>02 / 05</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 3 · 시스템 아키텍처
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-title">System Architecture</span>
+    <span class="page-num">03</span>
+  </div>
+
+  <div class="section-title">전체 시스템 구조</div>
+  <div class="arch-image-placeholder">
+    <p class="placeholder-label">[ 시스템 아키텍처 다이어그램 ]<br/>React(Vite) ↔ Spring Boot ↔ Supabase(PostgreSQL · Auth · Realtime)</p>
+  </div>
+
+  <div class="section-title">인증 흐름 (Supabase JWT · Spring Security)</div>
+  <div class="flow-container">
+    <div class="flow-steps">
+      <div class="flow-step">
+        <span class="flow-step-num">01</span>
+        <span class="flow-step-label">로그인 요청</span>
+        <span class="flow-step-desc">React에서<br/>supabase.auth<br/>.signIn() 호출</span>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">02</span>
+        <span class="flow-step-label">JWT 발급</span>
+        <span class="flow-step-desc">Supabase Auth가<br/>HS256 JWT 토큰<br/>발급 및 반환</span>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">03</span>
+        <span class="flow-step-label">상태 저장</span>
+        <span class="flow-step-desc">Zustand authStore<br/>세션 저장 &<br/>변경 이벤트 구독</span>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">04</span>
+        <span class="flow-step-label">API 요청</span>
+        <span class="flow-step-desc">axios 인터셉터가<br/>Bearer 토큰<br/>자동 첨부</span>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">05</span>
+        <span class="flow-step-label">JWT 검증</span>
+        <span class="flow-step-desc">SupabaseJwtFilter<br/>JJWT로 서명<br/>검증</span>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">06</span>
+        <span class="flow-step-label">Principal 주입</span>
+        <span class="flow-step-desc">SecurityContext에<br/>SupabasePrincipal<br/>저장 · 컨트롤러 주입</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:18px;">레이어 구조</div>
+  <div class="arch-cols">
+    <div>
+      <p class="arch-col-title">Backend — Domain-first 패키지</p>
+      <div class="arch-item">
+        <span class="arch-item-key">Controller</span>
+        <span class="arch-item-val">HTTP 요청 수신, DTO 변환, 응답 래핑</span>
+      </div>
+      <div class="arch-item">
+        <span class="arch-item-key">Service</span>
+        <span class="arch-item-val">비즈니스 로직, @Transactional 관리</span>
+      </div>
+      <div class="arch-item">
+        <span class="arch-item-key">Repository</span>
+        <span class="arch-item-val">JPA + QueryDSL 동적 조건 쿼리</span>
+      </div>
+      <div class="arch-item">
+        <span class="arch-item-key">Entity</span>
+        <span class="arch-item-val">BaseEntity (Soft Delete, 감사 필드)</span>
+      </div>
+      <div class="arch-item">
+        <span class="arch-item-key">Mapper</span>
+        <span class="arch-item-val">MapStruct Entity ↔ DTO 변환</span>
+      </div>
+      <div class="arch-item">
+        <span class="arch-item-key">Common</span>
+        <span class="arch-item-val">ApiResponse, BusinessException, ErrorCode</span>
+      </div>
+    </div>
+    <div>
+      <p class="arch-col-title">Frontend — Feature-first 폴더</p>
+      <div class="arch-item">
+        <span class="arch-item-key">features/</span>
+        <span class="arch-item-val">도메인별 api · hooks · components · schemas</span>
+      </div>
+      <div class="arch-item">
+        <span class="arch-item-key">api/</span>
+        <span class="arch-item-val">순수 axios 호출 함수 (React 의존 없음)</span>
+      </div>
+      <div class="arch-item">
+        <span class="arch-item-key">hooks/</span>
+        <span class="arch-item-val">React Query 훅 (캐싱·동기화 전담)</span>
+      </div>
+      <div class="arch-item">
+        <span class="arch-item-key">store/</span>
+        <span class="arch-item-val">Zustand — 인증·UI 클라이언트 상태만 보관</span>
+      </div>
+      <div class="arch-item">
+        <span class="arch-item-key">schemas/</span>
+        <span class="arch-item-val">zod 폼 유효성 검증 스키마</span>
+      </div>
+      <div class="arch-item">
+        <span class="arch-item-key">router/</span>
+        <span class="arch-item-val">React Router + PrivateRoute 인증 가드</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>myMES · Portfolio</span>
+    <span>03 / 05</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 4 · 기술적 도전 & 해결
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-title">Technical Challenges</span>
+    <span class="page-num">04</span>
+  </div>
+
+  <div class="challenge-block">
+    <p class="challenge-num">CHALLENGE 01</p>
+    <p class="challenge-title">Supabase JWT를 Spring Security와 직접 통합</p>
+    <div class="challenge-row">
+      <span class="challenge-tag">문제</span>
+      <p class="challenge-content">
+        Supabase는 자체 Auth 서버가 JWT를 발급하므로, Spring Security의 기본 OAuth2 Resource Server
+        설정과 구조가 맞지 않았습니다. 특히 HS256 서명 방식과 Supabase 전용 클레임 구조를
+        표준 필터 체인에 맞게 처리해야 했습니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag solution">해결</span>
+      <p class="challenge-content">
+        <span class="code-inline">OncePerRequestFilter</span>를 상속한 <span class="code-inline">SupabaseJwtFilter</span>를
+        직접 구현하여, JJWT 라이브러리로 HS256 검증을 수행하고
+        <span class="code-inline">SupabasePrincipal</span>(userId, email, role)을
+        SecurityContext에 주입했습니다. 컨트롤러에서는 <span class="code-inline">@AuthenticationPrincipal</span>로
+        자연스럽게 접근할 수 있습니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag result">결과</span>
+      <p class="challenge-content">
+        프론트엔드 Supabase Auth와 Spring Security가 동일한 JWT를 공유하는
+        일관된 인증 흐름 확보. 별도 인증 서버 없이 Stateless 구조 유지.
+      </p>
+    </div>
+  </div>
+
+  <div class="challenge-block">
+    <p class="challenge-num">CHALLENGE 02</p>
+    <p class="challenge-title">품목별 공정 일괄 복사 — 트랜잭션 원자성 보장</p>
+    <div class="challenge-row">
+      <span class="challenge-tag">문제</span>
+      <p class="challenge-content">
+        특정 품목의 전체 공정 라우팅을 다른 품목으로 복사하는 기능에서, 복사 도중
+        일부만 저장되고 실패하는 부분 커밋 상황이 발생할 수 있었습니다.
+        또한 대상 품목에 이미 공정이 존재할 경우 기존 데이터와의 충돌 처리가 필요했습니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag solution">해결</span>
+      <p class="challenge-content">
+        복사 로직 전체를 단일 <span class="code-inline">@Transactional</span> 메서드로 묶고,
+        복사 전 대상 품목의 기존 공정을 Soft Delete 처리한 뒤 새 공정을 일괄 저장했습니다.
+        Soft Delete 덕분에 실패 시 완전 롤백이 보장됩니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag result">결과</span>
+      <p class="challenge-content">
+        복사 작업의 원자성 보장, 실패 시 원본 데이터 보전. 복사 이력 추적 가능.
+      </p>
+    </div>
+  </div>
+
+  <div class="challenge-block">
+    <p class="challenge-num">CHALLENGE 03</p>
+    <p class="challenge-title">서버 상태와 클라이언트 상태의 명확한 분리</p>
+    <div class="challenge-row">
+      <span class="challenge-tag">문제</span>
+      <p class="challenge-content">
+        초기 설계에서 API 데이터를 Zustand 전역 스토어에 저장하다 보니,
+        캐시 무효화·로딩 상태·에러 처리를 직접 구현해야 하는 부담과
+        상태 동기화 버그가 빈번하게 발생했습니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag solution">해결</span>
+      <p class="challenge-content">
+        서버 상태(API 데이터)는 React Query로 전환하고, Zustand는 인증 세션·UI 상태
+        (사이드바 열림 여부 등) 클라이언트 상태만 담당하도록 역할을 엄격히 분리했습니다.
+        API 호출은 <span class="code-inline">api/{domain}Api.ts</span> → <span class="code-inline">hooks/use{Domain}Query.ts</span>
+        2-레이어 구조로 고정했습니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag result">결과</span>
+      <p class="challenge-content">
+        자동 캐시 관리·Optimistic Update 활용, 상태 동기화 버그 제거,
+        컴포넌트 코드량 대폭 감소.
+      </p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>myMES · Portfolio</span>
+    <span>04 / 05</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 5 · 설계 원칙 & 회고
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-title">Design Principles &amp; Retrospective</span>
+    <span class="page-num">05</span>
+  </div>
+
+  <div class="section-title">주요 설계 원칙</div>
+  <div class="design-grid">
+    <div class="design-card">
+      <p class="design-card-title">
+        <span class="design-icon">B</span>
+        Backend 일관성
+      </p>
+      <ul class="design-list">
+        <li>모든 응답 <span class="code-inline">ApiResponse&lt;T&gt;</span> 래핑</li>
+        <li>비즈니스 예외 <span class="code-inline">BusinessException</span> + <span class="code-inline">ErrorCode</span> enum</li>
+        <li>Soft Delete — <span class="code-inline">deletedAt</span> 필드, <span class="code-inline">entity.delete()</span> 호출</li>
+        <li>Service 기본 <span class="code-inline">@Transactional(readOnly=true)</span></li>
+        <li>동적 조건 2개↑ → QueryDSL 사용 원칙</li>
+        <li>MapStruct로 Entity↔DTO 변환 분리</li>
+      </ul>
+    </div>
+    <div class="design-card">
+      <p class="design-card-title">
+        <span class="design-icon">F</span>
+        Frontend 일관성
+      </p>
+      <ul class="design-list">
+        <li>Feature-first 폴더 — 도메인 응집도 최우선</li>
+        <li>컴포넌트에서 axios 직접 호출 금지</li>
+        <li>폼은 react-hook-form + zod + @hookform/resolvers</li>
+        <li>TypeScript <span class="code-inline">any</span> 금지 → <span class="code-inline">unknown</span> + 타입 가드</li>
+        <li>enum 대신 <span class="code-inline">as const</span> 패턴</li>
+        <li>스타일링 Tailwind만, 인라인 style 속성 금지</li>
+      </ul>
+    </div>
+    <div class="design-card">
+      <p class="design-card-title">
+        <span class="design-icon">A</span>
+        API 설계
+      </p>
+      <ul class="design-list">
+        <li>URL 복수형 명사 + 케밥케이스 기준</li>
+        <li>Swagger UI 자동 문서화 (SpringDoc OpenAPI)</li>
+        <li>Vite 프록시로 개발 CORS 없이 백엔드 연결</li>
+        <li>401 응답 시 axios 인터셉터 자동 로그아웃</li>
+        <li>공개 엔드포인트 <span class="code-inline">GET /api/health</span> 단 하나</li>
+      </ul>
+    </div>
+    <div class="design-card">
+      <p class="design-card-title">
+        <span class="design-icon">R</span>
+        Realtime
+      </p>
+      <ul class="design-list">
+        <li>Supabase Realtime — PostgreSQL 변경 구독</li>
+        <li><span class="code-inline">useSupabaseRealtime</span> 커스텀 훅으로 추상화</li>
+        <li>대시보드 지표 실시간 반영 목표</li>
+        <li>Supabase 대시보드 Replication 활성화 필요</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-title">회고</div>
+  <div class="retro-cols">
+    <div class="retro-box good">
+      <p class="retro-box-title">잘 된 점</p>
+      <p class="retro-item">도메인 기반 패키지 설계로 기능 추가 시 영향 범위를 명확히 격리할 수 있었습니다.</p>
+      <p class="retro-item">Supabase를 활용해 Auth·DB·Realtime을 별도 인프라 없이 빠르게 통합했습니다.</p>
+      <p class="retro-item">React Query / Zustand 역할 분리로 상태 관리 코드가 눈에 띄게 단순해졌습니다.</p>
+      <p class="retro-item">Soft Delete 패턴으로 데이터 이력 추적과 롤백 안전성을 동시에 확보했습니다.</p>
+    </div>
+    <div class="retro-box improve">
+      <p class="retro-box-title">아쉬운 점 / 개선 방향</p>
+      <p class="retro-item">생산 계획·작업 지시 등 핵심 MES 기능이 아직 미완성 상태입니다.</p>
+      <p class="retro-item">테스트 커버리지가 핵심 도메인에 집중되어 있어 전체적인 커버리지 확대가 필요합니다.</p>
+      <p class="retro-item">대시보드 KPI 지표와 Realtime 연동 기능 구현이 남아 있습니다.</p>
+      <p class="retro-item">운영 배포 시 ddl-auto: validate 전환 및 마이그레이션 전략 수립이 필요합니다.</p>
+    </div>
+  </div>
+
+  <div class="cover-image-placeholder" style="height:36mm; margin-top: 0;">
+    <p class="placeholder-label">[ ERD 또는 주요 도메인 관계도 ]</p>
+  </div>
+
+  <div class="page-footer">
+    <span>myMES · Portfolio</span>
+    <span>05 / 05</span>
+  </div>
+</div>
+
+</body>
+</html>
