@@ -202,5 +202,5 @@ const ProcessEquipmentManagementPage = () => {
     </div>
   )
 }
-
+{/* fixme: 주설비 등록 로직 확인 */}
 export default ProcessEquipmentManagementPage
