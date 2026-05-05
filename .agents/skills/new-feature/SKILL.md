@@ -8,7 +8,7 @@ description: 새로운 프론트엔드 기능(도메인) 추가 시 사용. 현�
 - 프레임워크: Vite + React 19 + TypeScript
 - 서버 상태 관리: React Query (TanStack Query)
 - 클라이언트/UI 상태 관리: Zustand는 전역 인증/UI 상태 중심으로만 사용
-- 스타일링: Tailwind CSS + 공통 스타일 상수
+- 스타일링: MUI 컴포넌트 1순위, 보조로 Tailwind CSS + 공통 스타일 상수
 - API 통신: `src/lib/axios.ts`의 `api` named export 사용
 - 기본 feature 경로: `frontend/src/features/{group}/{domain}/`
 
@@ -259,7 +259,7 @@ export type WorkOrderFormValues = z.output<typeof workOrderFormSchema>
 - 데이터 fetch/mutation은 page에서 hook을 호출하고, DataGrid는 props로 데이터를 받는 패턴을 우선한다.
 - Props 타입은 컴포넌트 상단에 `interface {Domain}DataGridProps`로 정의한다.
 - 이벤트 props는 `onEdit`, `onDelete`, `onPageChange`처럼 `on{Event}`로 둔다.
-- Tailwind CSS와 `common/styles/*`의 공통 class 상수를 사용한다. 인라인 `style` 금지.
+- MUI 컴포넌트를 1순위로 사용하고, MUI로 어려운 경우에만 Tailwind CSS와 `common/styles/*`의 공통 class 상수를 보조로 사용한다. 인라인 `style` 금지.
 
 ### {Domain}FormModal.tsx
 
@@ -341,7 +341,7 @@ const WorkOrderManagementPage = () => {
             showToast({ title: '작업지시를 수정했습니다.', variant: 'success' })
             handleClose()
           },
-          onError: () => showToast({ title: '수정 중 오류가 발생했습니다.', variant: 'error' }),
+          onError: () => showToast({ title: '처리 중 오류가 발생했습니다.', variant: 'error' }),
         },
       )
       return
@@ -352,7 +352,7 @@ const WorkOrderManagementPage = () => {
         showToast({ title: '작업지시를 등록했습니다.', variant: 'success' })
         handleClose()
       },
-      onError: () => showToast({ title: '등록 중 오류가 발생했습니다.', variant: 'error' }),
+      onError: () => showToast({ title: '처리 중 오류가 발생했습니다.', variant: 'error' }),
     })
   }
 
@@ -366,7 +366,7 @@ const WorkOrderManagementPage = () => {
 
     deleteWorkOrder.mutate(workOrder.id, {
       onSuccess: () => showToast({ title: '작업지시를 삭제했습니다.', variant: 'success' }),
-      onError: () => showToast({ title: '삭제 중 오류가 발생했습니다.', variant: 'error' }),
+      onError: () => showToast({ title: '처리 중 오류가 발생했습니다.', variant: 'error' }),
     })
   }
 
@@ -447,5 +447,5 @@ export default WorkOrderManagementPage
 - [ ] `any`와 `enum`을 사용하지 않았는가
 - [ ] 페이지를 `pages/{Domain}ManagementPage.tsx`에 만들고 router에 연결했는가
 - [ ] 메뉴 노출이 필요하면 `Sidebar.tsx`까지 연결했는가
-- [ ] Tailwind CSS와 공통 스타일 상수를 사용하고 인라인 style을 쓰지 않았는가
+- [ ] MUI 컴포넌트를 1순위로 사용하고, 보조로만 Tailwind CSS·공통 스타일 상수를 썼는가; 인라인 style을 쓰지 않았는가
 - [ ] 사용자 피드백은 `useFeedback()` 패턴을 따르는가

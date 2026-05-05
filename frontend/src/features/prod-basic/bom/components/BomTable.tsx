@@ -1,4 +1,6 @@
 import { Check, Pencil, Trash2, X } from 'lucide-react'
+import AppGridInput from '@/common/components/AppGridInput'
+import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
 import type { ItemResponse } from '@/features/master/item/types'
 import type { BomResponse } from '../types'
 
@@ -28,11 +30,6 @@ interface BomTableProps {
   onDelete: (bom: BomResponse) => void
 }
 
-const inputCls =
-  'w-full rounded border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm text-[var(--text-strong)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]'
-const sequenceInputCls = `${inputCls} min-w-20 text-center`
-const quantityInputCls = `${inputCls} min-w-28 text-right`
-
 const BomTable = ({
   boms,
   materialOptions,
@@ -58,29 +55,28 @@ const BomTable = ({
   const inlineAddRow = (
     <tr className="bg-[var(--primary-soft)]/40">
       <td className="px-4 py-2">
-        <input
-          className={sequenceInputCls}
+        <AppGridInput
           type="number"
-          min={1}
           value={newRow.sequence}
           onChange={(event) => onChangeNewRow({ ...newRow, sequence: event.target.value })}
           placeholder="1"
+          slotProps={{ htmlInput: { min: 1 } }}
+          sx={{ minWidth: 80, '& .MuiInputBase-input': { textAlign: 'center' } }}
         />
       </td>
       <td className="px-4 py-2" colSpan={2}>
-        <select
-          className={inputCls}
+        <AppSelect
           value={newRow.materialItemId}
           onChange={(event) => onChangeNewRow({ ...newRow, materialItemId: event.target.value })}
           autoFocus
         >
-          <option value="">자재 선택</option>
+          <AppMenuItem value="">자재 선택</AppMenuItem>
           {materialOptions.map((item) => (
-            <option key={item.id} value={item.id}>
+            <AppMenuItem key={item.id} value={String(item.id)}>
               {item.itemCode} - {item.itemName}
-            </option>
+            </AppMenuItem>
           ))}
-        </select>
+        </AppSelect>
       </td>
       <td className="px-4 py-2 text-xs text-[var(--text-muted)]">
         {newRow.materialItemId
@@ -88,26 +84,24 @@ const BomTable = ({
           : '-'}
       </td>
       <td className="px-4 py-2">
-        <input
-          className={quantityInputCls}
+        <AppGridInput
           type="number"
-          min="0.000001"
-          step="0.000001"
           value={newRow.quantity}
           onChange={(event) => onChangeNewRow({ ...newRow, quantity: event.target.value })}
           placeholder="1"
+          slotProps={{ htmlInput: { min: '0.000001', step: '0.000001' } }}
+          sx={{ minWidth: 112, '& .MuiInputBase-input': { textAlign: 'right' } }}
         />
       </td>
       <td className="px-4 py-2 text-center text-xs text-[var(--text-muted)]">
         {newRow.materialItemId ? (getMaterial(parseInt(newRow.materialItemId, 10))?.unit ?? '-') : '-'}
       </td>
       <td className="px-4 py-2">
-        <input
-          className={inputCls}
+        <AppGridInput
           value={newRow.description}
           onChange={(event) => onChangeNewRow({ ...newRow, description: event.target.value })}
           placeholder="비고"
-          maxLength={500}
+          slotProps={{ htmlInput: { maxLength: 500 } }}
         />
       </td>
       <td className="px-4 py-2">
@@ -165,28 +159,27 @@ const BomTable = ({
             editingId === bom.id ? (
               <tr key={bom.id} className="bg-[var(--primary-soft)]/40">
                 <td className="px-4 py-2">
-                  <input
-                    className={sequenceInputCls}
+                  <AppGridInput
                     type="number"
-                    min={1}
                     value={editRow.sequence}
                     onChange={(event) => onChangeEditRow({ ...editRow, sequence: event.target.value })}
                     autoFocus
+                    slotProps={{ htmlInput: { min: 1 } }}
+                    sx={{ minWidth: 80, '& .MuiInputBase-input': { textAlign: 'center' } }}
                   />
                 </td>
                 <td className="px-4 py-2" colSpan={2}>
-                  <select
-                    className={inputCls}
+                  <AppSelect
                     value={editRow.materialItemId}
                     onChange={(event) => onChangeEditRow({ ...editRow, materialItemId: event.target.value })}
                   >
-                    <option value="">자재 선택</option>
+                    <AppMenuItem value="">자재 선택</AppMenuItem>
                     {materialOptions.map((item) => (
-                      <option key={item.id} value={item.id}>
+                      <AppMenuItem key={item.id} value={String(item.id)}>
                         {item.itemCode} - {item.itemName}
-                      </option>
+                      </AppMenuItem>
                     ))}
-                  </select>
+                  </AppSelect>
                 </td>
                 <td className="px-4 py-2 text-xs text-[var(--text-muted)]">
                   {editRow.materialItemId
@@ -194,13 +187,12 @@ const BomTable = ({
                     : '-'}
                 </td>
                 <td className="px-4 py-2">
-                  <input
-                    className={quantityInputCls}
+                  <AppGridInput
                     type="number"
-                    min="0.000001"
-                    step="0.000001"
                     value={editRow.quantity}
                     onChange={(event) => onChangeEditRow({ ...editRow, quantity: event.target.value })}
+                    slotProps={{ htmlInput: { min: '0.000001', step: '0.000001' } }}
+                    sx={{ minWidth: 112, '& .MuiInputBase-input': { textAlign: 'right' } }}
                   />
                 </td>
                 <td className="px-4 py-2 text-center text-xs text-[var(--text-muted)]">
@@ -209,11 +201,10 @@ const BomTable = ({
                     : '-'}
                 </td>
                 <td className="px-4 py-2">
-                  <input
-                    className={inputCls}
+                  <AppGridInput
                     value={editRow.description}
                     onChange={(event) => onChangeEditRow({ ...editRow, description: event.target.value })}
-                    maxLength={500}
+                    slotProps={{ htmlInput: { maxLength: 500 } }}
                   />
                 </td>
                 <td className="px-4 py-2">

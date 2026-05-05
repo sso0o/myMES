@@ -22,6 +22,9 @@ public class WorkOrderResponse {
     private Long processId;
     private String processCode;
     private String processName;
+    private Long equipmentId;
+    private String equipmentCode;
+    private String equipmentName;
     private String workerName;
     private LocalDate dueDate;
     private Long bomVersionId;

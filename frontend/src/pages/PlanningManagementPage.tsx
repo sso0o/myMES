@@ -223,6 +223,7 @@ const PlanningManagementPage = () => {
         />
       )}
 
+      {/* TODO: 탭 이동 시 카운트되는 숫자 확인 필요 */}
       <PlanningDataGrid
         plans={plans}
         loading={isLoading}

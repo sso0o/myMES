@@ -1,14 +1,15 @@
 import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm, useWatch } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import Modal from '@/common/components/Modal'
+import AppNumberField from '@/common/components/AppNumberField'
+import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
+import AppTextField from '@/common/components/AppTextField'
+import AppTextarea from '@/common/components/AppTextarea'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import {
   formClass,
-  formDisabledInputClass,
-  formInputClass,
   formLabelClass,
-  formTextareaClass,
 } from '@/common/styles/form'
 import { useProcessTypeOptions } from '../hooks/useProcessQuery'
 import {
@@ -84,11 +85,10 @@ const ProcessFormModal = ({
               <label className={formLabelClass}>
                 공정코드
               </label>
-              <input
-                type="text"
+              <AppTextField
                 value={editTarget.processCode}
                 disabled
-                className={formDisabledInputClass}
+                sx={{ '& .MuiInputBase-input': { fontFamily: 'monospace' } }}
               />
             </div>
           )}
@@ -97,12 +97,10 @@ const ProcessFormModal = ({
             <label className={formLabelClass}>
               공정명 <span className="text-[var(--danger)]">*</span>
             </label>
-            <input
-              type="text"
+            <AppTextField
               {...register('processName')}
               placeholder="공정명을 입력하세요"
-              maxLength={100}
-              className={formInputClass}
+              slotProps={{ htmlInput: { maxLength: 100 } }}
             />
             {errors.processName && <p className={formErrorClass}>{errors.processName.message}</p>}
           </div>
@@ -111,20 +109,23 @@ const ProcessFormModal = ({
             <label className={formLabelClass}>
               공정유형
             </label>
-            <select
-              {...register('processTypeId')}
-              className={formInputClass}
-            >
-              <option value="">공정유형 선택</option>
-              {processTypeOptions
-                .filter((opt) => opt.isActive)
-                .sort((a, b) => a.sortOrder - b.sortOrder)
-                .map((opt) => (
-                  <option key={opt.id} value={opt.id}>
-                    {opt.codeName}
-                  </option>
-                ))}
-            </select>
+            <Controller
+              name="processTypeId"
+              control={control}
+              render={({ field }) => (
+                <AppSelect {...field} value={field.value === '' ? '' : String(field.value)}>
+                  <AppMenuItem value="">공정유형 선택</AppMenuItem>
+                  {processTypeOptions
+                    .filter((opt) => opt.isActive)
+                    .sort((a, b) => a.sortOrder - b.sortOrder)
+                    .map((opt) => (
+                      <AppMenuItem key={opt.id} value={String(opt.id)}>
+                        {opt.codeName}
+                      </AppMenuItem>
+                    ))}
+                </AppSelect>
+              )}
+            />
             {errors.processTypeId && (
               <p className={formErrorClass}>{errors.processTypeId.message}</p>
             )}
@@ -134,12 +135,10 @@ const ProcessFormModal = ({
             <label className={formLabelClass}>
               표준시간(분)
             </label>
-            <input
-              type="number"
+            <AppNumberField
               {...register('standardTime')}
-              min={0}
               placeholder="0"
-              className={formInputClass}
+              slotProps={{ htmlInput: { min: 0 } }}
             />
             {errors.standardTime && (
               <p className={formErrorClass}>{errors.standardTime.message}</p>
@@ -148,12 +147,11 @@ const ProcessFormModal = ({
 
           <div>
             <label className={formLabelClass}>설명</label>
-            <textarea
+            <AppTextarea
               {...register('description')}
               placeholder="공정에 대한 설명을 입력하세요"
               rows={3}
-              maxLength={500}
-              className={formTextareaClass}
+              slotProps={{ htmlInput: { maxLength: 500 } }}
             />
             {errors.description && <p className={formErrorClass}>{errors.description.message}</p>}
           </div>

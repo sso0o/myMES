@@ -12,6 +12,8 @@ import java.util.Optional;
 
 public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
 
+    List<WorkOrder> findAllByOrderByDueDateAsc();
+
     List<WorkOrder> findByStatusOrderByDueDateAsc(WorkOrderStatus status);
 
     List<WorkOrder> findByDueDateBeforeAndStatusNotOrderByDueDateAsc(LocalDate today, WorkOrderStatus status);

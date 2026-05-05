@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import { AlertTriangle, X } from 'lucide-react'
+import Checkbox from '@mui/material/Checkbox'
+import Radio from '@mui/material/Radio'
+import AppTextField from '@/common/components/AppTextField'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import type { ItemResponse } from '@/features/master/item/types'
-import type { BomResponse } from '@/features/prod-basic/bom/types'
-import { BomCopyMode } from '@/features/prod-basic/bom/types'
-import type { BomCopyMode as BomCopyModeType } from '@/features/prod-basic/bom/types'
+import { BomCopyMode, type BomCopyMode as BomCopyModeType, type BomResponse } from '@/features/prod-basic/bom/types'
 
 interface BomBulkCopyModalProps {
   sourceItem: ItemResponse
@@ -104,24 +105,20 @@ const BomBulkCopyModal = ({
           <p className="mb-2 text-xs font-medium text-[var(--text-base)]">복사 방식</p>
           <div className="flex gap-4">
             <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--text-strong)]">
-              <input
-                type="radio"
-                name="bomCopyMode"
-                value={BomCopyMode.REPLACE}
+              <Radio
+                size="small"
                 checked={mode === BomCopyMode.REPLACE}
                 onChange={() => setMode(BomCopyMode.REPLACE)}
-                className="accent-[var(--primary)]"
+                sx={{ p: 0, color: 'var(--text-muted)', '&.Mui-checked': { color: 'var(--primary)' } }}
               />
               새 버전으로 교체
             </label>
             <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--text-strong)]">
-              <input
-                type="radio"
-                name="bomCopyMode"
-                value={BomCopyMode.APPEND}
+              <Radio
+                size="small"
                 checked={mode === BomCopyMode.APPEND}
                 onChange={() => setMode(BomCopyMode.APPEND)}
-                className="accent-[var(--primary)]"
+                sx={{ p: 0, color: 'var(--text-muted)', '&.Mui-checked': { color: 'var(--primary)' } }}
               />
               뒤에 추가
             </label>
@@ -136,12 +133,11 @@ const BomBulkCopyModal = ({
 
         <div className="flex flex-1 flex-col overflow-hidden px-5 py-3">
           <div className="mb-2 flex items-center justify-between gap-2">
-            <input
-              type="text"
+            <AppTextField
               placeholder="품목명 또는 품목코드 검색"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              className="flex-1 rounded border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-sm text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              sx={{ flex: 1 }}
             />
             <button
               type="button"
@@ -182,12 +178,12 @@ const BomBulkCopyModal = ({
                       onClick={() => handleToggle(item.id)}
                       className={`flex cursor-pointer items-center gap-3 px-4 py-2.5 transition-colors ${checked ? 'bg-[var(--primary-soft)]' : 'hover:bg-[var(--surface-alt)]'}`}
                     >
-                      <input
-                        type="checkbox"
+                      <Checkbox
+                        size="small"
                         checked={checked}
                         onChange={() => handleToggle(item.id)}
                         onClick={(event) => event.stopPropagation()}
-                        className="accent-[var(--primary)]"
+                        sx={{ p: 0, color: 'var(--text-muted)', '&.Mui-checked': { color: 'var(--primary)' } }}
                       />
                       <div className="min-w-0 flex-1">
                         <p

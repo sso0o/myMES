@@ -2,12 +2,12 @@ import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import Modal from '@/common/components/Modal'
+import AppNumberField from '@/common/components/AppNumberField'
+import AppTextField from '@/common/components/AppTextField'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import {
   formClass,
-  formInputClass,
   formLabelClass,
-  formMonoInputClass,
 } from '@/common/styles/form'
 import {
   commonCodeFormSchema,
@@ -73,13 +73,12 @@ const CommonCodeFormModal = ({
             <label className={formLabelClass}>
               Code
             </label>
-            <input
-              type="text"
+            <AppTextField
               value={editTarget?.code ?? ''}
               placeholder="Generated on save"
-              maxLength={50}
               disabled
-              className={`${formMonoInputClass} bg-[var(--surface)] disabled:bg-[var(--surface-alt)] disabled:text-[var(--text-muted)]`}
+              slotProps={{ htmlInput: { maxLength: 50 } }}
+              sx={{ '& .MuiInputBase-input': { fontFamily: 'monospace' } }}
             />
           </div>
 
@@ -87,12 +86,10 @@ const CommonCodeFormModal = ({
             <label className={formLabelClass}>
               Code Name
             </label>
-            <input
-              type="text"
+            <AppTextField
               {...register('codeName')}
               placeholder="e.g. Waiting"
-              maxLength={100}
-              className={formInputClass}
+              slotProps={{ htmlInput: { maxLength: 100 } }}
             />
             {errors.codeName && <p className={formErrorClass}>{errors.codeName.message}</p>}
           </div>
@@ -101,12 +98,10 @@ const CommonCodeFormModal = ({
             <label className={formLabelClass}>
               Sort Order
             </label>
-            <input
-              type="number"
+            <AppNumberField
               {...register('sortOrder')}
               placeholder="1"
-              min={1}
-              className={formInputClass}
+              slotProps={{ htmlInput: { min: 1 } }}
             />
             {errors.sortOrder && <p className={formErrorClass}>{errors.sortOrder.message}</p>}
           </div>
@@ -115,16 +110,15 @@ const CommonCodeFormModal = ({
             <label className={formLabelClass}>
               Numbering Prefix
             </label>
-            <input
-              type="text"
+            <AppTextField
               {...numberingPrefixField}
               onChange={(event) => {
                 event.target.value = event.target.value.toUpperCase()
                 void numberingPrefixField.onChange(event)
               }}
               placeholder="e.g. RM, FG, WIP"
-              maxLength={20}
-              className={formMonoInputClass}
+              slotProps={{ htmlInput: { maxLength: 20 } }}
+              sx={{ '& .MuiInputBase-input': { fontFamily: 'monospace' } }}
             />
             {errors.numberingPrefix && (
               <p className={formErrorClass}>{errors.numberingPrefix.message}</p>

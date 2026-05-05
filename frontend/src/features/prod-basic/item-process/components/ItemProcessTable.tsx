@@ -5,6 +5,8 @@ import {
   editIconButtonClass,
   saveIconButtonClass,
 } from '@/common/styles/button'
+import AppGridInput from '@/common/components/AppGridInput'
+import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
 import {
   tableBodyClass,
   tableClass,
@@ -14,7 +16,6 @@ import {
   tableRowClass,
   tableScrollClass,
 } from '@/common/styles/table'
-import { inlineInputClass } from '@/common/styles/form'
 import type { ProcessResponse } from '@/features/prod-basic/process/types'
 import type { ItemProcessResponse } from '../types'
 
@@ -42,8 +43,6 @@ interface ItemProcessTableProps {
   onDelete: (ip: ItemProcessResponse) => void
 }
 
-const sequenceInputCls = `${inlineInputClass} min-w-20 text-center`
-
 const ItemProcessTable = ({
   itemProcesses,
   processOptions,
@@ -70,29 +69,28 @@ const ItemProcessTable = ({
   const inlineAddRow = (
     <tr className={tableInlineEditRowClass}>
       <td className="px-4 py-2">
-        <input
-          className={sequenceInputCls}
+        <AppGridInput
           type="number"
-          min={1}
           value={newRow.sequence}
           onChange={(e) => onChangeNewRow({ ...newRow, sequence: e.target.value })}
           placeholder="1"
+          slotProps={{ htmlInput: { min: 1 } }}
+          sx={{ minWidth: 80, '& .MuiInputBase-input': { textAlign: 'center' } }}
         />
       </td>
       <td className="px-4 py-2 font-mono text-xs text-[var(--text-muted)]" colSpan={2}>
-        <select
-          className={inlineInputClass}
+        <AppSelect
           value={newRow.processId}
           onChange={(e) => onChangeNewRow({ ...newRow, processId: e.target.value })}
           autoFocus
         >
-          <option value="">공정 선택</option>
+          <AppMenuItem value="">공정 선택</AppMenuItem>
           {activeProcesses.map((p) => (
-            <option key={p.id} value={p.id}>
+            <AppMenuItem key={p.id} value={String(p.id)}>
               {p.processCode} — {p.processName}
-            </option>
+            </AppMenuItem>
           ))}
-        </select>
+        </AppSelect>
       </td>
       <td className="px-4 py-2 text-xs text-[var(--text-muted)]">
         {newRow.processId ? (getProcess(parseInt(newRow.processId, 10))?.processTypeName ?? '-') : '-'}
@@ -158,28 +156,27 @@ const ItemProcessTable = ({
             return editingId === ip.id ? (
               <tr key={ip.id} className={tableInlineEditRowClass}>
                 <td className="px-4 py-2">
-                  <input
-                    className={sequenceInputCls}
+                  <AppGridInput
                     type="number"
-                    min={1}
                     value={editRow.sequence}
                     onChange={(e) => onChangeEditRow({ ...editRow, sequence: e.target.value })}
                     autoFocus
+                    slotProps={{ htmlInput: { min: 1 } }}
+                    sx={{ minWidth: 80, '& .MuiInputBase-input': { textAlign: 'center' } }}
                   />
                 </td>
                 <td className="px-4 py-2" colSpan={2}>
-                  <select
-                    className={inlineInputClass}
+                  <AppSelect
                     value={editRow.processId}
                     onChange={(e) => onChangeEditRow({ ...editRow, processId: e.target.value })}
                   >
-                    <option value="">공정 선택</option>
+                    <AppMenuItem value="">공정 선택</AppMenuItem>
                     {activeProcesses.map((p) => (
-                      <option key={p.id} value={p.id}>
+                      <AppMenuItem key={p.id} value={String(p.id)}>
                         {p.processCode} — {p.processName}
-                      </option>
+                      </AppMenuItem>
                     ))}
-                  </select>
+                  </AppSelect>
                 </td>
                 <td className="px-4 py-2 text-xs text-[var(--text-muted)]">
                   {editRow.processId

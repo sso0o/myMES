@@ -4,6 +4,7 @@ import com.mymes.backend.bom.entity.BomVersion;
 import com.mymes.backend.common.entity.BaseEntity;
 import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
+import com.mymes.backend.equipment.entity.Equipment;
 import com.mymes.backend.item.entity.Item;
 import com.mymes.backend.process.entity.MfgProcess;
 import jakarta.persistence.*;
@@ -48,6 +49,10 @@ public class WorkOrder extends BaseEntity {
     @JoinColumn(name = "process_id")
     private MfgProcess process;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "equipment_id")
+    private Equipment equipment;
+
     @Column(name = "worker_name", length = 50)
     private String workerName;
 
@@ -60,25 +65,27 @@ public class WorkOrder extends BaseEntity {
 
     @Builder
     public WorkOrder(String workOrderNo, Item item, Integer plannedQty,
-                     Priority priority, MfgProcess process, String workerName, LocalDate dueDate,
-                     BomVersion bomVersion) {
+                     Priority priority, MfgProcess process, Equipment equipment,
+                     String workerName, LocalDate dueDate, BomVersion bomVersion) {
         this.workOrderNo = workOrderNo;
         this.item = item;
         this.plannedQty = plannedQty;
         this.priority = priority;
         this.status = WorkOrderStatus.WAITING;
         this.process = process;
+        this.equipment = equipment;
         this.workerName = workerName;
         this.dueDate = dueDate;
         this.bomVersion = bomVersion;
     }
 
     public void update(Item item, Integer plannedQty, Priority priority,
-                       MfgProcess process, String workerName, LocalDate dueDate) {
+                       MfgProcess process, Equipment equipment, String workerName, LocalDate dueDate) {
         this.item = item;
         this.plannedQty = plannedQty;
         this.priority = priority;
         this.process = process;
+        this.equipment = equipment;
         this.workerName = workerName;
         this.dueDate = dueDate;
     }

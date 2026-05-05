@@ -1,6 +1,7 @@
 import { Check, Pencil, Trash2, X } from 'lucide-react'
 import type { GridColDef } from '@mui/x-data-grid'
 import AppDataGrid from '@/common/components/AppDataGrid'
+import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
 import Badge from '@/common/components/Badge'
 import {
   cancelIconButtonClass,
@@ -8,7 +9,6 @@ import {
   editIconButtonClass,
   saveIconButtonClass,
 } from '@/common/styles/button'
-import { inlineInputClass } from '@/common/styles/form'
 import type { EquipmentResponse } from '@/features/prod-basic/equipment/types'
 import type { ProcessEquipmentInlineRow, ProcessEquipmentResponse } from '../types'
 
@@ -155,19 +155,18 @@ const ProcessEquipmentDataGrid = ({
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) {
           return (
-            <select
-              className={inlineInputClass}
+            <AppSelect
               value={newRow.equipmentId}
               onChange={(e) => onChangeNewRow({ ...newRow, equipmentId: e.target.value })}
               autoFocus
             >
-              <option value="">설비 선택</option>
+              <AppMenuItem value="">설비 선택</AppMenuItem>
               {activeEquipments.map((eq) => (
-                <option key={eq.id} value={eq.id}>
+                <AppMenuItem key={eq.id} value={String(eq.id)}>
                   {eq.equipmentCode} - {eq.equipmentName}
-                </option>
+                </AppMenuItem>
               ))}
-            </select>
+            </AppSelect>
           )
         }
 

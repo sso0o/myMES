@@ -121,7 +121,7 @@ types/        # 전역 공통 타입 (ApiResponse<T> 등)
 - API 호출은 `features/{domain}/api/{domain}Api.ts` (순수 axios 함수) → `features/{domain}/hooks/use{Domain}Query.ts` (React Query 훅) 2-레이어 구조; 컴포넌트에서 axios 직접 호출 금지
 - 폼 유효성 검증은 `react-hook-form` + `zod` + `@hookform/resolvers` 조합; 스키마는 `features/{domain}/schemas/`에 위치; 단일 필드 구독은 `watch()` 대신 `useWatch()` 사용
 - TypeScript `any` 사용 금지 (`unknown` + 타입 가드 사용); enum 대신 `as const` 패턴 사용; zod schema는 `z.input<>`(폼 입력)과 `z.output<>`(변환 후) 타입을 분리해서 사용
-- 스타일링은 Tailwind CSS만 사용; 인라인 `style` 속성 금지; 복잡한 className은 `cn()` (clsx + tailwind-merge) 사용
+- 스타일링은 MUI 컴포넌트를 1순위로 사용; MUI로 어려운 경우에만 Tailwind CSS 보조 사용; 인라인 `style` 속성 금지; 복잡한 className은 `cn()` (clsx + tailwind-merge) 사용
 
 ### Vite Proxy
 `vite.config.ts`에서 `/api` → `http://localhost:8080` 프록시 설정되어 있어 개발 환경에서 CORS 없이 백엔드 호출 가능.
