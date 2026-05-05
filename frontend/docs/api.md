@@ -74,3 +74,21 @@ export const useCreateWorkOrder = () => {
 - API 파일은 `@/lib/axios`의 `api` named export를 사용합니다.
 - 쿼리 키는 도메인별 상수로 관리합니다.
 - Mutation 성공 시 관련 쿼리를 `invalidateQueries`로 갱신합니다.
+
+## 에러 토스트
+Mutation 실패 토스트는 백엔드 `ApiResponse.message`를 우선 표시합니다. 메시지가 없거나 API 응답 형태가 아니면 기본 문구는 `처리 중 오류가 발생했습니다.`를 사용합니다.
+
+```ts
+import { getApiErrorMessage } from '@/common/utils/apiError'
+
+onError: (error) => {
+  showToast({
+    title: getApiErrorMessage(error, '처리 중 오류가 발생했습니다.'),
+    variant: 'error',
+  })
+}
+```
+
+**규칙**
+- `BusinessException`으로 내려온 메시지는 사용자가 이해할 수 있는 업무 메시지이므로 숨기지 않습니다.
+- 등록/수정/삭제 등 액션별 fallback 문구를 따로 만들지 않고 `처리 중 오류가 발생했습니다.`로 통일합니다.

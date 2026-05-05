@@ -2,6 +2,7 @@ import type { Dispatch, SetStateAction } from 'react'
 import { Check, Pencil, Trash2, X } from 'lucide-react'
 import type { GridColDef } from '@mui/x-data-grid'
 import AppDataGrid from '@/common/components/AppDataGrid'
+import AppGridInput from '@/common/components/AppGridInput'
 import Badge from '@/common/components/Badge'
 import {
   cancelIconButtonClass,
@@ -9,7 +10,6 @@ import {
   editIconButtonClass,
   saveIconButtonClass,
 } from '@/common/styles/button'
-import { inlineInputClass } from '@/common/styles/form'
 import type { CommonCodeResponse } from '@/features/master/commonCode/types'
 
 export interface NewCodeRow {
@@ -72,11 +72,17 @@ const CommonCodeDataGrid = ({
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) {
           return (
-            <input
-              className={`${inlineInputClass} font-mono bg-[var(--surface-alt)] text-[var(--text-muted)]`}
+            <AppGridInput
               value=""
               placeholder="저장 시 자동 채번"
-              readOnly
+              slotProps={{ htmlInput: { readOnly: true } }}
+              sx={{
+                '& .MuiInputBase-root': { bgcolor: 'var(--surface-alt)' },
+                '& .MuiInputBase-input': {
+                  fontFamily: 'monospace',
+                  color: 'var(--text-muted)',
+                },
+              }}
             />
           )
         }
@@ -93,29 +99,27 @@ const CommonCodeDataGrid = ({
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) {
           return (
-            <input
-              className={inlineInputClass}
+            <AppGridInput
               value={newRow.codeName}
               onChange={(event) =>
                 onNewRowChange((row) => ({ ...row, codeName: event.target.value }))
               }
               placeholder="예: 대기"
-              maxLength={100}
               autoFocus
+              slotProps={{ htmlInput: { maxLength: 100 } }}
             />
           )
         }
 
         if (params.row.id === editingId) {
           return (
-            <input
-              className={inlineInputClass}
+            <AppGridInput
               value={editRow.codeName}
               onChange={(event) =>
                 onEditRowChange((row) => ({ ...row, codeName: event.target.value }))
               }
-              maxLength={100}
               autoFocus
+              slotProps={{ htmlInput: { maxLength: 100 } }}
             />
           )
         }
@@ -133,8 +137,7 @@ const CommonCodeDataGrid = ({
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) {
           return (
-            <input
-              className={`${inlineInputClass} font-mono text-center`}
+            <AppGridInput
               value={newRow.numberingPrefix}
               onChange={(event) =>
                 onNewRowChange((row) => ({
@@ -142,16 +145,16 @@ const CommonCodeDataGrid = ({
                   numberingPrefix: event.target.value.toUpperCase(),
                 }))
               }
-              maxLength={20}
               placeholder="예: RM"
+              slotProps={{ htmlInput: { maxLength: 20 } }}
+              sx={{ '& .MuiInputBase-input': { fontFamily: 'monospace', textAlign: 'center' } }}
             />
           )
         }
 
         if (params.row.id === editingId) {
           return (
-            <input
-              className={`${inlineInputClass} font-mono text-center`}
+            <AppGridInput
               value={editRow.numberingPrefix}
               onChange={(event) =>
                 onEditRowChange((row) => ({
@@ -159,8 +162,9 @@ const CommonCodeDataGrid = ({
                   numberingPrefix: event.target.value.toUpperCase(),
                 }))
               }
-              maxLength={20}
               placeholder="예: RM"
+              slotProps={{ htmlInput: { maxLength: 20 } }}
+              sx={{ '& .MuiInputBase-input': { fontFamily: 'monospace', textAlign: 'center' } }}
             />
           )
         }
@@ -182,29 +186,29 @@ const CommonCodeDataGrid = ({
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) {
           return (
-            <input
-              className={`${inlineInputClass} text-center`}
+            <AppGridInput
               type="number"
-              min={1}
               value={newRow.sortOrder}
               onChange={(event) =>
                 onNewRowChange((row) => ({ ...row, sortOrder: event.target.value }))
               }
               placeholder="1"
+              slotProps={{ htmlInput: { min: 1 } }}
+              sx={{ '& .MuiInputBase-input': { textAlign: 'center' } }}
             />
           )
         }
 
         if (params.row.id === editingId) {
           return (
-            <input
-              className={`${inlineInputClass} text-center`}
+            <AppGridInput
               type="number"
-              min={1}
               value={editRow.sortOrder}
               onChange={(event) =>
                 onEditRowChange((row) => ({ ...row, sortOrder: event.target.value }))
               }
+              slotProps={{ htmlInput: { min: 1 } }}
+              sx={{ '& .MuiInputBase-input': { textAlign: 'center' } }}
             />
           )
         }

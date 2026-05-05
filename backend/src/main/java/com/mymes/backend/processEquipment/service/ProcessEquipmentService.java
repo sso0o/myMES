@@ -57,6 +57,17 @@ public class ProcessEquipmentService {
     }
 
     /**
+     * 공정에 특정 설비가 배정되어 있는지 확인합니다.
+     *
+     * @param processId 공정 ID
+     * @param equipmentId 설비 ID
+     * @return 공정-설비 배정 존재 여부
+     */
+    public boolean existsByProcessAndEquipment(Long processId, Long equipmentId) {
+        return processEquipmentRepository.existsByProcessIdAndEquipmentId(processId, equipmentId);
+    }
+
+    /**
      * ID로 공정-설비 배정을 단건 조회합니다.
      *
      * @param id 공정-설비 배정 ID

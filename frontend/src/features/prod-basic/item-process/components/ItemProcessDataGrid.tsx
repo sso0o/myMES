@@ -1,13 +1,14 @@
 import { Check, Pencil, Trash2, X } from 'lucide-react'
 import type { GridColDef } from '@mui/x-data-grid'
 import AppDataGrid from '@/common/components/AppDataGrid'
+import AppGridInput from '@/common/components/AppGridInput'
+import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
 import {
   cancelIconButtonClass,
   deleteIconButtonClass,
   editIconButtonClass,
   saveIconButtonClass,
 } from '@/common/styles/button'
-import { inlineInputClass } from '@/common/styles/form'
 import type { ProcessResponse } from '@/features/prod-basic/process/types'
 import type { ItemProcessResponse } from '@/features/prod-basic/item-process/types'
 
@@ -21,8 +22,6 @@ const DATA_GRID_DEFAULT_PAGE_SIZE = 25
 const DATA_GRID_PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 const actionCellClass = 'flex h-full w-full items-center justify-center gap-2'
 const compactActionCellClass = 'flex h-full w-full items-center justify-center gap-1'
-const sequenceInputClass = `${inlineInputClass} min-w-20 text-center`
-
 interface ItemProcessDataGridProps {
   itemProcesses: ItemProcessResponse[]
   processOptions: ProcessResponse[]
@@ -91,26 +90,26 @@ const ItemProcessDataGrid = ({
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) {
           return (
-            <input
-              className={sequenceInputClass}
+            <AppGridInput
               type="number"
-              min={1}
               value={newRow.sequence}
               onChange={(event) => onChangeNewRow({ ...newRow, sequence: event.target.value })}
               placeholder="1"
+              slotProps={{ htmlInput: { min: 1 } }}
+              sx={{ minWidth: 80, '& .MuiInputBase-input': { textAlign: 'center' } }}
             />
           )
         }
 
         if (params.row.id === editingId) {
           return (
-            <input
-              className={sequenceInputClass}
+            <AppGridInput
               type="number"
-              min={1}
               value={editRow.sequence}
               onChange={(event) => onChangeEditRow({ ...editRow, sequence: event.target.value })}
               autoFocus
+              slotProps={{ htmlInput: { min: 1 } }}
+              sx={{ minWidth: 80, '& .MuiInputBase-input': { textAlign: 'center' } }}
             />
           )
         }
@@ -146,36 +145,34 @@ const ItemProcessDataGrid = ({
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) {
           return (
-            <select
-              className={inlineInputClass}
+            <AppSelect
               value={newRow.processId}
               onChange={(event) => onChangeNewRow({ ...newRow, processId: event.target.value })}
               autoFocus
             >
-              <option value="">공정 선택</option>
+              <AppMenuItem value="">공정 선택</AppMenuItem>
               {activeProcesses.map((process) => (
-                <option key={process.id} value={process.id}>
+                <AppMenuItem key={process.id} value={String(process.id)}>
                   {process.processCode} - {process.processName}
-                </option>
+                </AppMenuItem>
               ))}
-            </select>
+            </AppSelect>
           )
         }
 
         if (params.row.id === editingId) {
           return (
-            <select
-              className={inlineInputClass}
+            <AppSelect
               value={editRow.processId}
               onChange={(event) => onChangeEditRow({ ...editRow, processId: event.target.value })}
             >
-              <option value="">공정 선택</option>
+              <AppMenuItem value="">공정 선택</AppMenuItem>
               {activeProcesses.map((process) => (
-                <option key={process.id} value={process.id}>
+                <AppMenuItem key={process.id} value={String(process.id)}>
                   {process.processCode} - {process.processName}
-                </option>
+                </AppMenuItem>
               ))}
-            </select>
+            </AppSelect>
           )
         }
 

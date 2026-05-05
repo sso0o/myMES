@@ -2,12 +2,11 @@ import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import Modal from '@/common/components/Modal'
+import AppTextField from '@/common/components/AppTextField'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import {
   formClass,
-  formInputClass,
   formLabelClass,
-  formMonoInputClass,
 } from '@/common/styles/form'
 import {
   codeGroupFormSchema,
@@ -77,19 +76,18 @@ const CodeGroupFormModal = ({
             <label className={formLabelClass}>
               그룹 ID <span className="text-[var(--danger)]">*</span>
             </label>
-            <input
-              type="text"
+            <AppTextField
               {...groupIdField}
               onChange={(event) => {
                 event.target.value = event.target.value.toUpperCase()
                 void groupIdField.onChange(event)
               }}
               placeholder="예: WORK_STATUS"
-              maxLength={50}
-              readOnly={!!editTarget}
-              className={`${formMonoInputClass} bg-[var(--surface)] ${
-                editTarget ? 'bg-[var(--surface-alt)] text-[var(--text-muted)]' : ''
-              }`}
+              slotProps={{ htmlInput: { maxLength: 50, readOnly: !!editTarget } }}
+              sx={{
+                '& .MuiInputBase-input': { fontFamily: 'monospace' },
+                ...(editTarget ? { '& .MuiInputBase-root': { bgcolor: 'var(--surface-alt)' } } : {}),
+              }}
             />
             {errors.groupId && <p className={formErrorClass}>{errors.groupId.message}</p>}
           </div>
@@ -98,12 +96,10 @@ const CodeGroupFormModal = ({
             <label className={formLabelClass}>
               그룹명 <span className="text-[var(--danger)]">*</span>
             </label>
-            <input
-              type="text"
+            <AppTextField
               {...register('groupName')}
               placeholder="예: 작업 상태"
-              maxLength={100}
-              className={formInputClass}
+              slotProps={{ htmlInput: { maxLength: 100 } }}
             />
             {errors.groupName && <p className={formErrorClass}>{errors.groupName.message}</p>}
           </div>
@@ -112,12 +108,10 @@ const CodeGroupFormModal = ({
             <label className={formLabelClass}>
               설명
             </label>
-            <input
-              type="text"
+            <AppTextField
               {...register('description')}
               placeholder="코드 그룹에 대한 설명"
-              maxLength={255}
-              className={formInputClass}
+              slotProps={{ htmlInput: { maxLength: 255 } }}
             />
             {errors.description && <p className={formErrorClass}>{errors.description.message}</p>}
           </div>

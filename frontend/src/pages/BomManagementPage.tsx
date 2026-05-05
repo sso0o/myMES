@@ -14,8 +14,7 @@ import {
   useRestoreBomVersion,
   useSaveBom,
 } from '@/features/prod-basic/bom/hooks/useBomQuery'
-import type { BomResponse } from '@/features/prod-basic/bom/types'
-import type { BomCopyMode } from '@/features/prod-basic/bom/types'
+import type { BomCopyMode, BomResponse } from '@/features/prod-basic/bom/types'
 
 const emptyRow: BomInlineRow = { materialItemId: '', sequence: '', quantity: '', description: '' }
 const EMPTY_BOMS: BomResponse[] = []

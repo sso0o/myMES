@@ -1,13 +1,14 @@
 import { Check, Pencil, Trash2, X } from 'lucide-react'
 import type { GridColDef } from '@mui/x-data-grid'
 import AppDataGrid from '@/common/components/AppDataGrid'
+import AppGridInput from '@/common/components/AppGridInput'
+import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
 import {
   cancelIconButtonClass,
   deleteIconButtonClass,
   editIconButtonClass,
   saveIconButtonClass,
 } from '@/common/styles/button'
-import { inlineInputClass } from '@/common/styles/form'
 import type { ItemResponse } from '@/features/master/item/types'
 import type { BomResponse } from '@/features/prod-basic/bom/types'
 
@@ -23,9 +24,6 @@ const DATA_GRID_DEFAULT_PAGE_SIZE = 25
 const DATA_GRID_PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 const actionCellClass = 'flex h-full w-full items-center justify-center gap-2'
 const compactActionCellClass = 'flex h-full w-full items-center justify-center gap-1'
-const sequenceInputClass = `${inlineInputClass} min-w-20 text-center`
-const quantityInputClass = `${inlineInputClass} min-w-28 text-right`
-
 interface BomDataGridProps {
   boms: BomResponse[]
   materialOptions: ItemResponse[]
@@ -112,26 +110,26 @@ const BomDataGrid = ({
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) {
           return (
-            <input
-              className={sequenceInputClass}
+            <AppGridInput
               type="number"
-              min={1}
               value={newRow.sequence}
               onChange={(event) => onChangeNewRow({ ...newRow, sequence: event.target.value })}
               placeholder="1"
+              slotProps={{ htmlInput: { min: 1 } }}
+              sx={{ minWidth: 80, '& .MuiInputBase-input': { textAlign: 'center' } }}
             />
           )
         }
 
         if (params.row.id === editingId) {
           return (
-            <input
-              className={sequenceInputClass}
+            <AppGridInput
               type="number"
-              min={1}
               value={editRow.sequence}
               onChange={(event) => onChangeEditRow({ ...editRow, sequence: event.target.value })}
               autoFocus
+              slotProps={{ htmlInput: { min: 1 } }}
+              sx={{ minWidth: 80, '& .MuiInputBase-input': { textAlign: 'center' } }}
             />
           )
         }
@@ -169,40 +167,38 @@ const BomDataGrid = ({
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) {
           return (
-            <select
-              className={inlineInputClass}
+            <AppSelect
               value={newRow.materialItemId}
               onChange={(event) =>
                 onChangeNewRow({ ...newRow, materialItemId: event.target.value })
               }
               autoFocus
             >
-              <option value="">자재 선택</option>
+              <AppMenuItem value="">자재 선택</AppMenuItem>
               {materialOptions.map((item) => (
-                <option key={item.id} value={item.id}>
+                <AppMenuItem key={item.id} value={String(item.id)}>
                   {item.itemCode} - {item.itemName}
-                </option>
+                </AppMenuItem>
               ))}
-            </select>
+            </AppSelect>
           )
         }
 
         if (params.row.id === editingId) {
           return (
-            <select
-              className={inlineInputClass}
+            <AppSelect
               value={editRow.materialItemId}
               onChange={(event) =>
                 onChangeEditRow({ ...editRow, materialItemId: event.target.value })
               }
             >
-              <option value="">자재 선택</option>
+              <AppMenuItem value="">자재 선택</AppMenuItem>
               {materialOptions.map((item) => (
-                <option key={item.id} value={item.id}>
+                <AppMenuItem key={item.id} value={String(item.id)}>
                   {item.itemCode} - {item.itemName}
-                </option>
+                </AppMenuItem>
               ))}
-            </select>
+            </AppSelect>
           )
         }
 
@@ -239,27 +235,25 @@ const BomDataGrid = ({
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) {
           return (
-            <input
-              className={quantityInputClass}
+            <AppGridInput
               type="number"
-              min="0.000001"
-              step="0.000001"
               value={newRow.quantity}
               onChange={(event) => onChangeNewRow({ ...newRow, quantity: event.target.value })}
               placeholder="1"
+              slotProps={{ htmlInput: { min: '0.000001', step: '0.000001' } }}
+              sx={{ minWidth: 112, '& .MuiInputBase-input': { textAlign: 'right' } }}
             />
           )
         }
 
         if (params.row.id === editingId) {
           return (
-            <input
-              className={quantityInputClass}
+            <AppGridInput
               type="number"
-              min="0.000001"
-              step="0.000001"
               value={editRow.quantity}
               onChange={(event) => onChangeEditRow({ ...editRow, quantity: event.target.value })}
+              slotProps={{ htmlInput: { min: '0.000001', step: '0.000001' } }}
+              sx={{ minWidth: 112, '& .MuiInputBase-input': { textAlign: 'right' } }}
             />
           )
         }
@@ -293,23 +287,21 @@ const BomDataGrid = ({
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) {
           return (
-            <input
-              className={inlineInputClass}
+            <AppGridInput
               value={newRow.description}
               onChange={(event) => onChangeNewRow({ ...newRow, description: event.target.value })}
               placeholder="비고"
-              maxLength={500}
+              slotProps={{ htmlInput: { maxLength: 500 } }}
             />
           )
         }
 
         if (params.row.id === editingId) {
           return (
-            <input
-              className={inlineInputClass}
+            <AppGridInput
               value={editRow.description}
               onChange={(event) => onChangeEditRow({ ...editRow, description: event.target.value })}
-              maxLength={500}
+              slotProps={{ htmlInput: { maxLength: 500 } }}
             />
           )
         }
