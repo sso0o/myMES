@@ -416,6 +416,13 @@ const BomDataGrid = ({
         height: '100%',
         border: 'none',
         borderRadius: 0,
+        '& .MuiDataGrid-cell': {
+          display: 'flex',
+          alignItems: 'center',
+        },
+        '& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within': {
+          outlineOffset: '-1px',
+        },
         '& .MuiDataGrid-row.inline-editing': {
           bgcolor: 'color-mix(in srgb, var(--primary-soft) 40%, transparent)',
           '&:hover': {
