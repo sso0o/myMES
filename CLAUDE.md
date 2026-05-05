@@ -58,7 +58,7 @@ Supabase Auth가 JWT를 발급하고, 프론트와 백엔드 모두 이 토큰�
 
 **도메인 기준(Domain-first)** 패키지 구조. 각 도메인 패키지 내부는 `controller/`, `service/`, `repository/`, `entity/`, `dto/`, `mapper/` 레이어로 분리.
 
-현재 도메인: `code`, `defect`, `item`, `planning`, `process`, `production`, `user`, `workorder`  
+현재 도메인: `bom`, `code`, `defect`, `equipment`, `item`, `itemprocess`, `planning`, `process`, `production`, `user`, `workorder`  
 공통: `common/` (ApiResponse, BusinessException, ErrorCode, GlobalExceptionHandler)  
 인증: `security/` (SecurityConfig, SupabaseJwtFilter, SupabasePrincipal)
 
@@ -78,20 +78,38 @@ Supabase Auth가 JWT를 발급하고, 프론트와 백엔드 모두 이 토큰�
 
 ### 프론트엔드 구조 (`frontend/src/`)
 
-**기능 기준(Feature-first)** 폴더 구조:
+**기능 기준(Feature-first)** + 네비게이션 그룹 기준 폴더 구조:
 ```
-features/{domain}/
+features/
+  auth/                     # 인증
+  master/{subdomain}/       # 마스터 데이터 (item, commonCode, bom, equipment, item-process, process, planning)
+  prod-basic/{subdomain}/   # 생산 기초 (bom, equipment, item-process, process, planning)
+    components/             # 그룹 내 공유 컴포넌트
+    hooks/                  # 그룹 내 공유 훅
+    types/                  # 그룹 내 공유 타입
+  prod-management/{subdomain}/ # 생산 관리 (planning 등)
+각 subdomain 내부:
   api/        # axios 호출 순수 함수
   components/ # 도메인 전용 컴포넌트
   hooks/      # React Query 훅
   schemas/    # zod 폼 유효성 검증 스키마
   types/      # 도메인 타입 정의
 common/       # 여러 도메인에서 공유하는 컴포넌트·훅
-pages/        # 라우트 단위 진입 컴포넌트 (features로 위임)
+pages/        # 라우트 단위 진입 컴포넌트
 store/        # Zustand 전역 상태 (authStore, uiStore)
 lib/          # axios, supabase 클라이언트 설정
 router/       # React Router 설정 + PrivateRoute
 types/        # 전역 공통 타입 (ApiResponse<T> 등)
+```
+
+**실제 사용 중인 라우트** (`router/index.tsx`):
+```
+/master/items               → ItemManagementPage
+/master/common-codes        → CommonCodeManagementPage
+/prod-basic/processes       → ProcessManagementPage
+/prod-basic/equipment       → EquipmentManagementPage
+/prod-basic/item-processes  → ItemProcessManagementPage
+/prod-basic/boms            → BomManagementPage
 ```
 
 - `lib/axios.ts` — baseURL `/api`, 401 응답 시 자동 로그아웃 및 `/login` 리다이렉트
