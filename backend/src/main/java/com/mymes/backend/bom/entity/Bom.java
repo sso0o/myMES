@@ -38,6 +38,10 @@ public class Bom extends BaseEntity {
     @JoinColumn(name = "material_item_id", nullable = false)
     private Item materialItem;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bom_version_id") // NOT NULL은 BomIndexConfig 마이그레이션에서 적용
+    private BomVersion bomVersion;
+
     @Column(nullable = false)
     private Integer sequence;
 
@@ -48,16 +52,11 @@ public class Bom extends BaseEntity {
     private String description;
 
     @Builder
-    public Bom(Item parentItem, Item materialItem, Integer sequence, BigDecimal quantity, String description) {
+    public Bom(Item parentItem, Item materialItem, BomVersion bomVersion,
+               Integer sequence, BigDecimal quantity, String description) {
         this.parentItem = parentItem;
         this.materialItem = materialItem;
-        this.sequence = sequence;
-        this.quantity = quantity;
-        this.description = description;
-    }
-
-    public void update(Item materialItem, Integer sequence, BigDecimal quantity, String description) {
-        this.materialItem = materialItem;
+        this.bomVersion = bomVersion;
         this.sequence = sequence;
         this.quantity = quantity;
         this.description = description;

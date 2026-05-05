@@ -15,10 +15,14 @@ public interface BomRepository extends JpaRepository<Bom, Long> {
 
     boolean existsByParentItemIdAndSequence(Long parentItemId, Integer sequence);
 
-    boolean existsByParentItemIdAndMaterialItemIdAndIdNot(Long parentItemId, Long materialItemId, Long id);
+    boolean existsByParentItemIdAndMaterialItemIdAndBomVersionId(Long parentItemId, Long materialItemId, Long bomVersionId);
 
-    boolean existsByParentItemIdAndSequenceAndIdNot(Long parentItemId, Integer sequence, Long id);
+    boolean existsByParentItemIdAndSequenceAndBomVersionId(Long parentItemId, Integer sequence, Long bomVersionId);
 
-    @Query("SELECT MAX(b.sequence) FROM Bom b WHERE b.parentItem.id = :parentItemId")
-    Integer findMaxSequenceByParentItemId(@Param("parentItemId") Long parentItemId);
+    /**
+     * 특정 BOM 버전에 속한 라인을 순서 오름차순으로 조회합니다.
+     * 소프트 삭제된 라인 포함 조회 (이력 조회 및 버전 복원용 네이티브 쿼리).
+     */
+    @Query(value = "SELECT * FROM boms WHERE bom_version_id = :versionId ORDER BY sequence ASC", nativeQuery = true)
+    List<Bom> findByBomVersionIdIncludingDeleted(@Param("versionId") Long versionId);
 }

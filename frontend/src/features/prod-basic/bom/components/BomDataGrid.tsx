@@ -59,6 +59,9 @@ const createNewRow = (): BomResponse => ({
   sequence: 0,
   quantity: 0,
   description: null,
+  versionId: 0,
+  versionNo: 0,
+  versionStatus: 'ACTIVE',
   createdAt: '',
 })
 

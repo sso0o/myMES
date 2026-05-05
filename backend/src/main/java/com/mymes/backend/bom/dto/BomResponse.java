@@ -1,5 +1,6 @@
 package com.mymes.backend.bom.dto;
 
+import com.mymes.backend.bom.entity.BomVersionStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -21,5 +22,8 @@ public class BomResponse {
     private Integer sequence;
     private BigDecimal quantity;
     private String description;
+    private Long versionId;
+    private Integer versionNo;
+    private BomVersionStatus versionStatus;
     private LocalDateTime createdAt;
 }
