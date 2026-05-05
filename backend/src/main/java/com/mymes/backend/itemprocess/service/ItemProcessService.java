@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -37,6 +38,17 @@ public class ItemProcessService {
         return itemProcessRepository.findByItemIdOrderBySequenceAsc(itemId).stream()
                 .map(itemProcessMapper::toResponse)
                 .toList();
+    }
+
+    /**
+     * 품목의 첫 번째 공정을 순서 기준으로 조회합니다.
+     *
+     * @param itemId 품목 ID
+     * @return 첫 번째 품목-공정 매핑
+     */
+    public Optional<ItemProcess> findFirstByItemId(Long itemId) {
+        return itemProcessRepository.findByItemIdOrderBySequenceAsc(itemId).stream()
+                .findFirst();
     }
 
     public ItemProcessResponse findById(Long id) {

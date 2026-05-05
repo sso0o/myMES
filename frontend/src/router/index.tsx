@@ -11,6 +11,7 @@ import ItemProcessManagementPage from '@/pages/ItemProcessManagementPage'
 import BomManagementPage from '@/pages/BomManagementPage'
 import PlanningManagementPage from '@/pages/PlanningManagementPage'
 import ProcessEquipmentManagementPage from '@/pages/ProcessEquipmentManagementPage'
+import WorkOrderTimelinePage from '@/pages/WorkOrderTimelinePage'
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage />, errorElement: <RouteErrorScreen /> },
@@ -24,7 +25,7 @@ const router = createBrowserRouter([
         children: [
           { path: '/', element: <Navigate to="/dashboard" replace /> },
           { path: '/dashboard', element: <div className="text-slate-700">대시보드 (준비 중)</div> },
-          { path: '/work-orders', element: <div className="text-slate-700">작업 지시 (준비 중)</div> },
+          { path: '/work-orders', element: <WorkOrderTimelinePage /> },
           { path: '/production', element: <div className="text-slate-700">생산 실적 (준비 중)</div> },
           { path: '/planning', element: <PlanningManagementPage /> },
           { path: '/quality', element: <div className="text-slate-700">품질 관리 (준비 중)</div> },

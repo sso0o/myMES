@@ -22,6 +22,8 @@ public class WorkOrderCreateRequest {
 
     private Long processId;
 
+    private Long equipmentId;
+
     @Size(max = 50)
     private String workerName;
 

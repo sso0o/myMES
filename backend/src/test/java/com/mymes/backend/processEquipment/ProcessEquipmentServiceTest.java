@@ -88,6 +88,20 @@ class ProcessEquipmentServiceTest {
     }
 
     @Test
+    @DisplayName("공정-설비 배정 존재 여부를 확인한다")
+    void existsByProcessAndEquipment_returnsExists() {
+        // given
+        given(processEquipmentRepository.existsByProcessIdAndEquipmentId(1L, 2L)).willReturn(true);
+
+        // when
+        boolean result = processEquipmentService.existsByProcessAndEquipment(1L, 2L);
+
+        // then
+        assertThat(result).isTrue();
+        verify(processEquipmentRepository).existsByProcessIdAndEquipmentId(1L, 2L);
+    }
+
+    @Test
     @DisplayName("존재하지 않는 배정 ID 조회 시 예외가 발생한다")
     void findById_notFound_throwsException() {
         // given
