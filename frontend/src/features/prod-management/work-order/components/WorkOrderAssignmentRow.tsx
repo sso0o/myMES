@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Save } from 'lucide-react'
+import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
 import { useProcessEquipmentListByProcess } from '@/features/prod-basic/process-equipment/hooks/useProcessEquipmentQuery'
 import type { ProcessResponse } from '@/features/prod-basic/process/types'
 import { saveIconButtonClass } from '@/common/styles/button'
@@ -13,9 +14,6 @@ interface WorkOrderAssignmentRowProps {
   onSave: (workOrder: WorkOrderResponse, processId: number | null, equipmentId: number | null) => void
 }
 
-const selectClass =
-  'h-9 rounded-md border border-[var(--border)] bg-[var(--surface)] px-2 text-sm text-[var(--text-base)] outline-none transition-colors focus:border-[var(--primary)] disabled:bg-[var(--surface-alt)] disabled:text-[var(--text-muted)]'
-
 const WorkOrderAssignmentRow = ({
   workOrder,
   processes,
@@ -24,12 +22,23 @@ const WorkOrderAssignmentRow = ({
 }: WorkOrderAssignmentRowProps) => {
   const [processId, setProcessId] = useState<number | null>(workOrder.processId)
   const [equipmentId, setEquipmentId] = useState<number | null>(workOrder.equipmentId)
+  const [serverAssignment, setServerAssignment] = useState({
+    processId: workOrder.processId,
+    equipmentId: workOrder.equipmentId,
+  })
   const { data: processEquipments = [] } = useProcessEquipmentListByProcess(processId)
 
-  useEffect(() => {
+  if (
+    serverAssignment.processId !== workOrder.processId ||
+    serverAssignment.equipmentId !== workOrder.equipmentId
+  ) {
+    setServerAssignment({
+      processId: workOrder.processId,
+      equipmentId: workOrder.equipmentId,
+    })
     setProcessId(workOrder.processId)
     setEquipmentId(workOrder.equipmentId)
-  }, [workOrder.equipmentId, workOrder.processId])
+  }
 
   const equipmentOptions = useMemo(
     () =>
@@ -57,34 +66,34 @@ const WorkOrderAssignmentRow = ({
       </td>
       <td className="px-4 py-3 text-sm text-[var(--text-base)]">{workOrder.dueDate}</td>
       <td className="px-4 py-3">
-        <select
-          value={processId ?? ''}
+        <AppSelect
+          value={processId === null ? '' : String(processId)}
           onChange={(event) => handleProcessChange(event.target.value)}
           disabled={!canEdit || isSaving}
-          className={`${selectClass} w-44`}
+          sx={{ width: 176 }}
         >
-          <option value="">공정 선택</option>
+          <AppMenuItem value="">공정 선택</AppMenuItem>
           {processes.map((process) => (
-            <option key={process.id} value={process.id}>
+            <AppMenuItem key={process.id} value={String(process.id)}>
               {process.processCode} · {process.processName}
-            </option>
+            </AppMenuItem>
           ))}
-        </select>
+        </AppSelect>
       </td>
       <td className="px-4 py-3">
-        <select
-          value={equipmentId ?? ''}
+        <AppSelect
+          value={equipmentId === null ? '' : String(equipmentId)}
           onChange={(event) => setEquipmentId(event.target.value ? Number(event.target.value) : null)}
           disabled={!canEdit || isSaving || processId === null}
-          className={`${selectClass} w-52`}
+          sx={{ width: 208 }}
         >
-          <option value="">설비 미배정</option>
+          <AppMenuItem value="">설비 미배정</AppMenuItem>
           {equipmentOptions.map((equipment) => (
-            <option key={equipment.id} value={equipment.id}>
+            <AppMenuItem key={equipment.id} value={String(equipment.id)}>
               {equipment.label}
-            </option>
+            </AppMenuItem>
           ))}
-        </select>
+        </AppSelect>
       </td>
       <td className="px-4 py-3 text-right">
         <button

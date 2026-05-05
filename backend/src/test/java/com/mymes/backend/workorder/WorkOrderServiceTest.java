@@ -177,6 +177,7 @@ class WorkOrderServiceTest {
             WorkOrderCreateRequest request = createRequest(1L, 10L, 20L);
             given(itemService.getItem(1L)).willReturn(item);
             given(processService.getProcess(10L)).willReturn(process);
+            given(itemProcessService.existsByItemAndProcess(1L, 10L)).willReturn(true);
             given(equipmentService.getEquipment(20L)).willReturn(equipment);
             given(processEquipmentService.existsByProcessAndEquipment(10L, 20L)).willReturn(true);
             given(bomVersionService.findActiveVersion(1L)).willReturn(Optional.empty());
@@ -190,6 +191,7 @@ class WorkOrderServiceTest {
 
             // then
             assertThat(result.getEquipmentId()).isEqualTo(20L);
+            verify(itemProcessService, times(1)).existsByItemAndProcess(1L, 10L);
             verify(processEquipmentService, times(1)).existsByProcessAndEquipment(10L, 20L);
             verify(workOrderRepository, times(1)).saveAndFlush(any(WorkOrder.class));
         }
@@ -216,6 +218,7 @@ class WorkOrderServiceTest {
             WorkOrderCreateRequest request = createRequest(1L, 10L, 20L);
             given(itemService.getItem(1L)).willReturn(item);
             given(processService.getProcess(10L)).willReturn(process);
+            given(itemProcessService.existsByItemAndProcess(1L, 10L)).willReturn(true);
             given(equipmentService.getEquipment(20L)).willReturn(equipment);
             given(processEquipmentService.existsByProcessAndEquipment(10L, 20L)).willReturn(false);
 
@@ -223,6 +226,23 @@ class WorkOrderServiceTest {
             assertThatThrownBy(() -> workOrderService.create(request))
                     .isInstanceOf(BusinessException.class)
                     .hasFieldOrPropertyWithValue("errorCode", ErrorCode.WORK_ORDER_EQUIPMENT_NOT_AVAILABLE);
+            verify(workOrderRepository, never()).saveAndFlush(any(WorkOrder.class));
+        }
+
+        @Test
+        @DisplayName("해당 품목에 등록되지 않은 공정이면 예외가 발생한다")
+        void create_unavailableProcess_throwsException() {
+            // given
+            WorkOrderCreateRequest request = createRequest(1L, 10L, 20L);
+            given(itemService.getItem(1L)).willReturn(item);
+            given(processService.getProcess(10L)).willReturn(process);
+            given(itemProcessService.existsByItemAndProcess(1L, 10L)).willReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> workOrderService.create(request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasFieldOrPropertyWithValue("errorCode", ErrorCode.WORK_ORDER_PROCESS_NOT_AVAILABLE);
+            verify(equipmentService, never()).getEquipment(20L);
             verify(workOrderRepository, never()).saveAndFlush(any(WorkOrder.class));
         }
     }
@@ -239,6 +259,7 @@ class WorkOrderServiceTest {
             given(workOrderRepository.findById(1L)).willReturn(Optional.of(workOrder));
             given(itemService.getItem(1L)).willReturn(item);
             given(processService.getProcess(10L)).willReturn(process);
+            given(itemProcessService.existsByItemAndProcess(1L, 10L)).willReturn(true);
             given(equipmentService.getEquipment(20L)).willReturn(equipment);
             given(processEquipmentService.existsByProcessAndEquipment(10L, 20L)).willReturn(true);
             given(workOrderMapper.toResponse(workOrder)).willReturn(workOrderResponse);
@@ -249,8 +270,26 @@ class WorkOrderServiceTest {
             // then
             assertThat(result.getEquipmentId()).isEqualTo(20L);
             assertThat(workOrder.getEquipment()).isEqualTo(equipment);
+            verify(itemProcessService, times(1)).existsByItemAndProcess(1L, 10L);
             verify(processEquipmentService, times(1)).existsByProcessAndEquipment(10L, 20L);
             verify(workOrderMapper, times(1)).toResponse(workOrder);
+        }
+
+        @Test
+        @DisplayName("해당 품목에 등록되지 않은 공정으로 수정하면 예외가 발생한다")
+        void update_unavailableProcess_throwsException() {
+            // given
+            WorkOrderUpdateRequest request = updateRequest(1L, 10L, 20L);
+            given(workOrderRepository.findById(1L)).willReturn(Optional.of(workOrder));
+            given(itemService.getItem(1L)).willReturn(item);
+            given(processService.getProcess(10L)).willReturn(process);
+            given(itemProcessService.existsByItemAndProcess(1L, 10L)).willReturn(false);
+
+            // when & then
+            assertThatThrownBy(() -> workOrderService.update(1L, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasFieldOrPropertyWithValue("errorCode", ErrorCode.WORK_ORDER_PROCESS_NOT_AVAILABLE);
+            verify(equipmentService, never()).getEquipment(20L);
         }
 
         @Test

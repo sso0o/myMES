@@ -92,6 +92,7 @@ public class WorkOrderService {
         Item item = itemService.getItem(request.getItemId());
         MfgProcess process = request.getProcessId() != null
                 ? processService.getProcess(request.getProcessId()) : null;
+        validateItemProcess(item, process);
         Equipment equipment = resolveEquipment(process, request.getEquipmentId());
 
         BomVersion bomVersion = bomVersionService.findActiveVersion(item.getId()).orElse(null);
@@ -143,6 +144,7 @@ public class WorkOrderService {
         Item item = itemService.getItem(request.getItemId());
         MfgProcess process = request.getProcessId() != null
                 ? processService.getProcess(request.getProcessId()) : null;
+        validateItemProcess(item, process);
         Equipment equipment = resolveEquipment(process, request.getEquipmentId());
         workOrder.update(item, request.getPlannedQty(), request.getPriority(),
                 process, equipment, request.getWorkerName(), request.getDueDate());
@@ -244,6 +246,15 @@ public class WorkOrderService {
             throw new BusinessException(ErrorCode.WORK_ORDER_EQUIPMENT_NOT_AVAILABLE);
         }
         return equipment;
+    }
+
+    private void validateItemProcess(Item item, MfgProcess process) {
+        if (process == null) {
+            return;
+        }
+        if (!itemProcessService.existsByItemAndProcess(item.getId(), process.getId())) {
+            throw new BusinessException(ErrorCode.WORK_ORDER_PROCESS_NOT_AVAILABLE);
+        }
     }
 
     private String generateWorkOrderNo() {

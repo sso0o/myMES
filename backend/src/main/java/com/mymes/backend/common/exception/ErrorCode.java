@@ -46,6 +46,7 @@ public enum ErrorCode {
     WORK_ORDER_INVALID_STATUS_TRANSITION(409, "유효하지 않은 상태 전이입니다."),
     WORK_ORDER_NOT_MODIFIABLE(409, "대기 상태의 작업지시만 수정할 수 있습니다."),
     WORK_ORDER_NOT_DELETABLE(409, "대기 상태의 작업지시만 삭제할 수 있습니다."),
+    WORK_ORDER_PROCESS_NOT_AVAILABLE(400, "선택한 공정은 해당 품목에 등록된 공정이 아닙니다."),
     WORK_ORDER_PROCESS_REQUIRED_FOR_EQUIPMENT(400, "설비를 배정하려면 공정이 필요합니다."),
     WORK_ORDER_EQUIPMENT_NOT_AVAILABLE(400, "선택한 설비는 해당 공정에 배정된 설비가 아닙니다."),
     WORK_ORDER_NO_GENERATION_FAILED(500, "작업지시 번호 생성에 실패했습니다."),
