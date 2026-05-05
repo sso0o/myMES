@@ -4,6 +4,8 @@ import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
 import com.mymes.backend.item.entity.Item;
 import com.mymes.backend.item.service.ItemService;
+import com.mymes.backend.planning.dto.ProductionPlanBulkConfirmResponse;
+import com.mymes.backend.planning.dto.ProductionPlanBulkReleaseResponse;
 import com.mymes.backend.planning.dto.ProductionPlanCreateRequest;
 import com.mymes.backend.planning.dto.ProductionPlanResponse;
 import com.mymes.backend.planning.dto.ProductionPlanUpdateRequest;
@@ -122,6 +124,64 @@ public class ProductionPlanService {
         log.info("생산계획 삭제 완료: id={}", id);
     }
 
+    /**
+     * 여러 생산계획을 일괄 확정합니다.
+     * 모든 대상 계획이 DRAFT 상태여야 합니다. 하나라도 상태가 맞지 않으면 전체 롤백됩니다.
+     *
+     * @param planIds 확정할 생산계획 ID 목록
+     * @return 요청 수, 확정 수가 담긴 응답
+     * @throws BusinessException 대상 계획이 존재하지 않거나 상태 전이가 불가한 경우
+     */
+    @Transactional
+    public ProductionPlanBulkConfirmResponse bulkConfirm(List<Long> planIds) {
+        List<ProductionPlan> plans = productionPlanRepository.findAllById(planIds);
+        for (ProductionPlan plan : plans) {
+            plan.changeStatus(PlanStatus.CONFIRMED);
+        }
+        log.info("생산계획 일괄 확정 완료: count={}", plans.size());
+        return ProductionPlanBulkConfirmResponse.builder()
+                .requestedCount(planIds.size())
+                .confirmedCount(plans.size())
+                .build();
+    }
+
+    /**
+     * 여러 생산계획에 대해 작업지시를 일괄 발행합니다.
+     * 모든 대상 계획이 CONFIRMED 상태여야 합니다. 하나라도 실패하면 전체 롤백됩니다.
+     *
+     * @param planIds 발행할 생산계획 ID 목록
+     * @return 요청 수, 발행 수, 생성된 작업지시 수가 담긴 응답
+     * @throws BusinessException 대상 계획이 존재하지 않거나 이미 발행된 경우
+     */
+    @Transactional
+    public ProductionPlanBulkReleaseResponse bulkRelease(List<Long> planIds) {
+        List<ProductionPlan> plans = productionPlanRepository.findAllById(planIds);
+        int workOrderCount = 0;
+        for (ProductionPlan plan : plans) {
+            if (plan.getWorkOrder() != null) {
+                throw new BusinessException(ErrorCode.PLAN_ALREADY_RELEASED);
+            }
+            WorkOrder workOrder = workOrderService.createForPlan(
+                    plan.getItem(), plan.getPlannedQty(), plan.getPlannedDate());
+            plan.linkWorkOrder(workOrder);
+            plan.changeStatus(PlanStatus.RELEASED);
+            workOrderCount++;
+        }
+        log.info("생산계획 일괄 발행 완료: planCount={}, workOrderCount={}", plans.size(), workOrderCount);
+        return ProductionPlanBulkReleaseResponse.builder()
+                .requestedCount(planIds.size())
+                .releasedCount(plans.size())
+                .workOrderCount(workOrderCount)
+                .build();
+    }
+
+    /**
+     * ID로 생산계획 엔티티를 조회합니다.
+     *
+     * @param id 생산계획 ID
+     * @return 생산계획 엔티티
+     * @throws BusinessException 생산계획이 존재하지 않을 경우 (PLAN_NOT_FOUND)
+     */
     public ProductionPlan getPlan(Long id) {
         return productionPlanRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PLAN_NOT_FOUND, String.valueOf(id)));

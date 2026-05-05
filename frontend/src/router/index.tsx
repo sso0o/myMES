@@ -9,6 +9,8 @@ import ProcessManagementPage from '@/pages/ProcessManagementPage'
 import EquipmentManagementPage from '@/pages/EquipmentManagementPage'
 import ItemProcessManagementPage from '@/pages/ItemProcessManagementPage'
 import BomManagementPage from '@/pages/BomManagementPage'
+import PlanningManagementPage from '@/pages/PlanningManagementPage'
+import ProcessEquipmentManagementPage from '@/pages/ProcessEquipmentManagementPage'
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage />, errorElement: <RouteErrorScreen /> },
@@ -24,7 +26,7 @@ const router = createBrowserRouter([
           { path: '/dashboard', element: <div className="text-slate-700">대시보드 (준비 중)</div> },
           { path: '/work-orders', element: <div className="text-slate-700">작업 지시 (준비 중)</div> },
           { path: '/production', element: <div className="text-slate-700">생산 실적 (준비 중)</div> },
-          { path: '/planning', element: <div className="text-slate-700">생산 계획 (준비 중)</div> },
+          { path: '/planning', element: <PlanningManagementPage /> },
           { path: '/quality', element: <div className="text-slate-700">품질 관리 (준비 중)</div> },
           { path: '/master/items', element: <ItemManagementPage /> },
           { path: '/master/common-codes', element: <CommonCodeManagementPage /> },
@@ -32,6 +34,7 @@ const router = createBrowserRouter([
           { path: '/prod-basic/equipment', element: <EquipmentManagementPage /> },
           { path: '/prod-basic/item-processes', element: <ItemProcessManagementPage /> },
           { path: '/prod-basic/boms', element: <BomManagementPage /> },
+          { path: '/prod-basic/process-equipment', element: <ProcessEquipmentManagementPage /> },
         ],
       },
     ],
