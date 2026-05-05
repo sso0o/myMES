@@ -16,20 +16,18 @@ import {
 } from '@/features/prod-basic/item-process/hooks/useItemProcessQuery'
 import type { ItemProcessResponse } from '@/features/prod-basic/item-process/types'
 import { CopyMode } from '@/features/prod-basic/item-process/types'
-import ItemProcessTable from '@/features/prod-basic/item-process/components/ItemProcessTable'
+import ItemProcessDataGrid, {
+  type ItemProcessInlineRow,
+} from '@/features/prod-basic/item-process/components/ItemProcessDataGrid'
 import ItemProcessBulkCopyModal from '@/features/prod-basic/item-process/components/ItemProcessBulkCopyModal'
-
-interface InlineRow {
-  processId: string
-  sequence: string
-}
+import ItemProcessItemDataGrid from '@/features/prod-basic/item-process/components/ItemProcessItemDataGrid'
 
 const ItemProcessManagementPage = () => {
   const [selectedItem, setSelectedItem] = useState<ItemResponse | null>(null)
   const [addingRow, setAddingRow] = useState(false)
-  const [newRow, setNewRow] = useState<InlineRow>({ processId: '', sequence: '' })
+  const [newRow, setNewRow] = useState<ItemProcessInlineRow>({ processId: '', sequence: '' })
   const [editingId, setEditingId] = useState<number | null>(null)
-  const [editRow, setEditRow] = useState<InlineRow>({ processId: '', sequence: '' })
+  const [editRow, setEditRow] = useState<ItemProcessInlineRow>({ processId: '', sequence: '' })
   const [bulkCopyOpen, setBulkCopyOpen] = useState(false)
 
   const { showToast, showAlert } = useFeedback()
@@ -173,59 +171,28 @@ const ItemProcessManagementPage = () => {
 
   return (
     <>
-    <div className="space-y-5 p-6">
+    <div className="min-w-0 max-w-full space-y-5 overflow-hidden p-6">
       <PageHeader title="품목별 공정 관리" description="품목에 적용되는 공정 순서를 관리합니다." />
 
-      <div className="flex h-[calc(100vh-16rem)] gap-0">
+      <div className="flex h-[calc(100vh-16rem)] min-w-0 gap-0">
         {/* 좌측: 품목 목록 */}
-        <div className="flex w-80 shrink-0 flex-col rounded-l-lg border border-[var(--border)] bg-[var(--surface)]">
+        <div className="flex w-[28rem] shrink-0 flex-col rounded-l-lg border border-[var(--border)] bg-[var(--surface)]">
           <div className="flex min-h-[52px] shrink-0 items-center border-b border-[var(--border)] px-4">
             <span className="text-sm font-semibold text-[var(--text-strong)]">품목 목록</span>
           </div>
 
-          <ul className="flex-1 overflow-y-auto">
-            {itemsLoading ? (
-              <li className="px-4 py-8 text-center text-sm text-[var(--text-muted)]">
-                불러오는 중...
-              </li>
-            ) : items.length === 0 ? (
-              <li className="px-4 py-8 text-center text-sm text-[var(--text-muted)]">
-                등록된 품목이 없습니다.
-              </li>
-            ) : (
-              items.map((item) => (
-                <li
-                  key={item.id}
-                  onClick={() => handleSelectItem(item)}
-                  className={`cursor-pointer px-4 py-3 transition-colors ${
-                    selectedItem?.id === item.id
-                      ? 'bg-[var(--primary-soft)]'
-                      : 'hover:bg-[var(--surface-alt)]'
-                  }`}
-                >
-                  <p
-                    className={`truncate text-sm font-medium ${
-                      selectedItem?.id === item.id
-                        ? 'text-[var(--primary)]'
-                        : 'text-[var(--text-strong)]'
-                    }`}
-                  >
-                    {item.itemName}
-                  </p>
-                  <p className="mt-0.5 font-mono text-xs text-[var(--text-muted)]">
-                    {item.itemCode}
-                  </p>
-                  {item.itemTypeName && (
-                    <p className="mt-0.5 text-xs text-[var(--text-muted)]">{item.itemTypeName}</p>
-                  )}
-                </li>
-              ))
-            )}
-          </ul>
+          <div className="min-h-0 flex-1">
+            <ItemProcessItemDataGrid
+              items={items}
+              loading={itemsLoading}
+              selectedItemId={selectedItem?.id ?? null}
+              onSelectItem={handleSelectItem}
+            />
+          </div>
         </div>
 
         {/* 우측: 공정 목록 */}
-        <div className="flex flex-1 flex-col rounded-r-lg border border-l-0 border-[var(--border)] bg-[var(--surface)]">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-r-lg border border-l-0 border-[var(--border)] bg-[var(--surface)]">
           <div className="flex min-h-[52px] shrink-0 items-center justify-between border-b border-[var(--border)] px-5">
             <div className="min-w-0 flex-1">
               <span className="text-sm font-semibold text-[var(--text-strong)]">
@@ -261,27 +228,28 @@ const ItemProcessManagementPage = () => {
 
           {!selectedItem ? (
             <EmptyState message="좌측에서 품목을 선택하세요." fill />
-          ) : processesLoading ? (
-            <EmptyState message="불러오는 중..." fill />
           ) : (
-            <ItemProcessTable
-              itemProcesses={itemProcesses}
-              processOptions={processes}
-              addingRow={addingRow}
-              editingId={editingId}
-              newRow={newRow}
-              editRow={editRow}
-              isCreating={createItemProcess.isPending}
-              isUpdating={updateItemProcess.isPending}
-              onCancelAdd={handleCancelAdd}
-              onChangeNewRow={setNewRow}
-              onSaveAdd={handleSaveAdd}
-              onStartEdit={handleStartEdit}
-              onCancelEdit={handleCancelEdit}
-              onChangeEditRow={setEditRow}
-              onSaveEdit={handleSaveEdit}
-              onDelete={handleDelete}
-            />
+            <div className="min-h-0 flex-1">
+              <ItemProcessDataGrid
+                itemProcesses={itemProcesses}
+                processOptions={processes}
+                loading={processesLoading}
+                addingRow={addingRow}
+                editingId={editingId}
+                newRow={newRow}
+                editRow={editRow}
+                isCreating={createItemProcess.isPending}
+                isUpdating={updateItemProcess.isPending}
+                onCancelAdd={handleCancelAdd}
+                onChangeNewRow={setNewRow}
+                onSaveAdd={handleSaveAdd}
+                onStartEdit={handleStartEdit}
+                onCancelEdit={handleCancelEdit}
+                onChangeEditRow={setEditRow}
+                onSaveEdit={handleSaveEdit}
+                onDelete={handleDelete}
+              />
+            </div>
           )}
         </div>
       </div>

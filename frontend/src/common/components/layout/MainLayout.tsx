@@ -26,7 +26,7 @@ const MainLayout = () => {
     <div className="flex min-h-screen bg-[var(--background)]">
       <Sidebar />
 
-      <div className="ml-60 flex flex-1 flex-col">
+      <div className="ml-60 flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-10 flex h-14 items-center justify-end gap-4 border-b border-[var(--border)] bg-[var(--surface)] px-6">
           <span className="text-sm text-[var(--text-base)]">
             <span className="font-semibold text-[var(--text-strong)]">{displayName}</span>
@@ -41,7 +41,7 @@ const MainLayout = () => {
           </button>
         </header>
 
-        <main className="flex-1 overflow-auto p-6">
+        <main className="min-w-0 flex-1 overflow-auto p-6">
           <Outlet />
         </main>
       </div>

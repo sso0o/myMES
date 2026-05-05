@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
-import EmptyState from '@/common/components/EmptyState'
 import InlineAlert from '@/common/components/InlineAlert'
 import PageHeader from '@/common/components/PageHeader'
 import { useFeedback } from '@/common/hooks/useFeedback'
 import { pagePrimaryActionButtonClass } from '@/common/styles/button'
-import EquipmentTable from '@/features/prod-basic/equipment/components/EquipmentTable'
+import EquipmentDataGrid from '@/features/prod-basic/equipment/components/EquipmentDataGrid'
 import EquipmentFormModal from '@/features/prod-basic/equipment/components/EquipmentFormModal'
 import {
   useCreateEquipment,
@@ -27,9 +26,6 @@ const EquipmentManagementPage = () => {
 
   const { showToast, showAlert } = useFeedback()
   const { data: equipmentList = [], isLoading, isError } = useEquipmentList()
-
-  const totalPages = Math.ceil(equipmentList.length / size)
-  const pagedEquipment = equipmentList.slice(page * size, page * size + size)
 
   const createEquipment = useCreateEquipment()
   const updateEquipment = useUpdateEquipment()
@@ -124,21 +120,16 @@ const EquipmentManagementPage = () => {
         <InlineAlert>설비 목록을 불러오는 중 오류가 발생했습니다.</InlineAlert>
       )}
 
-      {isLoading ? (
-        <EmptyState message="불러오는 중..." />
-      ) : (
-        <EquipmentTable
-          equipment={pagedEquipment}
-          onEdit={handleOpenEdit}
-          onDelete={handleDelete}
-          currentPage={page}
-          totalPages={totalPages}
-          totalItems={equipmentList.length}
-          pageSize={size}
-          onPageChange={setPage}
-          onPageSizeChange={handlePageSizeChange}
-        />
-      )}
+      <EquipmentDataGrid
+        equipment={equipmentList}
+        loading={isLoading}
+        currentPage={page}
+        pageSize={size}
+        onPageChange={setPage}
+        onPageSizeChange={handlePageSizeChange}
+        onEdit={handleOpenEdit}
+        onDelete={handleDelete}
+      />
 
       <EquipmentFormModal
         key={`${modalOpen ? 'open' : 'closed'}-${editTarget?.id ?? 'create'}`}
