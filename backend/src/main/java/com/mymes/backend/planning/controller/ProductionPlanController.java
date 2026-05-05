@@ -1,6 +1,9 @@
 package com.mymes.backend.planning.controller;
 
 import com.mymes.backend.common.response.ApiResponse;
+import com.mymes.backend.planning.dto.ProductionPlanBulkConfirmResponse;
+import com.mymes.backend.planning.dto.ProductionPlanBulkReleaseResponse;
+import com.mymes.backend.planning.dto.ProductionPlanBulkRequest;
 import com.mymes.backend.planning.dto.ProductionPlanCreateRequest;
 import com.mymes.backend.planning.dto.ProductionPlanResponse;
 import com.mymes.backend.planning.dto.ProductionPlanStatusUpdateRequest;
@@ -64,5 +67,17 @@ public class ProductionPlanController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         productionPlanService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/bulk-confirm")
+    public ResponseEntity<ApiResponse<ProductionPlanBulkConfirmResponse>> bulkConfirm(
+            @Valid @RequestBody ProductionPlanBulkRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok(productionPlanService.bulkConfirm(request.getPlanIds())));
+    }
+
+    @PostMapping("/bulk-release")
+    public ResponseEntity<ApiResponse<ProductionPlanBulkReleaseResponse>> bulkRelease(
+            @Valid @RequestBody ProductionPlanBulkRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok(productionPlanService.bulkRelease(request.getPlanIds())));
     }
 }

@@ -76,6 +76,10 @@ public enum ErrorCode {
     EQUIPMENT_NOT_FOUND(404, "설비를 찾을 수 없습니다."),
     EQUIPMENT_CODE_DUPLICATED(409, "이미 존재하는 설비코드입니다."),
 
+    // Process Equipment
+    PROCESS_EQUIPMENT_NOT_FOUND(404, "공정-설비 배정을 찾을 수 없습니다."),
+    PROCESS_EQUIPMENT_DUPLICATED(409, "해당 공정에 이미 등록된 설비입니다."),
+
     // User
     USER_NOT_FOUND(404, "유저를 찾을 수 없습니다."),
     USER_PASSWORD_MISMATCH(400, "현재 비밀번호가 일치하지 않습니다."),

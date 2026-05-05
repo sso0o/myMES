@@ -14,7 +14,18 @@
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({**d.get\\('dependencies',{}\\), **d.get\\('devDependencies',{}\\)}, indent=2\\)\\)\")",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('version:', d['version']\\); print\\('peerDeps:', json.dumps\\(d.get\\('peerDependencies',{}\\), indent=2\\)\\)\")",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('version:', d['version']\\)\")",
-      "Bash(./gradlew build *)"
+      "Bash(./gradlew build *)",
+      "mcp__c7f96ad4-96f6-4c7a-bbb6-4a0924ba8f4e__notion-fetch",
+      "mcp__c7f96ad4-96f6-4c7a-bbb6-4a0924ba8f4e__notion-create-pages",
+      "mcp__c7f96ad4-96f6-4c7a-bbb6-4a0924ba8f4e__notion-update-page",
+      "Bash(xargs ls *)",
+      "Bash(grep -E \"^==>|^$\")",
+      "Read(//tmp/**)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__c7f96ad4-96f6-4c7a-bbb6-4a0924ba8f4e__notion-update-data-source",
+      "Bash(./gradlew compileJava compileTestJava)",
+      "Bash(./gradlew compileTestJava)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")"
     ]
   }
 }
