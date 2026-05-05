@@ -2,10 +2,11 @@ import {
   BarChart2,
   CalendarDays,
   ClipboardList,
+  ClipboardCheck,
   LayoutDashboard,
   ListTree,
   Package,
-  ShieldCheck,
+  ShieldAlert,
   Wrench,
   GitBranch,
   Layers,
@@ -41,7 +42,13 @@ const menuGroups = [
       { label: '생산 계획', path: '/planning', icon: CalendarDays },
       { label: '작업 지시', path: '/work-orders', icon: ClipboardList },
       { label: '생산 실적', path: '/production', icon: BarChart2 },
-      { label: '품질 관리', path: '/quality', icon: ShieldCheck },
+    ],
+  },
+  {
+    group: '품질관리',
+    items: [
+      { label: '품질검사', path: '/quality/inspections', icon: ClipboardCheck },
+      { label: '불량관리', path: '/quality/defects', icon: ShieldAlert },
     ],
   },
   {
