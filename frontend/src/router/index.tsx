@@ -15,6 +15,8 @@ import WorkOrderTimelinePage from '@/pages/WorkOrderTimelinePage'
 import DashboardPage from '@/pages/DashboardPage'
 import ProductionRecordPage from '@/pages/ProductionRecordPage'
 import WorkerManagementPage from '@/pages/WorkerManagementPage'
+import QualityInspectionPage from '@/pages/QualityInspectionPage'
+import DefectManagementPage from '@/pages/DefectManagementPage'
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage />, errorElement: <RouteErrorScreen /> },
@@ -31,7 +33,9 @@ const router = createBrowserRouter([
           { path: '/work-orders', element: <WorkOrderTimelinePage /> },
           { path: '/production', element: <ProductionRecordPage /> },
           { path: '/planning', element: <PlanningManagementPage /> },
-          { path: '/quality', element: <div className="text-slate-700">품질 관리 (준비 중)</div> },
+          { path: '/quality', element: <Navigate to="/quality/inspections" replace /> },
+          { path: '/quality/inspections', element: <QualityInspectionPage /> },
+          { path: '/quality/defects', element: <DefectManagementPage /> },
           { path: '/master/items', element: <ItemManagementPage /> },
           { path: '/master/common-codes', element: <CommonCodeManagementPage /> },
           { path: '/prod-basic/processes', element: <ProcessManagementPage /> },
