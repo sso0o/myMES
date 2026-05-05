@@ -1,27 +1,16 @@
 import { useState } from 'react'
-import { Check, Pencil, Plus, Trash2, X } from 'lucide-react'
-import Badge from '@/common/components/Badge'
+import { Plus } from 'lucide-react'
 import EmptyState from '@/common/components/EmptyState'
 import PageHeader from '@/common/components/PageHeader'
-import {
-  cancelIconButtonClass,
-  deleteIconButtonClass,
-  editIconButtonClass,
-  primaryActionButtonClass,
-  saveIconButtonClass,
-} from '@/common/styles/button'
-import { inlineInputClass } from '@/common/styles/form'
-import {
-  tableBodyClass,
-  tableClass,
-  tableEmptyCellClass,
-  tableHeadClass,
-  tableInlineEditRowClass,
-  tableRowClass,
-  tableScrollClass,
-} from '@/common/styles/table'
+import { primaryActionButtonClass } from '@/common/styles/button'
 import { useFeedback } from '@/common/hooks/useFeedback'
 import CodeGroupFormModal from '@/features/master/commonCode/components/CodeGroupFormModal'
+import CodeGroupDataGrid from '@/features/master/commonCode/components/CodeGroupDataGrid'
+import CommonCodeDataGrid, {
+  NEW_ROW_ID,
+  type EditCodeRow,
+  type NewCodeRow,
+} from '@/features/master/commonCode/components/CommonCodeDataGrid'
 import {
   useCodeGroupDetail,
   useCodeGroupList,
@@ -38,18 +27,6 @@ import type {
   CodeGroupUpdateRequest,
   CommonCodeResponse,
 } from '@/features/master/commonCode/types'
-
-interface NewCodeRow {
-  codeName: string
-  sortOrder: string
-  numberingPrefix: string
-}
-
-interface EditCodeRow {
-  codeName: string
-  sortOrder: string
-  numberingPrefix: string
-}
 
 const CommonCodeManagementPage = () => {
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null)
@@ -237,13 +214,26 @@ const CommonCodeManagementPage = () => {
   const codes = groupDetail?.codes ?? []
   const canAddCode = Boolean(selectedGroupId) && !addingRow
 
+  // 추가 중일 때 센티넬 행을 rows 끝에 삽입
+  const newRowSentinel: CommonCodeResponse = {
+    id: NEW_ROW_ID,
+    groupId: selectedGroupId ?? '',
+    code: '',
+    codeName: '',
+    sortOrder: 0,
+    isActive: true,
+    numberingPrefix: null,
+    createdAt: '',
+  }
+  const codeRows: CommonCodeResponse[] = addingRow ? [...codes, newRowSentinel] : codes
+
   return (
-    <div className="space-y-5 p-6">
+    <div className="min-w-0 max-w-full space-y-5 overflow-hidden p-6">
       <PageHeader title="공통코드 관리" description="시스템에서 사용하는 기준 코드를 관리합니다." />
 
-      <div className="flex h-[calc(100vh-16rem)] gap-0">
+      <div className="flex h-[calc(100vh-16rem)] min-w-0 gap-0">
         {/* 좌측: 코드 그룹 목록 */}
-        <div className="flex w-80 shrink-0 flex-col rounded-l-lg border border-[var(--border)] bg-[var(--surface)]">
+        <div className="flex w-96 shrink-0 flex-col rounded-l-lg border border-[var(--border)] bg-[var(--surface)]">
           <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
             <span className="text-sm font-semibold text-[var(--text-strong)]">코드 그룹</span>
             <button
@@ -256,67 +246,24 @@ const CommonCodeManagementPage = () => {
             </button>
           </div>
 
-        {groupsError && (
-          <p className="px-4 py-3 text-xs text-[var(--danger)]">그룹 목록을 불러오지 못했습니다.</p>
-        )}
-
-        <ul className="flex-1 overflow-y-auto">
-          {groupsLoading ? (
-            <li className="px-4 py-8 text-center text-sm text-[var(--text-muted)]">불러오는 중...</li>
-          ) : groups.length === 0 ? (
-            <li className="px-4 py-8 text-center text-sm text-[var(--text-muted)]">
-              등록된 그룹이 없습니다.
-            </li>
-          ) : (
-            groups.map((group) => (
-              <li
-                key={group.groupId}
-                onClick={() => handleSelectGroup(group.groupId)}
-                className={`flex cursor-pointer items-center justify-between px-4 py-3 transition-colors ${
-                  selectedGroupId === group.groupId ? 'bg-[var(--primary-soft)]' : 'hover:bg-[var(--surface-alt)]'
-                }`}
-              >
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={`truncate text-sm font-medium ${
-                      selectedGroupId === group.groupId ? 'text-[var(--primary)]' : 'text-[var(--text-strong)]'
-                    }`}
-                  >
-                    {group.groupName}
-                  </p>
-                  <p className="mt-0.5 font-mono text-xs text-[var(--text-muted)]">{group.groupId}</p>
-                </div>
-
-                <div className="ml-2 flex shrink-0 gap-1">
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      handleOpenEditGroup(group)
-                    }}
-                    className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--primary-soft)] hover:text-[var(--primary)]"
-                  >
-                    <Pencil size={13} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      handleDeleteGroup(group)
-                    }}
-                    className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--danger-soft)] hover:text-[var(--danger)]"
-                  >
-                    <Trash2 size={13} />
-                  </button>
-                </div>
-              </li>
-            ))
+          {groupsError && (
+            <p className="px-4 py-3 text-xs text-[var(--danger)]">그룹 목록을 불러오지 못했습니다.</p>
           )}
-        </ul>
-      </div>
+
+          <div className="min-h-0 flex-1">
+            <CodeGroupDataGrid
+              groups={groups}
+              loading={groupsLoading}
+              selectedGroupId={selectedGroupId}
+              onSelectGroup={handleSelectGroup}
+              onEditGroup={handleOpenEditGroup}
+              onDeleteGroup={handleDeleteGroup}
+            />
+          </div>
+        </div>
 
         {/* 우측: 선택한 그룹의 코드 항목 */}
-        <div className="flex flex-1 flex-col rounded-r-lg border border-l-0 border-[var(--border)] bg-[var(--surface)]">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-r-lg border border-l-0 border-[var(--border)] bg-[var(--surface)]">
           <div className="flex items-center justify-between border-b border-[var(--border)] px-5 py-3">
             <div>
               <span className="text-sm font-semibold text-[var(--text-strong)]">
@@ -343,192 +290,23 @@ const CommonCodeManagementPage = () => {
           {!selectedGroupId ? (
             <EmptyState message="좌측에서 코드 그룹을 선택하세요." fill />
           ) : (
-            <div className={tableScrollClass}>
-            <table className={tableClass}>
-              <thead className={tableHeadClass}>
-                <tr>
-                  <th className="px-5 py-3 text-left font-medium">코드값</th>
-                  <th className="px-5 py-3 text-left font-medium">코드명</th>
-                  <th className="w-28 px-5 py-3 text-center font-medium">채번코드</th>
-                  <th className="w-24 px-5 py-3 text-center font-medium">정렬</th>
-                  <th className="w-20 px-5 py-3 text-center font-medium">상태</th>
-                  <th className="w-24 px-5 py-3 text-center font-medium">관리</th>
-                </tr>
-              </thead>
-
-              <tbody className={tableBodyClass}>
-                {codes.length === 0 && !addingRow && (
-                  <tr>
-                    <td colSpan={6} className={`${tableEmptyCellClass} px-5`}>
-                      등록된 코드가 없습니다.
-                    </td>
-                  </tr>
-                )}
-
-                {codes.map((code) =>
-                  editingId === code.id ? (
-                    <tr key={code.id} className={tableInlineEditRowClass}>
-                      <td className="px-5 py-2 font-mono text-[var(--text-muted)]">{code.code}</td>
-                      <td className="px-5 py-2">
-                        <input
-                          className={inlineInputClass}
-                          value={editRow.codeName}
-                          onChange={(event) => setEditRow((row) => ({ ...row, codeName: event.target.value }))}
-                          autoFocus
-                          maxLength={100}
-                        />
-                      </td>
-                      <td className="px-5 py-2">
-                        <input
-                          className={`${inlineInputClass} font-mono text-center`}
-                          value={editRow.numberingPrefix}
-                          onChange={(event) =>
-                            setEditRow((row) => ({ ...row, numberingPrefix: event.target.value.toUpperCase() }))
-                          }
-                          maxLength={20}
-                          placeholder="예: RM"
-                        />
-                      </td>
-                      <td className="px-5 py-2">
-                        <input
-                          className={`${inlineInputClass} text-center`}
-                          type="number"
-                          min={1}
-                          value={editRow.sortOrder}
-                          onChange={(event) => setEditRow((row) => ({ ...row, sortOrder: event.target.value }))}
-                        />
-                      </td>
-                      <td className="px-5 py-2 text-center">
-                        <Badge variant={code.isActive ? 'success' : 'muted'}>
-                          {code.isActive ? '활성' : '비활성'}
-                        </Badge>
-                      </td>
-                      <td className="px-5 py-2">
-                        <div className="flex justify-center gap-1">
-                          <button
-                            type="button"
-                            onClick={() => handleSaveEdit(code.id)}
-                            disabled={updateCode.isPending}
-                            className={saveIconButtonClass}
-                            title="저장"
-                          >
-                            <Check size={15} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleCancelEdit}
-                            className={cancelIconButtonClass}
-                            title="취소"
-                          >
-                            <X size={15} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    <tr key={code.id} className={tableRowClass}>
-                      <td className="px-5 py-3 font-mono text-[var(--text-base)]">{code.code}</td>
-                      <td className="px-5 py-3 text-[var(--text-strong)]">{code.codeName}</td>
-                      <td className="px-5 py-3 text-center font-mono text-[var(--text-muted)]">
-                        {code.numberingPrefix ?? '-'}
-                      </td>
-                      <td className="px-5 py-3 text-center text-[var(--text-muted)]">{code.sortOrder}</td>
-                      <td className="px-5 py-3 text-center">
-                        <Badge variant={code.isActive ? 'success' : 'muted'}>
-                          {code.isActive ? '활성' : '비활성'}
-                        </Badge>
-                      </td>
-                      <td className="px-5 py-3">
-                        <div className="flex justify-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleStartEdit(code)}
-                            className={editIconButtonClass}
-                            title="수정"
-                          >
-                            <Pencil size={15} />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteCode(code)}
-                            className={deleteIconButtonClass}
-                            title="삭제"
-                          >
-                            <Trash2 size={15} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ),
-                )}
-
-                {addingRow && (
-                  <tr className={tableInlineEditRowClass}>
-                    <td className="px-5 py-2">
-                      <input
-                        className={`${inlineInputClass} font-mono bg-[var(--surface-alt)] text-[var(--text-muted)]`}
-                        value=""
-                        placeholder="저장 시 자동 채번"
-                        readOnly
-                      />
-                    </td>
-                    <td className="px-5 py-2">
-                      <input
-                        className={inlineInputClass}
-                        value={newRow.codeName}
-                        onChange={(event) => setNewRow((row) => ({ ...row, codeName: event.target.value }))}
-                        placeholder="예: 대기"
-                        maxLength={100}
-                        autoFocus
-                      />
-                    </td>
-                    <td className="px-5 py-2">
-                      <input
-                        className={`${inlineInputClass} font-mono text-center`}
-                        value={newRow.numberingPrefix}
-                        onChange={(event) =>
-                          setNewRow((row) => ({ ...row, numberingPrefix: event.target.value.toUpperCase() }))
-                        }
-                        maxLength={20}
-                        placeholder="예: RM"
-                      />
-                    </td>
-                    <td className="px-5 py-2">
-                      <input
-                        className={`${inlineInputClass} text-center`}
-                        type="number"
-                        min={1}
-                        value={newRow.sortOrder}
-                        onChange={(event) => setNewRow((row) => ({ ...row, sortOrder: event.target.value }))}
-                        placeholder="1"
-                      />
-                    </td>
-                    <td />
-                    <td className="px-5 py-2">
-                      <div className="flex justify-center gap-1">
-                        <button
-                          type="button"
-                          onClick={handleSaveAdd}
-                          disabled={createCode.isPending}
-                          className={saveIconButtonClass}
-                          title="저장"
-                        >
-                          <Check size={15} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={handleCancelAdd}
-                          className={cancelIconButtonClass}
-                          title="취소"
-                        >
-                          <X size={15} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+            <div className="min-h-0 flex-1">
+              <CommonCodeDataGrid
+                rows={codeRows}
+                editingId={editingId}
+                newRow={newRow}
+                editRow={editRow}
+                createPending={createCode.isPending}
+                updatePending={updateCode.isPending}
+                onNewRowChange={setNewRow}
+                onEditRowChange={setEditRow}
+                onSaveAdd={handleSaveAdd}
+                onCancelAdd={handleCancelAdd}
+                onStartEdit={handleStartEdit}
+                onSaveEdit={handleSaveEdit}
+                onCancelEdit={handleCancelEdit}
+                onDeleteCode={handleDeleteCode}
+              />
             </div>
           )}
         </div>

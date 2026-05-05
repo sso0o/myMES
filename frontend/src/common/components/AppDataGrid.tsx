@@ -38,11 +38,13 @@ function AppDataGrid<R extends GridValidRowModel>({
   const mergedSx = mergeSx(sx)
 
   return (
-    <DataGrid<R>
-      disableRowSelectionOnClick={disableRowSelectionOnClick}
-      sx={mergedSx}
-      {...rest}
-    />
+    <div className="h-full w-full min-w-0 max-w-full overflow-hidden">
+      <DataGrid<R>
+        disableRowSelectionOnClick={disableRowSelectionOnClick}
+        sx={mergedSx}
+        {...rest}
+      />
+    </div>
   )
 }
 

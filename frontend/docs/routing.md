@@ -52,6 +52,31 @@ const router = createBrowserRouter([
 ]);
 ```
 
+## 에러 처리
+
+라우트 에러는 `RouteErrorScreen` 컴포넌트로 처리합니다.
+
+```
+common/components/error/
+└── RouteErrorScreen.tsx   # 라우트 에러 전용 화면
+```
+
+- `useRouteError()`로 에러를 수신하고 `isRouteErrorResponse()`로 HTTP 에러 여부를 구분합니다.
+- 개발 환경(`import.meta.env.DEV`)에서만 스택 트레이스를 표시합니다.
+- 라우터 설정에서 `errorElement`로 등록합니다.
+
+```tsx
+import RouteErrorScreen from '@/common/components/error/RouteErrorScreen'
+
+const router = createBrowserRouter([
+    {
+        path: '/',
+        errorElement: <RouteErrorScreen />,
+        children: [...],
+    },
+])
+```
+
 **규칙**
 - 페이지 컴포넌트는 반드시 `features/{domain}/pages/`에 위치시킵니다.
 - 인증이 필요한 모든 라우트는 `PrivateRoute` 하위에 배치합니다.
