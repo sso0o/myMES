@@ -25,7 +25,8 @@
       "mcp__c7f96ad4-96f6-4c7a-bbb6-4a0924ba8f4e__notion-update-data-source",
       "Bash(./gradlew compileJava compileTestJava)",
       "Bash(./gradlew compileTestJava)",
-      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")"
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
+      "Bash(./gradlew cleanTest test --tests \"com.mymes.backend.production.ProductionServiceTest\")"
     ]
   }
 }
