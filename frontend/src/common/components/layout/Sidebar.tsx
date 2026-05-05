@@ -10,6 +10,7 @@ import {
   GitBranch,
   Layers,
   Link2,
+  Users,
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
@@ -41,6 +42,12 @@ const menuGroups = [
       { label: '작업 지시', path: '/work-orders', icon: ClipboardList },
       { label: '생산 실적', path: '/production', icon: BarChart2 },
       { label: '품질 관리', path: '/quality', icon: ShieldCheck },
+    ],
+  },
+  {
+    group: '운영 관리',
+    items: [
+      { label: '작업자 관리', path: '/operation/workers', icon: Users },
     ],
   },
 ]
