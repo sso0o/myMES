@@ -14,6 +14,7 @@ import ProcessEquipmentManagementPage from '@/pages/ProcessEquipmentManagementPa
 import WorkOrderTimelinePage from '@/pages/WorkOrderTimelinePage'
 import DashboardPage from '@/pages/DashboardPage'
 import ProductionRecordPage from '@/pages/ProductionRecordPage'
+import WorkerManagementPage from '@/pages/WorkerManagementPage'
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage />, errorElement: <RouteErrorScreen /> },
@@ -38,6 +39,7 @@ const router = createBrowserRouter([
           { path: '/prod-basic/item-processes', element: <ItemProcessManagementPage /> },
           { path: '/prod-basic/boms', element: <BomManagementPage /> },
           { path: '/prod-basic/process-equipment', element: <ProcessEquipmentManagementPage /> },
+          { path: '/operation/workers', element: <WorkerManagementPage /> },
         ],
       },
     ],

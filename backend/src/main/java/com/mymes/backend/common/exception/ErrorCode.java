@@ -88,6 +88,11 @@ public enum ErrorCode {
     USER_PASSWORD_MISMATCH(400, "현재 비밀번호가 일치하지 않습니다."),
     USER_EMP_NO_GENERATION_FAILED(500, "사번 생성에 실패했습니다."),
 
+    // Worker
+    WORKER_NOT_FOUND(404, "작업자를 찾을 수 없습니다."),
+    WORKER_CODE_GENERATION_FAILED(500, "작업자코드 생성에 실패했습니다."),
+    WORKER_RESIGNED_AT_REQUIRED(400, "퇴사 상태의 작업자는 퇴사일이 필요합니다."),
+
     // Supabase Admin API
     SUPABASE_USER_CREATE_FAILED(500, "Supabase 계정 생성에 실패했습니다."),
     SUPABASE_USER_UPDATE_FAILED(500, "Supabase 계정 수정에 실패했습니다."),
