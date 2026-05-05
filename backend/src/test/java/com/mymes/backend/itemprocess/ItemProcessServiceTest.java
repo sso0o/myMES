@@ -104,4 +104,23 @@ class ItemProcessServiceTest {
             verify(itemProcessRepository, times(1)).findByItemIdOrderBySequenceAsc(1L);
         }
     }
+
+    @Nested
+    @DisplayName("품목-공정 존재 여부")
+    class ExistsByItemAndProcess {
+
+        @Test
+        @DisplayName("품목에 등록된 공정이면 참을 반환한다")
+        void existsByItemAndProcess_true() {
+            // given
+            given(itemProcessRepository.existsByItemIdAndProcessId(1L, 10L)).willReturn(true);
+
+            // when
+            boolean result = itemProcessService.existsByItemAndProcess(1L, 10L);
+
+            // then
+            assertThat(result).isTrue();
+            verify(itemProcessRepository, times(1)).existsByItemIdAndProcessId(1L, 10L);
+        }
+    }
 }

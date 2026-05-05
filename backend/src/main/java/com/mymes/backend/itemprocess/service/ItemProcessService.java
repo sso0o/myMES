@@ -51,6 +51,17 @@ public class ItemProcessService {
                 .findFirst();
     }
 
+    /**
+     * 품목에 특정 공정이 등록되어 있는지 확인합니다.
+     *
+     * @param itemId 품목 ID
+     * @param processId 공정 ID
+     * @return 품목-공정 등록 여부
+     */
+    public boolean existsByItemAndProcess(Long itemId, Long processId) {
+        return itemProcessRepository.existsByItemIdAndProcessId(itemId, processId);
+    }
+
     public ItemProcessResponse findById(Long id) {
         return itemProcessMapper.toResponse(getItemProcess(id));
     }
