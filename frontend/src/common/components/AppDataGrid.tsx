@@ -32,6 +32,8 @@ function mergeSx(sx: AppDataGridSx): AppDataGridSx {
  */
 function AppDataGrid<R extends GridValidRowModel>({
   sx,
+  columnHeaderHeight = 48,
+  rowHeight = 44,
   disableRowSelectionOnClick = true,
   ...rest
 }: AppDataGridProps<R>) {
@@ -40,6 +42,8 @@ function AppDataGrid<R extends GridValidRowModel>({
   return (
     <div className="h-full w-full min-w-0 max-w-full overflow-hidden">
       <DataGrid<R>
+        columnHeaderHeight={columnHeaderHeight}
+        rowHeight={rowHeight}
         disableRowSelectionOnClick={disableRowSelectionOnClick}
         sx={mergedSx}
         {...rest}

@@ -4,7 +4,8 @@ import { primaryActionButtonClass } from '@/common/styles/button'
 import { useFeedback } from '@/common/hooks/useFeedback'
 import { useItemList } from '@/features/master/item/hooks/useItemQuery'
 import type { ItemResponse } from '@/features/master/item/types'
-import BomTable from '@/features/prod-basic/bom/components/BomTable'
+import BomDataGrid, { type BomInlineRow } from '@/features/prod-basic/bom/components/BomDataGrid'
+import BomItemDataGrid from '@/features/prod-basic/bom/components/BomItemDataGrid'
 import {
   useBomList,
   useCreateBom,
@@ -13,21 +14,14 @@ import {
 } from '@/features/prod-basic/bom/hooks/useBomQuery'
 import type { BomResponse } from '@/features/prod-basic/bom/types'
 
-interface InlineRow {
-  materialItemId: string
-  sequence: string
-  quantity: string
-  description: string
-}
-
-const emptyRow: InlineRow = { materialItemId: '', sequence: '', quantity: '', description: '' }
+const emptyRow: BomInlineRow = { materialItemId: '', sequence: '', quantity: '', description: '' }
 
 const BomManagementPage = () => {
   const [selectedItem, setSelectedItem] = useState<ItemResponse | null>(null)
   const [addingRow, setAddingRow] = useState(false)
-  const [newRow, setNewRow] = useState<InlineRow>(emptyRow)
+  const [newRow, setNewRow] = useState<BomInlineRow>(emptyRow)
   const [editingId, setEditingId] = useState<number | null>(null)
-  const [editRow, setEditRow] = useState<InlineRow>(emptyRow)
+  const [editRow, setEditRow] = useState<BomInlineRow>(emptyRow)
 
   const { showToast, showAlert } = useFeedback()
 
@@ -67,7 +61,7 @@ const BomManagementPage = () => {
     setNewRow(emptyRow)
   }
 
-  const parseRow = (row: InlineRow) => {
+  const parseRow = (row: BomInlineRow) => {
     const materialItemId = parseInt(row.materialItemId, 10)
     const sequence = parseInt(row.sequence, 10)
     const quantity = Number(row.quantity)
@@ -167,7 +161,7 @@ const BomManagementPage = () => {
   const canAdd = Boolean(selectedItem) && !addingRow
 
   return (
-    <div className="space-y-5 p-6">
+    <div className="min-w-0 max-w-full space-y-5 overflow-hidden p-6">
       <div>
         <h1 className="text-xl font-semibold text-[var(--text-strong)]">BOM 관리</h1>
         <p className="mt-0.5 text-sm text-[var(--text-muted)]">
@@ -175,54 +169,23 @@ const BomManagementPage = () => {
         </p>
       </div>
 
-      <div className="flex h-[calc(100vh-16rem)] gap-0">
-        <div className="flex w-80 shrink-0 flex-col rounded-l-lg border border-[var(--border)] bg-[var(--surface)]">
+      <div className="flex h-[calc(100vh-16rem)] min-w-0 gap-0">
+        <div className="flex w-[28rem] shrink-0 flex-col rounded-l-lg border border-[var(--border)] bg-[var(--surface)]">
           <div className="flex min-h-[52px] shrink-0 items-center border-b border-[var(--border)] px-4">
             <span className="text-sm font-semibold text-[var(--text-strong)]">품목 목록</span>
           </div>
 
-          <ul className="flex-1 overflow-y-auto">
-            {itemsLoading ? (
-              <li className="px-4 py-8 text-center text-sm text-[var(--text-muted)]">
-                불러오는 중...
-              </li>
-            ) : items.length === 0 ? (
-              <li className="px-4 py-8 text-center text-sm text-[var(--text-muted)]">
-                등록된 품목이 없습니다.
-              </li>
-            ) : (
-              items.map((item) => (
-                <li
-                  key={item.id}
-                  onClick={() => handleSelectItem(item)}
-                  className={`cursor-pointer px-4 py-3 transition-colors ${
-                    selectedItem?.id === item.id
-                      ? 'bg-[var(--primary-soft)]'
-                      : 'hover:bg-[var(--surface-alt)]'
-                  }`}
-                >
-                  <p
-                    className={`truncate text-sm font-medium ${
-                      selectedItem?.id === item.id
-                        ? 'text-[var(--primary)]'
-                        : 'text-[var(--text-strong)]'
-                    }`}
-                  >
-                    {item.itemName}
-                  </p>
-                  <p className="mt-0.5 font-mono text-xs text-[var(--text-muted)]">
-                    {item.itemCode}
-                  </p>
-                  {item.itemTypeName && (
-                    <p className="mt-0.5 text-xs text-[var(--text-muted)]">{item.itemTypeName}</p>
-                  )}
-                </li>
-              ))
-            )}
-          </ul>
+          <div className="min-h-0 flex-1">
+            <BomItemDataGrid
+              items={items}
+              loading={itemsLoading}
+              selectedItemId={selectedItem?.id ?? null}
+              onSelectItem={handleSelectItem}
+            />
+          </div>
         </div>
 
-        <div className="flex flex-1 flex-col rounded-r-lg border border-l-0 border-[var(--border)] bg-[var(--surface)]">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-r-lg border border-l-0 border-[var(--border)] bg-[var(--surface)]">
           <div className="flex min-h-[52px] shrink-0 items-center justify-between border-b border-[var(--border)] px-5">
             <div className="min-w-0 flex-1">
               <span className="text-sm font-semibold text-[var(--text-strong)]">
@@ -249,29 +212,28 @@ const BomManagementPage = () => {
             <div className="flex flex-1 items-center justify-center text-sm text-[var(--text-muted)]">
               좌측에서 품목을 선택하세요.
             </div>
-          ) : bomsLoading ? (
-            <div className="flex flex-1 items-center justify-center text-sm text-[var(--text-muted)]">
-              불러오는 중...
-            </div>
           ) : (
-            <BomTable
-              boms={boms}
-              materialOptions={materialOptions}
-              addingRow={addingRow}
-              editingId={editingId}
-              newRow={newRow}
-              editRow={editRow}
-              isCreating={createBom.isPending}
-              isUpdating={updateBom.isPending}
-              onCancelAdd={handleCancelAdd}
-              onChangeNewRow={setNewRow}
-              onSaveAdd={handleSaveAdd}
-              onStartEdit={handleStartEdit}
-              onCancelEdit={handleCancelEdit}
-              onChangeEditRow={setEditRow}
-              onSaveEdit={handleSaveEdit}
-              onDelete={handleDelete}
-            />
+            <div className="min-h-0 flex-1">
+              <BomDataGrid
+                boms={boms}
+                materialOptions={materialOptions}
+                loading={bomsLoading}
+                addingRow={addingRow}
+                editingId={editingId}
+                newRow={newRow}
+                editRow={editRow}
+                isCreating={createBom.isPending}
+                isUpdating={updateBom.isPending}
+                onCancelAdd={handleCancelAdd}
+                onChangeNewRow={setNewRow}
+                onSaveAdd={handleSaveAdd}
+                onStartEdit={handleStartEdit}
+                onCancelEdit={handleCancelEdit}
+                onChangeEditRow={setEditRow}
+                onSaveEdit={handleSaveEdit}
+                onDelete={handleDelete}
+              />
+            </div>
           )}
         </div>
       </div>

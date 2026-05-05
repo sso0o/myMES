@@ -27,10 +27,11 @@ export const appDataGridSx: SystemStyleObject<Theme> = {
     bgcolor: 'var(--surface-alt)',
     borderBottom: 0,
   },
-  '& .MuiDataGrid-columnHeader, & .MuiDataGrid-filler, & .MuiDataGrid-scrollbarFiller': {
+  '& .MuiDataGrid-columnHeader, & .MuiDataGrid-columnHeaders .MuiDataGrid-filler, & .MuiDataGrid-columnHeaders .MuiDataGrid-scrollbarFiller': {
     bgcolor: 'var(--surface-alt)',
   },
   '& .MuiDataGrid-filler, & .MuiDataGrid-scrollbarFiller': {
+    bgcolor: 'var(--surface)',
     borderTop: 0,
   },
   '& .MuiDataGrid-row--borderBottom .MuiDataGrid-columnHeader, & .MuiDataGrid-row--borderBottom .MuiDataGrid-filler, & .MuiDataGrid-row--borderBottom .MuiDataGrid-scrollbarFiller, & .MuiDataGrid-filler--borderBottom': {
@@ -40,7 +41,7 @@ export const appDataGridSx: SystemStyleObject<Theme> = {
     color: 'var(--text-base)',
     fontWeight: 500,
     fontSize: '0.875rem',
-    px: 2,
+    px: 1.5,
     '&:focus, &:focus-within': {
       outline: '2px solid var(--primary)',
       outlineOffset: '-2px',
@@ -68,7 +69,7 @@ export const appDataGridSx: SystemStyleObject<Theme> = {
 
   // ── 셀 / 행 ──────────────────────────────────────────────
   '& .MuiDataGrid-cell': {
-    px: 2,
+    px: 1.5,
     borderBottom: 0,
     color: 'var(--text-base)',
     '&:focus, &:focus-within': {
@@ -94,9 +95,11 @@ export const appDataGridSx: SystemStyleObject<Theme> = {
 
   // ── 빈 상태 오버레이 ──────────────────────────────────────
   '& .MuiDataGrid-overlayWrapper': {
+    bgcolor: 'var(--surface)',
     minHeight: '160px',
   },
   '& .MuiDataGrid-overlay': {
+    bgcolor: 'var(--surface)',
     color: 'var(--text-muted)',
     fontSize: '0.875rem',
   },
@@ -147,7 +150,11 @@ export const appDataGridSx: SystemStyleObject<Theme> = {
 
   // ── 스크롤바 ─────────────────────────────────────────────
   '& .MuiDataGrid-virtualScroller': {
+    bgcolor: 'var(--surface)',
     borderTop: 0,
     overflowX: 'auto',
+  },
+  '& .MuiDataGrid-virtualScrollerContent, & .MuiDataGrid-virtualScrollerRenderZone': {
+    bgcolor: 'var(--surface)',
   },
 }
