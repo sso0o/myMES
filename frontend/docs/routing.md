@@ -43,9 +43,9 @@ const router = createBrowserRouter([
         element: <PrivateRoute />,
         children: [
             { path: '/dashboard', element: <DashboardPage /> },
-            { path: '/work-orders', element: <WorkOrderListPage /> },
-            { path: '/work-orders/create', element: <CreateWorkOrderPage /> },
-            { path: '/work-orders/:id', element: <WorkOrderDetailPage /> },
+            { path: '/master/items', element: <ItemManagementPage /> },
+            { path: '/prod-basic/processes', element: <ProcessManagementPage /> },
+            { path: '/planning', element: <PlanningManagementPage /> },
             // ...
         ],
     },
@@ -78,6 +78,7 @@ const router = createBrowserRouter([
 ```
 
 **규칙**
-- 페이지 컴포넌트는 반드시 `features/{domain}/pages/`에 위치시킵니다.
+- 페이지 컴포넌트는 반드시 `pages/`에 위치시킵니다.
+- 도메인 구현은 `features/{group}/{domain}/`에 위치시킵니다.
 - 인증이 필요한 모든 라우트는 `PrivateRoute` 하위에 배치합니다.
 - URL은 케밥케이스 복수형을 사용합니다. (`/work-orders`, `/work-orders/:id`)

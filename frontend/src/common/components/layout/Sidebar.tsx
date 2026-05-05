@@ -9,6 +9,7 @@ import {
   Wrench,
   GitBranch,
   Layers,
+  Link2,
 } from 'lucide-react'
 import { NavLink } from 'react-router-dom'
 
@@ -30,6 +31,7 @@ const menuGroups = [
       { label: '설비 관리', path: '/prod-basic/equipment', icon: Wrench },
       { label: '품목별 공정 관리', path: '/prod-basic/item-processes', icon: Layers },
       { label: 'BOM 관리', path: '/prod-basic/boms', icon: Package },
+      { label: '공정별 설비 관리', path: '/prod-basic/process-equipment', icon: Link2 },
     ],
   },
   {
