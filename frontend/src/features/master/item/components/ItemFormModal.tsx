@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import Modal from '@/common/components/Modal'
+import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
+import AppTextField from '@/common/components/AppTextField'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import {
   formClass,
-  formDisabledInputClass,
-  formInputClass,
   formLabelClass,
 } from '@/common/styles/form'
 import type { ItemCreateRequest, ItemResponse, ItemUpdateRequest } from '../types'
@@ -41,6 +41,7 @@ const ItemFormModal = ({
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors },
   } = useForm<ItemFormInput, unknown, ItemFormValues>({
@@ -68,11 +69,10 @@ const ItemFormModal = ({
               <label className={formLabelClass}>
                 품목코드
               </label>
-              <input
-                type="text"
+              <AppTextField
                 value={editTarget.itemCode}
                 disabled
-                className={formDisabledInputClass}
+                sx={{ '& .MuiInputBase-input': { fontFamily: 'monospace' } }}
               />
             </div>
           )}
@@ -81,12 +81,10 @@ const ItemFormModal = ({
             <label className={formLabelClass}>
               품목명 <span className="text-[var(--danger)]">*</span>
             </label>
-            <input
-              type="text"
+            <AppTextField
               {...register('itemName')}
               placeholder="품목명을 입력하세요"
-              maxLength={100}
-              className={formInputClass}
+              slotProps={{ htmlInput: { maxLength: 100 } }}
             />
             {errors.itemName && <p className={formErrorClass}>{errors.itemName.message}</p>}
           </div>
@@ -95,20 +93,23 @@ const ItemFormModal = ({
             <label className={formLabelClass}>
               품목구분 <span className="text-[var(--danger)]">*</span>
             </label>
-            <select
-                {...register('itemTypeId')}
-                className={formInputClass}
-            >
-              <option value="">품목구분 선택</option>
-              {itemTypeOptions
-              .filter((opt) => opt.isActive)
-              .sort((a, b) => a.sortOrder - b.sortOrder)
-              .map((opt) => (
-                  <option key={opt.id} value={opt.id}>
-                    {opt.codeName}
-                  </option>
-              ))}
-            </select>
+            <Controller
+              name="itemTypeId"
+              control={control}
+              render={({ field }) => (
+                <AppSelect {...field} value={field.value === '' ? '' : String(field.value)}>
+                  <AppMenuItem value="">품목구분 선택</AppMenuItem>
+                  {itemTypeOptions
+                    .filter((opt) => opt.isActive)
+                    .sort((a, b) => a.sortOrder - b.sortOrder)
+                    .map((opt) => (
+                      <AppMenuItem key={opt.id} value={String(opt.id)}>
+                        {opt.codeName}
+                      </AppMenuItem>
+                    ))}
+                </AppSelect>
+              )}
+            />
             {errors.itemTypeId && <p className={formErrorClass}>{errors.itemTypeId.message}</p>}
           </div>
 
@@ -116,20 +117,23 @@ const ItemFormModal = ({
             <label className={formLabelClass}>
               단위 <span className="text-[var(--danger)]">*</span>
             </label>
-            <select
-              {...register('unit')}
-              className={formInputClass}
-            >
-              <option value="">단위 선택</option>
-              {itemUnitOptions
-                .filter((opt) => opt.isActive)
-                .sort((a, b) => a.sortOrder - b.sortOrder)
-                .map((opt) => (
-                  <option key={opt.id} value={opt.codeName}>
-                    {opt.codeName}
-                  </option>
-                ))}
-            </select>
+            <Controller
+              name="unit"
+              control={control}
+              render={({ field }) => (
+                <AppSelect {...field} value={field.value}>
+                  <AppMenuItem value="">단위 선택</AppMenuItem>
+                  {itemUnitOptions
+                    .filter((opt) => opt.isActive)
+                    .sort((a, b) => a.sortOrder - b.sortOrder)
+                    .map((opt) => (
+                      <AppMenuItem key={opt.id} value={opt.codeName}>
+                        {opt.codeName}
+                      </AppMenuItem>
+                    ))}
+                </AppSelect>
+              )}
+            />
             {errors.unit && <p className={formErrorClass}>{errors.unit.message}</p>}
           </div>
 

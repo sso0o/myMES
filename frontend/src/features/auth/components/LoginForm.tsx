@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import AppTextField from '@/common/components/AppTextField'
 import { useLogin } from '../hooks/useLogin'
 
 const LoginForm = () => {
@@ -17,12 +18,10 @@ const LoginForm = () => {
         <label className="mb-2 block text-sm font-medium text-[var(--text-base)]">
           사번
         </label>
-        <input
-          type="text"
+        <AppTextField
           inputMode="numeric"
           value={employeeNumber}
           onChange={(e) => setEmployeeNumber(e.target.value)}
-          className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
           placeholder="사번을 입력하세요"
           required
           autoFocus
@@ -33,11 +32,10 @@ const LoginForm = () => {
         <label className="mb-2 block text-sm font-medium text-[var(--text-base)]">
           비밀번호
         </label>
-        <input
+        <AppTextField
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
           placeholder="••••••••"
           required
         />

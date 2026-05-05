@@ -1,14 +1,14 @@
 import { useEffect } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm, useWatch } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import Modal from '@/common/components/Modal'
+import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
+import AppTextField from '@/common/components/AppTextField'
+import AppTextarea from '@/common/components/AppTextarea'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import {
   formClass,
-  formDisabledInputClass,
-  formInputClass,
   formLabelClass,
-  formTextareaClass,
 } from '@/common/styles/form'
 import { useEquipmentTypeOptions } from '../hooks/useEquipmentQuery'
 import {
@@ -90,11 +90,10 @@ const EquipmentFormModal = ({
               <label className={formLabelClass}>
                 설비코드
               </label>
-              <input
-                type="text"
+              <AppTextField
                 value={editTarget.equipmentCode}
                 disabled
-                className={formDisabledInputClass}
+                sx={{ '& .MuiInputBase-input': { fontFamily: 'monospace' } }}
               />
             </div>
           )}
@@ -103,12 +102,10 @@ const EquipmentFormModal = ({
             <label className={formLabelClass}>
               설비명 <span className="text-[var(--danger)]">*</span>
             </label>
-            <input
-              type="text"
+            <AppTextField
               {...register('equipmentName')}
               placeholder="설비명을 입력하세요"
-              maxLength={100}
-              className={formInputClass}
+              slotProps={{ htmlInput: { maxLength: 100 } }}
             />
             {errors.equipmentName && (
               <p className={formErrorClass}>{errors.equipmentName.message}</p>
@@ -119,20 +116,23 @@ const EquipmentFormModal = ({
             <label className={formLabelClass}>
               설비유형
             </label>
-            <select
-              {...register('equipmentTypeId')}
-              className={formInputClass}
-            >
-              <option value="">설비유형 선택</option>
-              {equipmentTypeOptions
-                .filter((opt) => opt.isActive)
-                .sort((a, b) => a.sortOrder - b.sortOrder)
-                .map((opt) => (
-                  <option key={opt.id} value={opt.id}>
-                    {opt.codeName}
-                  </option>
-                ))}
-            </select>
+            <Controller
+              name="equipmentTypeId"
+              control={control}
+              render={({ field }) => (
+                <AppSelect {...field} value={field.value === '' ? '' : String(field.value)}>
+                  <AppMenuItem value="">설비유형 선택</AppMenuItem>
+                  {equipmentTypeOptions
+                    .filter((opt) => opt.isActive)
+                    .sort((a, b) => a.sortOrder - b.sortOrder)
+                    .map((opt) => (
+                      <AppMenuItem key={opt.id} value={String(opt.id)}>
+                        {opt.codeName}
+                      </AppMenuItem>
+                    ))}
+                </AppSelect>
+              )}
+            />
             {errors.equipmentTypeId && (
               <p className={formErrorClass}>{errors.equipmentTypeId.message}</p>
             )}
@@ -140,12 +140,10 @@ const EquipmentFormModal = ({
 
           <div>
             <label className={formLabelClass}>위치</label>
-            <input
-              type="text"
+            <AppTextField
               {...register('location')}
               placeholder="설비 위치를 입력하세요"
-              maxLength={200}
-              className={formInputClass}
+              slotProps={{ htmlInput: { maxLength: 200 } }}
             />
             {errors.location && <p className={formErrorClass}>{errors.location.message}</p>}
           </div>
@@ -155,12 +153,10 @@ const EquipmentFormModal = ({
               <label className={formLabelClass}>
                 제조사
               </label>
-              <input
-                type="text"
+              <AppTextField
                 {...register('manufacturer')}
                 placeholder="제조사"
-                maxLength={100}
-                className={formInputClass}
+                slotProps={{ htmlInput: { maxLength: 100 } }}
               />
               {errors.manufacturer && (
                 <p className={formErrorClass}>{errors.manufacturer.message}</p>
@@ -170,12 +166,10 @@ const EquipmentFormModal = ({
               <label className={formLabelClass}>
                 모델명
               </label>
-              <input
-                type="text"
+              <AppTextField
                 {...register('modelName')}
                 placeholder="모델명"
-                maxLength={100}
-                className={formInputClass}
+                slotProps={{ htmlInput: { maxLength: 100 } }}
               />
               {errors.modelName && <p className={formErrorClass}>{errors.modelName.message}</p>}
             </div>
@@ -185,10 +179,9 @@ const EquipmentFormModal = ({
             <label className={formLabelClass}>
               구입일
             </label>
-            <input
+            <AppTextField
               type="date"
               {...register('purchaseDate')}
-              className={formInputClass}
             />
             {errors.purchaseDate && (
               <p className={formErrorClass}>{errors.purchaseDate.message}</p>
@@ -197,12 +190,11 @@ const EquipmentFormModal = ({
 
           <div>
             <label className={formLabelClass}>설명</label>
-            <textarea
+            <AppTextarea
               {...register('description')}
               placeholder="설비에 대한 설명을 입력하세요"
               rows={3}
-              maxLength={500}
-              className={formTextareaClass}
+              slotProps={{ htmlInput: { maxLength: 500 } }}
             />
             {errors.description && <p className={formErrorClass}>{errors.description.message}</p>}
           </div>

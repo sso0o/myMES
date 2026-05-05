@@ -1,4 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import type { SelectChangeEvent } from '@mui/material/Select'
+import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
 import {
   paginationIconButtonClass,
   paginationPageButtonActiveClass,
@@ -35,7 +37,7 @@ const Pagination = ({
 }: PaginationProps) => {
   const pageNumbers = getPageNumbers(currentPage, totalPages)
 
-  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handlePageSizeChange = (e: SelectChangeEvent<string>) => {
     onPageSizeChange(Number(e.target.value))
   }
 
@@ -43,17 +45,17 @@ const Pagination = ({
     <div className="flex items-center justify-between px-4 py-3">
       <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
         <span>총 {totalItems.toLocaleString()}건</span>
-        <select
-          value={pageSize}
+        <AppSelect
+          value={String(pageSize)}
           onChange={handlePageSizeChange}
-          className="rounded border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-sm text-[var(--text-base)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+          sx={{ width: 112 }}
         >
           {pageSizeOptions.map((opt) => (
-            <option key={opt} value={opt}>
+            <AppMenuItem key={opt} value={String(opt)}>
               {opt}건씩 보기
-            </option>
+            </AppMenuItem>
           ))}
-        </select>
+        </AppSelect>
       </div>
 
       {totalPages > 1 && (

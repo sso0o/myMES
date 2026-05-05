@@ -7,8 +7,12 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
 import Modal from '@/common/components/Modal'
+import AppNumberField from '@/common/components/AppNumberField'
+import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
+import AppTextField from '@/common/components/AppTextField'
+import AppTextarea from '@/common/components/AppTextarea'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
-import { formClass, formInputClass, formLabelClass, formDisabledInputClass } from '@/common/styles/form'
+import { formClass, formLabelClass } from '@/common/styles/form'
 import { useItemList } from '@/features/master/item/hooks/useItemQuery'
 import { planningFormSchema, type PlanningFormInput, type PlanningFormValues } from '../schemas/planningSchema'
 import type { ProductionPlanResponse } from '../types'
@@ -33,7 +37,8 @@ const getDefaultValues = (editTarget: ProductionPlanResponse | null): PlanningFo
 const datePickerSx = {
   width: '100%',
   '& .MuiInputBase-root': {
-    fontSize: '0.875rem',
+    minHeight: 30,
+    fontSize: '0.75rem',
     borderRadius: '0.5rem',
     color: 'var(--text-strong)',
     backgroundColor: 'var(--surface)',
@@ -48,7 +53,8 @@ const datePickerSx = {
     },
   },
   '& .MuiInputBase-input': {
-    padding: '0.5rem 0.75rem',
+    padding: '0.25rem 0.5rem',
+    lineHeight: 1.35,
   },
   '& .MuiOutlinedInput-notchedOutline': {
     display: 'none',
@@ -98,11 +104,10 @@ const PlanningFormModal = ({
           {editTarget && (
             <div>
               <label className={formLabelClass}>계획번호</label>
-              <input
-                type="text"
+              <AppTextField
                 value={editTarget.planNo}
                 disabled
-                className={formDisabledInputClass}
+                sx={{ '& .MuiInputBase-input': { fontFamily: 'monospace' } }}
               />
             </div>
           )}
@@ -111,14 +116,20 @@ const PlanningFormModal = ({
             <label className={formLabelClass}>
               품목 <span className="text-[var(--danger)]">*</span>
             </label>
-            <select {...register('itemId')} className={formInputClass}>
-              <option value="">품목을 선택하세요</option>
-              {items.map((item) => (
-                <option key={item.id} value={item.id}>
-                  [{item.itemCode}] {item.itemName}
-                </option>
-              ))}
-            </select>
+            <Controller
+              name="itemId"
+              control={control}
+              render={({ field }) => (
+                <AppSelect {...field} value={field.value === '' ? '' : String(field.value)}>
+                  <AppMenuItem value="">품목을 선택하세요</AppMenuItem>
+                  {items.map((item) => (
+                    <AppMenuItem key={item.id} value={String(item.id)}>
+                      [{item.itemCode}] {item.itemName}
+                    </AppMenuItem>
+                  ))}
+                </AppSelect>
+              )}
+            />
             {errors.itemId && <p className={formErrorClass}>{errors.itemId.message}</p>}
           </div>
 
@@ -126,12 +137,10 @@ const PlanningFormModal = ({
             <label className={formLabelClass}>
               계획수량 <span className="text-[var(--danger)]">*</span>
             </label>
-            <input
-              type="number"
-              min={1}
+            <AppNumberField
               {...register('plannedQty')}
               placeholder="수량을 입력하세요"
-              className={formInputClass}
+              slotProps={{ htmlInput: { min: 1 } }}
             />
             {errors.plannedQty && <p className={formErrorClass}>{errors.plannedQty.message}</p>}
           </div>
@@ -159,12 +168,11 @@ const PlanningFormModal = ({
 
           <div>
             <label className={formLabelClass}>메모</label>
-            <textarea
+            <AppTextarea
               {...register('memo')}
               placeholder="메모를 입력하세요"
               rows={3}
-              maxLength={500}
-              className="w-full resize-none rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              slotProps={{ htmlInput: { maxLength: 500 } }}
             />
             {errors.memo && <p className={formErrorClass}>{errors.memo.message}</p>}
           </div>

@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import Modal from '@/common/components/Modal'
+import AppNumberField from '@/common/components/AppNumberField'
+import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
-import { formClass, formInputClass, formLabelClass } from '@/common/styles/form'
+import { formClass, formLabelClass } from '@/common/styles/form'
 import { useProcessList } from '@/features/prod-basic/process/hooks/useProcessQuery'
 import type { ItemProcessCreateRequest, ItemProcessResponse, ItemProcessUpdateRequest } from '../types'
 
@@ -48,32 +50,29 @@ const ItemProcessFormModal = ({
             <label className={formLabelClass}>
               공정 <span className="text-[var(--danger)]">*</span>
             </label>
-            <select
-              value={processId ?? ''}
+            <AppSelect
+              value={processId === null ? '' : String(processId)}
               onChange={(e) => setProcessId(e.target.value ? Number(e.target.value) : null)}
               required
-              className={formInputClass}
             >
-              <option value="">공정 선택</option>
+              <AppMenuItem value="">공정 선택</AppMenuItem>
               {activeProcesses.map((p) => (
-                <option key={p.id} value={p.id}>
+                <AppMenuItem key={p.id} value={String(p.id)}>
                   {p.processCode} — {p.processName}
-                </option>
+                </AppMenuItem>
               ))}
-            </select>
+            </AppSelect>
           </div>
 
           <div>
             <label className={formLabelClass}>
               순서 <span className="text-[var(--danger)]">*</span>
             </label>
-            <input
-              type="number"
-              min={1}
+            <AppNumberField
               value={sequence}
               onChange={(e) => setSequence(Number(e.target.value))}
               required
-              className={formInputClass}
+              slotProps={{ htmlInput: { min: 1 } }}
             />
           </div>
 
