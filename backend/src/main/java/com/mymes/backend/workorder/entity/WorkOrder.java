@@ -1,5 +1,6 @@
 package com.mymes.backend.workorder.entity;
 
+import com.mymes.backend.bom.entity.BomVersion;
 import com.mymes.backend.common.entity.BaseEntity;
 import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
@@ -53,9 +54,14 @@ public class WorkOrder extends BaseEntity {
     @Column(name = "due_date", nullable = false)
     private LocalDate dueDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bom_version_id")
+    private BomVersion bomVersion;
+
     @Builder
     public WorkOrder(String workOrderNo, Item item, Integer plannedQty,
-                     Priority priority, MfgProcess process, String workerName, LocalDate dueDate) {
+                     Priority priority, MfgProcess process, String workerName, LocalDate dueDate,
+                     BomVersion bomVersion) {
         this.workOrderNo = workOrderNo;
         this.item = item;
         this.plannedQty = plannedQty;
@@ -64,6 +70,7 @@ public class WorkOrder extends BaseEntity {
         this.process = process;
         this.workerName = workerName;
         this.dueDate = dueDate;
+        this.bomVersion = bomVersion;
     }
 
     public void update(Item item, Integer plannedQty, Priority priority,

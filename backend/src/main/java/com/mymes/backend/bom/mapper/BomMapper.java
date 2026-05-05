@@ -1,7 +1,9 @@
 package com.mymes.backend.bom.mapper;
 
 import com.mymes.backend.bom.dto.BomResponse;
+import com.mymes.backend.bom.dto.BomVersionResponse;
 import com.mymes.backend.bom.entity.Bom;
+import com.mymes.backend.bom.entity.BomVersion;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -16,5 +18,10 @@ public interface BomMapper {
     @Mapping(source = "materialItem.itemName", target = "materialItemName")
     @Mapping(source = "materialItem.itemType.codeName", target = "materialItemTypeName")
     @Mapping(source = "materialItem.unit", target = "unit")
+    @Mapping(source = "bomVersion.id", target = "versionId")
+    @Mapping(source = "bomVersion.versionNo", target = "versionNo")
+    @Mapping(source = "bomVersion.status", target = "versionStatus")
     BomResponse toResponse(Bom bom);
+
+    BomVersionResponse toVersionResponse(BomVersion bomVersion);
 }

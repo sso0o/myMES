@@ -34,6 +34,12 @@ public enum ErrorCode {
     BOM_SEQUENCE_DUPLICATED(409, "해당 제품에 이미 사용 중인 순서입니다."),
     BOM_SELF_REFERENCE(400, "제품 품목과 자재 품목이 같을 수 없습니다."),
     BOM_QUANTITY_INVALID(400, "소요수량은 0보다 커야 합니다."),
+    BOM_COPY_TARGET_EMPTY(400, "대상 품목은 1개 이상이어야 합니다."),
+    BOM_COPY_SOURCE_TARGET_SAME(400, "원본 품목과 대상 품목이 같을 수 없습니다."),
+    BOM_COPY_EMPTY_SOURCE(400, "원본 품목에 복사할 자재가 없습니다."),
+    BOM_VERSION_NOT_FOUND(404, "BOM 버전을 찾을 수 없습니다."),
+    BOM_VERSION_NO_ACTIVE(404, "활성 BOM 버전이 없습니다."),
+    BOM_VERSION_ITEM_MISMATCH(400, "BOM 버전이 해당 품목에 속하지 않습니다."),
 
     // Work Order
     WORK_ORDER_NOT_FOUND(404, "작업 지시를 찾을 수 없습니다."),

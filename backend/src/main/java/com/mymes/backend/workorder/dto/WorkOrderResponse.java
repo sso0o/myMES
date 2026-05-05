@@ -24,6 +24,8 @@ public class WorkOrderResponse {
     private String processName;
     private String workerName;
     private LocalDate dueDate;
+    private Long bomVersionId;
+    private Integer bomVersionNo;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
