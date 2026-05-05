@@ -17,7 +17,8 @@ router/
 /work-orders/:id          # 작업 지시 상세
 /production               # 생산 실적
 /planning                 # 생산 계획
-/quality                  # 품질
+/quality/inspections      # 품질검사
+/quality/defects          # 불량관리
 /master/items             # 품목 관리
 /master/common-codes      # 공통코드 관리
 /prod-basic/processes     # 공정 관리

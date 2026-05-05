@@ -59,6 +59,14 @@ public enum ErrorCode {
     // Defect
     DEFECT_NOT_FOUND(404, "불량 기록을 찾을 수 없습니다."),
     DEFECT_PRODUCTION_RECORD_WORK_ORDER_MISMATCH(400, "선택한 생산실적이 해당 작업지시에 속하지 않습니다."),
+    DEFECT_QUALITY_INSPECTION_WORK_ORDER_MISMATCH(400, "선택한 품질검사가 해당 작업지시에 속하지 않습니다."),
+
+    // Quality Inspection
+    QUALITY_INSPECTION_NOT_FOUND(404, "품질검사를 찾을 수 없습니다."),
+    QUALITY_INSPECTION_QTY_INVALID(400, "합격수량과 불량수량의 합은 검사수량을 초과할 수 없습니다."),
+    QUALITY_INSPECTION_WORK_ORDER_ITEM_MISMATCH(400, "선택한 작업지시가 해당 품목에 속하지 않습니다."),
+    QUALITY_INSPECTION_WORK_ORDER_PROCESS_MISMATCH(400, "선택한 작업지시가 해당 공정에 속하지 않습니다."),
+    QUALITY_INSPECTION_NO_GENERATION_FAILED(500, "품질검사 번호 생성에 실패했습니다."),
 
     // Common Code
     CODE_GROUP_NOT_FOUND(404, "코드 그룹을 찾을 수 없습니다."),
