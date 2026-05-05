@@ -6,5 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface DefectRepository extends JpaRepository<DefectRecord, Long> {
+    List<DefectRecord> findAllByOrderByCreatedAtDesc();
+
     List<DefectRecord> findByWorkOrderIdOrderByCreatedAtDesc(Long workOrderId);
+
+    List<DefectRecord> findByQualityInspectionIdOrderByCreatedAtDesc(Long qualityInspectionId);
 }
