@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
-import EmptyState from '@/common/components/EmptyState'
 import InlineAlert from '@/common/components/InlineAlert'
 import PageHeader from '@/common/components/PageHeader'
 import { useFeedback } from '@/common/hooks/useFeedback'
 import { pagePrimaryActionButtonClass } from '@/common/styles/button'
+import ItemDataGrid from '@/features/master/item/components/ItemDataGrid'
 import ItemFormModal from '@/features/master/item/components/ItemFormModal'
-import ItemTable from '@/features/master/item/components/ItemTable'
 import {
   useCreateItem,
   useDeleteItem,
@@ -29,7 +28,6 @@ const ItemManagementPage = () => {
   const { data: response, isLoading, isError } = useItemList(page, size)
   const items = response?.data ?? []
   const pagination = response?.pagination
-  const totalPages = pagination ? Math.ceil(pagination.total / pagination.size) : 0
 
   const handlePageSizeChange = (newSize: number) => {
     setSize(newSize)
@@ -123,21 +121,17 @@ const ItemManagementPage = () => {
         <InlineAlert>품목 목록을 불러오는 중 오류가 발생했습니다.</InlineAlert>
       )}
 
-      {isLoading ? (
-        <EmptyState message="불러오는 중..." />
-      ) : (
-        <ItemTable
-          items={items}
-          onEdit={handleOpenEdit}
-          onDelete={handleDelete}
-          currentPage={page}
-          totalPages={totalPages}
-          totalItems={pagination?.total ?? 0}
-          pageSize={size}
-          onPageChange={setPage}
-          onPageSizeChange={handlePageSizeChange}
-        />
-      )}
+      <ItemDataGrid
+        items={items}
+        loading={isLoading}
+        currentPage={page}
+        totalItems={pagination?.total ?? 0}
+        pageSize={size}
+        onPageChange={setPage}
+        onPageSizeChange={handlePageSizeChange}
+        onEdit={handleOpenEdit}
+        onDelete={handleDelete}
+      />
 
       <ItemFormModal
         key={`${modalOpen ? 'open' : 'closed'}-${editTarget?.id ?? 'create'}`}

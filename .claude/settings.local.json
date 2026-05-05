@@ -10,7 +10,11 @@
       "Bash(./gradlew test *)",
       "Bash(xargs -I{} cat {})",
       "Bash(xargs cat *)",
-      "Bash(./gradlew compileJava --no-daemon -q)"
+      "Bash(./gradlew compileJava --no-daemon -q)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({**d.get\\('dependencies',{}\\), **d.get\\('devDependencies',{}\\)}, indent=2\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('version:', d['version']\\); print\\('peerDeps:', json.dumps\\(d.get\\('peerDependencies',{}\\), indent=2\\)\\)\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('version:', d['version']\\)\")",
+      "Bash(./gradlew build *)"
     ]
   }
 }

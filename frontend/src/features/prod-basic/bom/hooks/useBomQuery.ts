@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { bomApi } from '../api/bomApi'
-import type { BomCreateRequest, BomUpdateRequest } from '../types'
+import type { BomBulkCopyRequest, BomSaveRequest } from '../types'
 
 const QUERY_KEY = 'boms'
+const VERSION_QUERY_KEY = 'bom-versions'
 
 export const useBomList = (parentItemId: number | null) =>
   useQuery({
@@ -11,36 +12,62 @@ export const useBomList = (parentItemId: number | null) =>
     enabled: parentItemId != null,
   })
 
-export const useCreateBom = () => {
+export const useBomVersionHistory = (parentItemId: number | null) =>
+  useQuery({
+    queryKey: [VERSION_QUERY_KEY, parentItemId],
+    queryFn: () =>
+      bomApi.getVersionHistory(parentItemId as number).then((res) => res.data.data ?? []),
+    enabled: parentItemId != null,
+  })
+
+export const useBomVersionLines = (parentItemId: number | null, versionId: number | null) =>
+  useQuery({
+    queryKey: [QUERY_KEY, parentItemId, 'version', versionId],
+    queryFn: () =>
+      bomApi
+        .getVersionLines(parentItemId as number, versionId as number)
+        .then((res) => res.data.data ?? []),
+    enabled: parentItemId != null && versionId != null,
+  })
+
+export const useSaveBom = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (data: BomCreateRequest) => bomApi.create(data).then((res) => res.data.data),
-    onSuccess: (_, variables) =>
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY, variables.parentItemId] }),
+    mutationFn: ({ parentItemId, data }: { parentItemId: number; data: BomSaveRequest }) =>
+      bomApi.save(parentItemId, data).then((res) => res.data.data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY, variables.parentItemId] })
+      queryClient.invalidateQueries({ queryKey: [VERSION_QUERY_KEY, variables.parentItemId] })
+    },
   })
 }
 
-export const useUpdateBom = () => {
+export const useRestoreBomVersion = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({
-      id,
-      data,
+      parentItemId,
+      versionId,
     }: {
-      id: number
-      data: BomUpdateRequest
       parentItemId: number
-    }) => bomApi.update(id, data).then((res) => res.data.data),
-    onSuccess: (_, variables) =>
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY, variables.parentItemId] }),
+      versionId: number
+    }) => bomApi.restore(parentItemId, versionId).then((res) => res.data.data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY, variables.parentItemId] })
+      queryClient.invalidateQueries({ queryKey: [VERSION_QUERY_KEY, variables.parentItemId] })
+    },
   })
 }
 
-export const useDeleteBom = () => {
+export const useBulkCopyBom = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id }: { id: number; parentItemId: number }) => bomApi.delete(id),
-    onSuccess: (_, variables) =>
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY, variables.parentItemId] }),
+    mutationFn: (data: BomBulkCopyRequest) => bomApi.bulkCopy(data).then((res) => res.data.data),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY, variables.sourceItemId] })
+      variables.targetItemIds.forEach((id) =>
+        queryClient.invalidateQueries({ queryKey: [QUERY_KEY, id] }),
+      )
+    },
   })
 }

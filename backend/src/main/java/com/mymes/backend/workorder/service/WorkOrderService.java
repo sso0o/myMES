@@ -1,5 +1,7 @@
 package com.mymes.backend.workorder.service;
 
+import com.mymes.backend.bom.entity.BomVersion;
+import com.mymes.backend.bom.service.BomVersionService;
 import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
 import com.mymes.backend.item.entity.Item;
@@ -37,6 +39,7 @@ public class WorkOrderService {
     private final ItemService itemService;
     private final MfgProcessService processService;
     private final WorkOrderMapper workOrderMapper;
+    private final BomVersionService bomVersionService;
 
     public List<WorkOrderResponse> findAll() {
         return workOrderRepository.findAll().stream()
@@ -60,6 +63,8 @@ public class WorkOrderService {
         MfgProcess process = request.getProcessId() != null
                 ? processService.getProcess(request.getProcessId()) : null;
 
+        BomVersion bomVersion = bomVersionService.findActiveVersion(item.getId()).orElse(null);
+
         for (int attempt = 1; attempt <= MAX_WORK_ORDER_NO_RETRIES; attempt++) {
             String workOrderNo = generateWorkOrderNo();
             WorkOrder workOrder = WorkOrder.builder()
@@ -70,11 +75,14 @@ public class WorkOrderService {
                     .process(process)
                     .workerName(request.getWorkerName())
                     .dueDate(request.getDueDate())
+                    .bomVersion(bomVersion)
                     .build();
 
             try {
                 WorkOrder saved = workOrderRepository.saveAndFlush(workOrder);
-                log.info("작업지시 생성 완료: id={}, no={}", saved.getId(), saved.getWorkOrderNo());
+                log.info("작업지시 생성 완료: id={}, no={}, bomVersionId={}",
+                        saved.getId(), saved.getWorkOrderNo(),
+                        bomVersion != null ? bomVersion.getId() : null);
                 return workOrderMapper.toResponse(saved);
             } catch (DataIntegrityViolationException e) {
                 log.warn("작업지시 번호 충돌로 재시도합니다. attempt={}, workOrderNo={}", attempt, workOrderNo);
@@ -122,6 +130,8 @@ public class WorkOrderService {
 
     @Transactional
     public WorkOrder createForPlan(Item item, Integer plannedQty, LocalDate plannedDate) {
+        BomVersion bomVersion = bomVersionService.findActiveVersion(item.getId()).orElse(null);
+
         for (int attempt = 1; attempt <= MAX_WORK_ORDER_NO_RETRIES; attempt++) {
             String workOrderNo = generateWorkOrderNo();
             WorkOrder workOrder = WorkOrder.builder()
@@ -130,6 +140,7 @@ public class WorkOrderService {
                     .plannedQty(plannedQty)
                     .priority(Priority.MEDIUM)
                     .dueDate(plannedDate)
+                    .bomVersion(bomVersion)
                     .build();
             try {
                 WorkOrder saved = workOrderRepository.saveAndFlush(workOrder);

@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
-import EmptyState from '@/common/components/EmptyState'
 import InlineAlert from '@/common/components/InlineAlert'
 import PageHeader from '@/common/components/PageHeader'
 import { useFeedback } from '@/common/hooks/useFeedback'
 import { pagePrimaryActionButtonClass } from '@/common/styles/button'
-import ProcessTable from '@/features/prod-basic/process/components/ProcessTable'
+import ProcessDataGrid from '@/features/prod-basic/process/components/ProcessDataGrid'
 import ProcessFormModal from '@/features/prod-basic/process/components/ProcessFormModal'
 import {
   useCreateProcess,
@@ -27,9 +26,6 @@ const ProcessManagementPage = () => {
 
   const { showToast, showAlert } = useFeedback()
   const { data: processes = [], isLoading, isError } = useProcessList()
-
-  const totalPages = Math.ceil(processes.length / size)
-  const pagedProcesses = processes.slice(page * size, page * size + size)
 
   const createProcess = useCreateProcess()
   const updateProcess = useUpdateProcess()
@@ -124,21 +120,16 @@ const ProcessManagementPage = () => {
         <InlineAlert>공정 목록을 불러오는 중 오류가 발생했습니다.</InlineAlert>
       )}
 
-      {isLoading ? (
-        <EmptyState message="불러오는 중..." />
-      ) : (
-        <ProcessTable
-          processes={pagedProcesses}
-          onEdit={handleOpenEdit}
-          onDelete={handleDelete}
-          currentPage={page}
-          totalPages={totalPages}
-          totalItems={processes.length}
-          pageSize={size}
-          onPageChange={setPage}
-          onPageSizeChange={handlePageSizeChange}
-        />
-      )}
+      <ProcessDataGrid
+        processes={processes}
+        loading={isLoading}
+        currentPage={page}
+        pageSize={size}
+        onPageChange={setPage}
+        onPageSizeChange={handlePageSizeChange}
+        onEdit={handleOpenEdit}
+        onDelete={handleDelete}
+      />
 
       <ProcessFormModal
         key={`${modalOpen ? 'open' : 'closed'}-${editTarget?.id ?? 'create'}`}

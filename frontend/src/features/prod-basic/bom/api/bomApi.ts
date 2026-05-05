@@ -1,13 +1,33 @@
 import { api } from '@/lib/axios'
 import type { ApiResponse } from '@/types'
-import type { BomCreateRequest, BomResponse, BomUpdateRequest } from '../types'
+import type {
+  BomBulkCopyRequest,
+  BomBulkCopyResponse,
+  BomResponse,
+  BomSaveRequest,
+  BomVersionResponse,
+} from '../types'
 
 export const bomApi = {
   getList: (parentItemId: number) =>
     api.get<ApiResponse<BomResponse[]>>('/prod-basic/boms', { params: { parentItemId } }),
-  getById: (id: number) => api.get<ApiResponse<BomResponse>>(`/prod-basic/boms/${id}`),
-  create: (data: BomCreateRequest) => api.post<ApiResponse<BomResponse>>('/prod-basic/boms', data),
-  update: (id: number, data: BomUpdateRequest) =>
-    api.put<ApiResponse<BomResponse>>(`/prod-basic/boms/${id}`, data),
-  delete: (id: number) => api.delete(`/prod-basic/boms/${id}`),
+
+  getVersionHistory: (parentItemId: number) =>
+    api.get<ApiResponse<BomVersionResponse[]>>(`/prod-basic/boms/${parentItemId}/versions`),
+
+  getVersionLines: (parentItemId: number, versionId: number) =>
+    api.get<ApiResponse<BomResponse[]>>(
+      `/prod-basic/boms/${parentItemId}/versions/${versionId}/lines`,
+    ),
+
+  save: (parentItemId: number, data: BomSaveRequest) =>
+    api.post<ApiResponse<BomResponse[]>>(`/prod-basic/boms/${parentItemId}/save`, data),
+
+  restore: (parentItemId: number, versionId: number) =>
+    api.post<ApiResponse<BomResponse[]>>(
+      `/prod-basic/boms/${parentItemId}/versions/${versionId}/restore`,
+    ),
+
+  bulkCopy: (data: BomBulkCopyRequest) =>
+    api.post<ApiResponse<BomBulkCopyResponse>>('/prod-basic/boms/copy', data),
 }
