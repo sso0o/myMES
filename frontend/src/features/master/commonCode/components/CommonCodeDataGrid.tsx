@@ -1,8 +1,12 @@
-import type { Dispatch, SetStateAction } from 'react'
 import { Check, Pencil, Trash2, X } from 'lucide-react'
-import type { GridColDef } from '@mui/x-data-grid'
+import { GridRowModes, GridRowEditStopReasons } from '@mui/x-data-grid'
+import type {
+  GridColDef,
+  GridEventListener,
+  GridRowId,
+  GridRowModesModel,
+} from '@mui/x-data-grid'
 import AppDataGrid from '@/common/components/AppDataGrid'
-import AppGridInput from '@/common/components/AppGridInput'
 import Badge from '@/common/components/Badge'
 import {
   cancelIconButtonClass,
@@ -12,57 +16,49 @@ import {
 } from '@/common/styles/button'
 import type { CommonCodeResponse } from '@/features/master/commonCode/types'
 
-export interface NewCodeRow {
-  codeName: string
-  sortOrder: string
-  numberingPrefix: string
-}
+export const NEW_ROW_ID = -1
 
-export interface EditCodeRow {
-  codeName: string
-  sortOrder: string
-  numberingPrefix: string
-}
-
-const NEW_ROW_ID = -1
 const DATA_GRID_DEFAULT_PAGE_SIZE = 25
 const DATA_GRID_PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
-const actionCellClass = 'flex h-full w-full items-center justify-center gap-2'
 const compactActionCellClass = 'flex h-full w-full items-center justify-center gap-1'
+const actionCellClass = 'flex h-full w-full items-center justify-center gap-2'
+
+const toUpperCasePreProcess = (params: { props: { value?: unknown } }) => ({
+  ...params.props,
+  value: (params.props.value as string)?.toUpperCase() ?? '',
+})
 
 interface CommonCodeDataGridProps {
   rows: CommonCodeResponse[]
-  editingId: number | null
-  newRow: NewCodeRow
-  editRow: EditCodeRow
-  createPending: boolean
-  updatePending: boolean
-  onNewRowChange: Dispatch<SetStateAction<NewCodeRow>>
-  onEditRowChange: Dispatch<SetStateAction<EditCodeRow>>
-  onSaveAdd: () => void
-  onCancelAdd: () => void
-  onStartEdit: (code: CommonCodeResponse) => void
-  onSaveEdit: (codeId: number) => void
-  onCancelEdit: () => void
+  rowModesModel: GridRowModesModel
+  isPending: boolean
+  onRowModesModelChange: (model: GridRowModesModel) => void
+  processRowUpdate: (updated: CommonCodeResponse) => Promise<CommonCodeResponse>
+  onProcessRowUpdateError: (error: unknown) => void
+  onEditRow: (id: number) => void
+  onSaveRow: (id: GridRowId) => void
+  onCancelRow: (id: GridRowId) => void
   onDeleteCode: (code: CommonCodeResponse) => void
 }
 
 const CommonCodeDataGrid = ({
   rows,
-  editingId,
-  newRow,
-  editRow,
-  createPending,
-  updatePending,
-  onNewRowChange,
-  onEditRowChange,
-  onSaveAdd,
-  onCancelAdd,
-  onStartEdit,
-  onSaveEdit,
-  onCancelEdit,
+  rowModesModel,
+  isPending,
+  onRowModesModelChange,
+  processRowUpdate,
+  onProcessRowUpdateError,
+  onEditRow,
+  onSaveRow,
+  onCancelRow,
   onDeleteCode,
 }: CommonCodeDataGridProps) => {
+  const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
+    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+      event.defaultMuiPrevented = true
+    }
+  }
+
   const codeColumns: GridColDef<CommonCodeResponse>[] = [
     {
       field: 'code',
@@ -72,21 +68,9 @@ const CommonCodeDataGrid = ({
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) {
           return (
-            <AppGridInput
-              value=""
-              placeholder="저장 시 자동 채번"
-              slotProps={{ htmlInput: { readOnly: true } }}
-              sx={{
-                '& .MuiInputBase-root': { bgcolor: 'var(--surface-alt)' },
-                '& .MuiInputBase-input': {
-                  fontFamily: 'monospace',
-                  color: 'var(--text-muted)',
-                },
-              }}
-            />
+            <span className="font-mono text-[var(--text-muted)]">자동 채번</span>
           )
         }
-
         return <span className="font-mono text-[var(--text-base)]">{params.row.code}</span>
       },
     },
@@ -96,36 +80,10 @@ const CommonCodeDataGrid = ({
       flex: 1,
       minWidth: 120,
       sortable: false,
-      renderCell: (params) => {
-        if (params.row.id === NEW_ROW_ID) {
-          return (
-            <AppGridInput
-              value={newRow.codeName}
-              onChange={(event) =>
-                onNewRowChange((row) => ({ ...row, codeName: event.target.value }))
-              }
-              placeholder="예: 대기"
-              autoFocus
-              slotProps={{ htmlInput: { maxLength: 100 } }}
-            />
-          )
-        }
-
-        if (params.row.id === editingId) {
-          return (
-            <AppGridInput
-              value={editRow.codeName}
-              onChange={(event) =>
-                onEditRowChange((row) => ({ ...row, codeName: event.target.value }))
-              }
-              autoFocus
-              slotProps={{ htmlInput: { maxLength: 100 } }}
-            />
-          )
-        }
-
-        return <span className="text-[var(--text-strong)]">{params.row.codeName}</span>
-      },
+      editable: true,
+      renderCell: (params) => (
+        <span className="text-[var(--text-strong)]">{params.row.codeName}</span>
+      ),
     },
     {
       field: 'numberingPrefix',
@@ -134,47 +92,13 @@ const CommonCodeDataGrid = ({
       sortable: false,
       headerAlign: 'center',
       align: 'center',
-      renderCell: (params) => {
-        if (params.row.id === NEW_ROW_ID) {
-          return (
-            <AppGridInput
-              value={newRow.numberingPrefix}
-              onChange={(event) =>
-                onNewRowChange((row) => ({
-                  ...row,
-                  numberingPrefix: event.target.value.toUpperCase(),
-                }))
-              }
-              placeholder="예: RM"
-              slotProps={{ htmlInput: { maxLength: 20 } }}
-              sx={{ '& .MuiInputBase-input': { fontFamily: 'monospace', textAlign: 'center' } }}
-            />
-          )
-        }
-
-        if (params.row.id === editingId) {
-          return (
-            <AppGridInput
-              value={editRow.numberingPrefix}
-              onChange={(event) =>
-                onEditRowChange((row) => ({
-                  ...row,
-                  numberingPrefix: event.target.value.toUpperCase(),
-                }))
-              }
-              placeholder="예: RM"
-              slotProps={{ htmlInput: { maxLength: 20 } }}
-              sx={{ '& .MuiInputBase-input': { fontFamily: 'monospace', textAlign: 'center' } }}
-            />
-          )
-        }
-
-        return (
-          <span className="font-mono text-[var(--text-muted)]">
-            {params.row.numberingPrefix ?? '-'}
-          </span>
-        )
-      },
+      editable: true,
+      preProcessEditCellProps: toUpperCasePreProcess,
+      renderCell: (params) => (
+        <span className="font-mono text-[var(--text-muted)]">
+          {params.row.numberingPrefix ?? '-'}
+        </span>
+      ),
     },
     {
       field: 'sortOrder',
@@ -183,38 +107,11 @@ const CommonCodeDataGrid = ({
       sortable: false,
       headerAlign: 'center',
       align: 'center',
-      renderCell: (params) => {
-        if (params.row.id === NEW_ROW_ID) {
-          return (
-            <AppGridInput
-              type="number"
-              value={newRow.sortOrder}
-              onChange={(event) =>
-                onNewRowChange((row) => ({ ...row, sortOrder: event.target.value }))
-              }
-              placeholder="1"
-              slotProps={{ htmlInput: { min: 1 } }}
-              sx={{ '& .MuiInputBase-input': { textAlign: 'center' } }}
-            />
-          )
-        }
-
-        if (params.row.id === editingId) {
-          return (
-            <AppGridInput
-              type="number"
-              value={editRow.sortOrder}
-              onChange={(event) =>
-                onEditRowChange((row) => ({ ...row, sortOrder: event.target.value }))
-              }
-              slotProps={{ htmlInput: { min: 1 } }}
-              sx={{ '& .MuiInputBase-input': { textAlign: 'center' } }}
-            />
-          )
-        }
-
-        return <span className="text-[var(--text-muted)]">{params.row.sortOrder}</span>
-      },
+      editable: true,
+      type: 'number',
+      renderCell: (params) => (
+        <span className="text-[var(--text-muted)]">{params.row.sortOrder}</span>
+      ),
     },
     {
       field: 'isActive',
@@ -225,7 +122,6 @@ const CommonCodeDataGrid = ({
       align: 'center',
       renderCell: (params) => {
         if (params.row.id === NEW_ROW_ID) return null
-
         return (
           <Badge variant={params.row.isActive ? 'success' : 'muted'}>
             {params.row.isActive ? '활성' : '비활성'}
@@ -242,15 +138,15 @@ const CommonCodeDataGrid = ({
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => {
-        const code = params.row
+        const isInEditMode = rowModesModel[params.id]?.mode === GridRowModes.Edit
 
-        if (code.id === NEW_ROW_ID) {
+        if (isInEditMode) {
           return (
             <div className={compactActionCellClass}>
               <button
                 type="button"
-                onClick={onSaveAdd}
-                disabled={createPending}
+                onClick={() => onSaveRow(params.id)}
+                disabled={isPending}
                 className={saveIconButtonClass}
                 title="저장"
               >
@@ -258,31 +154,7 @@ const CommonCodeDataGrid = ({
               </button>
               <button
                 type="button"
-                onClick={onCancelAdd}
-                className={cancelIconButtonClass}
-                title="취소"
-              >
-                <X size={15} />
-              </button>
-            </div>
-          )
-        }
-
-        if (code.id === editingId) {
-          return (
-            <div className={compactActionCellClass}>
-              <button
-                type="button"
-                onClick={() => onSaveEdit(code.id)}
-                disabled={updatePending}
-                className={saveIconButtonClass}
-                title="저장"
-              >
-                <Check size={15} />
-              </button>
-              <button
-                type="button"
-                onClick={onCancelEdit}
+                onClick={() => onCancelRow(params.id)}
                 className={cancelIconButtonClass}
                 title="취소"
               >
@@ -296,7 +168,7 @@ const CommonCodeDataGrid = ({
           <div className={actionCellClass}>
             <button
               type="button"
-              onClick={() => onStartEdit(code)}
+              onClick={() => onEditRow(params.row.id)}
               className={editIconButtonClass}
               title="수정"
             >
@@ -304,7 +176,7 @@ const CommonCodeDataGrid = ({
             </button>
             <button
               type="button"
-              onClick={() => onDeleteCode(code)}
+              onClick={() => onDeleteCode(params.row)}
               className={deleteIconButtonClass}
               title="삭제"
             >
@@ -320,11 +192,16 @@ const CommonCodeDataGrid = ({
     <AppDataGrid<CommonCodeResponse>
       rows={rows}
       columns={codeColumns}
+      editMode="row"
+      rowModesModel={rowModesModel}
+      onRowModesModelChange={onRowModesModelChange}
+      onRowEditStop={handleRowEditStop}
+      processRowUpdate={processRowUpdate}
+      onProcessRowUpdateError={onProcessRowUpdateError}
       getRowId={(row) => row.id}
-      getRowClassName={(params) => {
-        const rowId = params.id as number
-        return rowId === editingId || rowId === NEW_ROW_ID ? 'inline-editing' : ''
-      }}
+      getRowClassName={(params) =>
+        rowModesModel[params.id]?.mode === GridRowModes.Edit ? 'inline-editing' : ''
+      }
       pageSizeOptions={DATA_GRID_PAGE_SIZE_OPTIONS}
       initialState={{
         pagination: {
@@ -347,5 +224,4 @@ const CommonCodeDataGrid = ({
   )
 }
 
-export { NEW_ROW_ID }
 export default CommonCodeDataGrid
