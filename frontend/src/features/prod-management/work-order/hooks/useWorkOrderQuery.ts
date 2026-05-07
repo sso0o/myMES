@@ -18,3 +18,12 @@ export const useUpdateWorkOrder = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEY] }),
   })
 }
+
+export const useChangeWorkOrderStatus = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, status }: { id: number; status: WorkOrderStatus }) =>
+      workOrderApi.changeStatus(id, status).then((res) => res.data.data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: [QUERY_KEY] }),
+  })
+}

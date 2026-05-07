@@ -13,4 +13,7 @@ export const workOrderApi = {
 
   update: (id: number, data: WorkOrderUpdateRequest) =>
     api.put<ApiResponse<WorkOrderResponse>>(`/work-orders/${id}`, data),
+
+  changeStatus: (id: number, status: WorkOrderStatus) =>
+    api.patch<ApiResponse<WorkOrderResponse>>(`/work-orders/${id}/status`, { status }),
 }

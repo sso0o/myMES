@@ -193,7 +193,7 @@ const PlanningManagementPage = () => {
   return (
     <div className="space-y-5 p-6">
       <PageHeader
-        title="생산계획"
+        title="생산 계획"
         description="생산 계획을 등록하고 작업지시로 발행합니다."
         actions={
           <button
