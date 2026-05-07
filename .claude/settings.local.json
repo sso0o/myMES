@@ -31,7 +31,8 @@
       "Bash(planning)",
       "Bash(prod\")",
       "Bash(Get-ChildItem -Path \"C:\\\\IDEAWorkspace\\\\SYCHOI\\\\myMES\\\\frontend\" -Recurse -Force)",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\IDEAWorkspace\\\\SYCHOI\\\\myMES\\\\backend\\\\src\\\\main\\\\java\\\\com\\\\mymes\\\\backend\\\\\" -Directory | Select-Object Name)"
     ]
   }
 }
