@@ -143,7 +143,7 @@
       font-size: 10.5pt;
       color: var(--mid);
       line-height: 1.7;
-      max-width: 120mm;
+<!--      max-width: 120mm;-->
     }
 
     /* 스택 배지 */
@@ -186,8 +186,15 @@
       text-align: center;
     }
 
+    .portfolio-image {
+      width: 100%;
+      object-fit: contain;
+      display: block;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+    }
+
     .cover-bottom {
-      border-top: 1px solid var(--border);
       padding-top: 12px;
       display: flex;
       justify-content: space-between;
@@ -316,6 +323,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .arch-image {
+      width: 100%;
+      height: 66mm;
+      object-fit: contain;
+      display: block;
+      border: 1.5px solid var(--border);
+      background: var(--white);
       margin-bottom: 20px;
     }
 
@@ -612,6 +629,185 @@
       color: var(--light);
       font-family: 'JetBrains Mono', monospace;
     }
+
+    /* ═══════════════════════════════
+       PAGE 6 — 개발 타임라인
+    ═══════════════════════════════ */
+    .timeline {
+      position: relative;
+      padding-left: 18px;
+      margin-top: 8px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 4px;
+      bottom: 4px;
+      width: 2px;
+      background: var(--black);
+    }
+
+    .timeline-row {
+      position: relative;
+      padding-bottom: 14px;
+    }
+
+    .timeline-row:last-child { padding-bottom: 0; }
+
+    .timeline-row::before {
+      content: '';
+      position: absolute;
+      left: -16px;
+      top: 5px;
+      width: 9px;
+      height: 9px;
+      background: var(--white);
+      border: 2px solid var(--black);
+      border-radius: 50%;
+    }
+
+    .timeline-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      color: var(--mid);
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .timeline-title {
+      font-size: 10pt;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 5px;
+    }
+
+    .timeline-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .timeline-list li {
+      font-size: 8.5pt;
+      color: var(--dark);
+      line-height: 1.6;
+      padding-left: 12px;
+      position: relative;
+      margin-bottom: 2px;
+    }
+
+    .timeline-list li::before {
+      content: '·';
+      position: absolute;
+      left: 2px;
+      top: -2px;
+      font-size: 13pt;
+      color: var(--light);
+    }
+
+    .timeline-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 6.5pt;
+      letter-spacing: 0.04em;
+      padding: 1px 6px;
+      background: var(--bg-mid);
+      color: var(--dark);
+      margin-left: 4px;
+      vertical-align: 1px;
+    }
+
+    /* ═══════════════════════════════
+       PAGE 7 — 트러블슈팅
+    ═══════════════════════════════ */
+    .ts-intro {
+      font-size: 9pt;
+      color: var(--mid);
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+
+    .ts-priority-block {
+      margin-bottom: 16px;
+    }
+
+    .ts-priority-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ts-priority-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 2px 8px;
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .ts-priority-tag.p2 { background: var(--mid); }
+    .ts-priority-tag.etc {
+      background: var(--white);
+      color: var(--black);
+      border: 1.5px solid var(--black);
+    }
+
+    .ts-priority-label {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: var(--black);
+    }
+
+    .ts-priority-count {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7pt;
+      color: var(--light);
+      margin-left: auto;
+    }
+
+    .ts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .ts-card {
+      border: 1px solid var(--border);
+      padding: 9px 11px;
+      background: var(--white);
+    }
+
+    .ts-card-title {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: var(--black);
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+
+    .ts-card-loc {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 6.5pt;
+      color: var(--light);
+      margin-bottom: 5px;
+    }
+
+    .ts-card-body {
+      font-size: 7.8pt;
+      color: var(--dark);
+      line-height: 1.55;
+    }
+
+    .ts-card-body strong {
+      font-weight: 700;
+      color: var(--black);
+    }
   </style>
 </head>
 <body>
@@ -656,14 +852,67 @@
       </div>
     </div>
 
-    <div class="cover-image-placeholder">
-      <p class="placeholder-label">[ 메인 화면 스크린샷 ]<br/>전체 대시보드 또는 주요 기능 화면</p>
+    <div class="section-title">주요 설계 원칙</div>
+    <div class="design-grid">
+      <div class="design-card">
+        <p class="design-card-title">
+          <span class="design-icon">B</span>
+          Backend 일관성
+        </p>
+        <ul class="design-list">
+          <li>모든 응답 <span class="code-inline">ApiResponse&lt;T&gt;</span> 래핑</li>
+          <li>비즈니스 예외 <span class="code-inline">BusinessException</span> + <span class="code-inline">ErrorCode</span> enum</li>
+          <li>Soft Delete — <span class="code-inline">deletedAt</span> 필드, <span class="code-inline">entity.delete()</span> 호출</li>
+          <li>Service 기본 <span class="code-inline">@Transactional(readOnly=true)</span></li>
+          <li>동적 조건 2개↑ → QueryDSL 사용 원칙</li>
+          <li>MapStruct로 Entity↔DTO 변환 분리</li>
+        </ul>
+      </div>
+      <div class="design-card">
+        <p class="design-card-title">
+          <span class="design-icon">F</span>
+          Frontend 일관성
+        </p>
+        <ul class="design-list">
+          <li>Feature-first 폴더 — 도메인 응집도 최우선</li>
+          <li>컴포넌트에서 axios 직접 호출 금지</li>
+          <li>폼은 react-hook-form + zod + @hookform/resolvers</li>
+          <li>TypeScript <span class="code-inline">any</span> 금지 → <span class="code-inline">unknown</span> + 타입 가드</li>
+          <li>enum 대신 <span class="code-inline">as const</span> 패턴</li>
+          <li>스타일링 Tailwind만, 인라인 style 속성 금지</li>
+        </ul>
+      </div>
+      <div class="design-card">
+        <p class="design-card-title">
+          <span class="design-icon">A</span>
+          API 설계
+        </p>
+        <ul class="design-list">
+          <li>URL 복수형 명사 + 케밥케이스 기준</li>
+          <li>Swagger UI 자동 문서화 (SpringDoc OpenAPI)</li>
+          <li>Vite 프록시로 개발 CORS 없이 백엔드 연결</li>
+          <li>401 응답 시 axios 인터셉터 자동 로그아웃</li>
+          <li>공개 엔드포인트 <span class="code-inline">GET /api/health</span> 단 하나</li>
+        </ul>
+      </div>
+      <div class="design-card">
+        <p class="design-card-title">
+          <span class="design-icon">R</span>
+          Realtime
+        </p>
+        <ul class="design-list">
+          <li>Supabase Realtime — PostgreSQL 변경 구독</li>
+          <li><span class="code-inline">useSupabaseRealtime</span> 커스텀 훅으로 추상화</li>
+          <li>대시보드 지표 실시간 반영 목표</li>
+          <li>Supabase 대시보드 Replication 활성화 필요</li>
+        </ul>
+      </div>
     </div>
 
     <div class="cover-bottom">
       <div>
         <p class="cover-info"><strong>개발 유형</strong> &nbsp;개인 프로젝트 (풀스택)</p>
-        <p class="cover-info" style="margin-top:3px;"><strong>GitHub</strong> &nbsp;github.com/sychoi/myMES</p>
+        <p class="cover-info" style="margin-top:1px; padding-bottom:5px"><strong>GitHub</strong> &nbsp;github.com/sso0o/myMES</p>
       </div>
       <p class="cover-info">Backend · Frontend · DB · Auth · Realtime</p>
     </div>
@@ -671,7 +920,7 @@
 
   <div class="page-footer">
     <span>myMES · Portfolio</span>
-    <span>01 / 05</span>
+    <span>01 / 08</span>
   </div>
 </div>
 
@@ -685,107 +934,127 @@
     <span class="page-num">02</span>
   </div>
 
-  <div class="section-title">배경 및 목적</div>
-  <div class="overview-grid" style="margin-top:12px;">
-    <div class="overview-card">
-      <p class="overview-card-title">Problem</p>
-      <p>
-        중소 제조업 현장에서는 생산 계획, 작업 지시, 실적 집계가 엑셀 등
-        수작업으로 관리되어 데이터 정합성 문제와 실시간 현황 파악의
-        어려움이 빈번하게 발생합니다.
-      </p>
-    </div>
-    <div class="overview-card">
-      <p class="overview-card-title">Goal</p>
-      <p>
-        제조 공정 전반을 체계적으로 관리할 수 있는 웹 기반 MES를 직접
-        설계·구현함으로써, 풀스택 아키텍처 설계 능력과 실무 수준의
-        도메인 모델링 역량을 검증합니다.
-      </p>
-    </div>
-  </div>
+<!--  <div class="section-title">배경 및 목적</div>-->
+<!--  <div class="overview-grid" style="margin-top:12px;">-->
+<!--    <div class="overview-card">-->
+<!--      <p class="overview-card-title">Problem</p>-->
+<!--      <p>-->
+<!--        중소 제조업 현장에서는 생산 계획, 작업 지시, 실적 집계가 엑셀 등-->
+<!--        수작업으로 관리되어 데이터 정합성 문제와 실시간 현황 파악의-->
+<!--        어려움이 빈번하게 발생합니다.-->
+<!--      </p>-->
+<!--    </div>-->
+<!--    <div class="overview-card">-->
+<!--      <p class="overview-card-title">Goal</p>-->
+<!--      <p>-->
+<!--        제조 공정 전반을 체계적으로 관리할 수 있는 웹 기반 MES를 직접-->
+<!--        설계·구현함으로써, 풀스택 아키텍처 설계 능력과 실무 수준의-->
+<!--        도메인 모델링 역량을 검증합니다.-->
+<!--      </p>-->
+<!--    </div>-->
+<!--  </div>-->
 
   <div class="section-title">핵심 도메인 구성</div>
-  <table class="feature-table" style="margin-bottom: 20px;">
+  <table class="feature-table" style="margin-bottom: 16px;">
     <thead>
       <tr>
-        <th style="width:24%">도메인</th>
-        <th style="width:46%">주요 기능</th>
-        <th style="width:14%">상태</th>
-        <th style="width:16%">API 경로</th>
+        <th style="width:22%">도메인</th>
+        <th style="width:48%">주요 기능 (구현 완료 기준)</th>
+        <th style="width:12%">상태</th>
+        <th style="width:18%">API 경로</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>공통코드 관리</td>
+        <td>공통코드</td>
         <td>코드 그룹 / 개별 코드 CRUD, 계층형 코드 체계</td>
         <td><span class="status-done">완료</span></td>
         <td><span class="code-inline">/master/code-groups</span></td>
       </tr>
       <tr>
         <td>품목 관리</td>
-        <td>원자재·반제품·완제품 품목 등록, 공통코드 연계</td>
+        <td>자동채번 <span class="code-inline">ITEM-000001</span>, 공통코드 연계, 중복 코드 검증</td>
         <td><span class="status-done">완료</span></td>
         <td><span class="code-inline">/master/items</span></td>
       </tr>
       <tr>
         <td>공정 관리</td>
-        <td>공정 단계 CRUD, 순서 정의</td>
+        <td>자동채번 <span class="code-inline">PROC-000001</span>, 공정 순서 정의</td>
         <td><span class="status-done">완료</span></td>
         <td><span class="code-inline">/prod-basic/processes</span></td>
       </tr>
       <tr>
         <td>설비 관리</td>
-        <td>설비 등록·수정·비활성화, 공정 연결</td>
+        <td>설비 등록·비활성화, 공정 연결</td>
         <td><span class="status-done">완료</span></td>
         <td><span class="code-inline">/prod-basic/equipment</span></td>
       </tr>
       <tr>
         <td>품목별 공정</td>
-        <td>품목 라우팅 정의, 공정 일괄 복사 기능</td>
+        <td>품목 라우팅, 공정 일괄 복사 (Soft Delete + 재생성)</td>
         <td><span class="status-done">완료</span></td>
         <td><span class="code-inline">/prod-basic/item-processes</span></td>
       </tr>
       <tr>
         <td>BOM 관리</td>
-        <td>자재 명세서 구성, 재귀적 BOM 트리</td>
+        <td>버전 헤더 분리(<span class="code-inline">BomVersion</span>) · Copy-on-Write 저장</td>
         <td><span class="status-done">완료</span></td>
         <td><span class="code-inline">/prod-basic/boms</span></td>
       </tr>
       <tr>
+        <td>공정-설비</td>
+        <td>공정-설비 N:M 매핑, 작업지시 배정 가시화</td>
+        <td><span class="status-done">완료</span></td>
+        <td><span class="code-inline">/prod-basic/process-equipment</span></td>
+      </tr>
+      <tr>
         <td>생산 계획</td>
-        <td>계획 수립, 수량·일정 관리</td>
-        <td><span class="status-wip">개발 중</span></td>
+        <td>상태 흐름 <span class="code-inline">DRAFT→CONFIRMED→RELEASED→CLOSED</span>, 일괄 확정·일괄 발행</td>
+        <td><span class="status-done">완료</span></td>
         <td><span class="code-inline">/production-plans</span></td>
       </tr>
       <tr>
         <td>작업 지시</td>
-        <td>작업 지시 발행, 상태 흐름 관리</td>
-        <td><span class="status-wip">개발 중</span></td>
+        <td>자동채번 <span class="code-inline">WO-yyyyMMdd-0000</span>, 공정별 다중 행 생성, 이전 공정 완료 검증</td>
+        <td><span class="status-done">완료</span></td>
         <td><span class="code-inline">/work-orders</span></td>
       </tr>
       <tr>
-        <td>생산 실적 / 불량</td>
-        <td>실적 집계, 불량 기록 및 조치 관리</td>
-        <td><span class="status-wip">개발 중</span></td>
+        <td>생산 실적</td>
+        <td>투입·양품·불량 수량 검증, 작업지시 진행 상태 연동</td>
+        <td><span class="status-done">완료</span></td>
         <td><span class="code-inline">/production-records</span></td>
+      </tr>
+      <tr>
+        <td>품질 검사</td>
+        <td>검사 유형(수입·공정·최종), 합격/불합격/보류 판정</td>
+        <td><span class="status-done">완료</span></td>
+        <td><span class="code-inline">/quality/inspections</span></td>
+      </tr>
+      <tr>
+        <td>불량 관리</td>
+        <td>불량 유형·원인 분류, 작업지시-생산실적 정합성 검증</td>
+        <td><span class="status-done">완료</span></td>
+        <td><span class="code-inline">/quality/defects</span></td>
+      </tr>
+      <tr>
+        <td>작업자 관리</td>
+        <td>자동채번 <span class="code-inline">W0001</span>, 재직/휴직/퇴사 상태, 퇴사 처리 분리</td>
+        <td><span class="status-done">완료</span></td>
+        <td><span class="code-inline">/operation/workers</span></td>
+      </tr>
+      <tr>
+        <td>대시보드</td>
+        <td>KPI 4종 + Bar/Line/Pie 차트 + 지연 이슈 목록 · Supabase Realtime 갱신</td>
+        <td><span class="status-done">완료</span></td>
+        <td><span class="code-inline">/api/dashboard/*</span></td>
       </tr>
     </tbody>
   </table>
 
-  <div class="section-title">화면 구성</div>
-  <div style="display:flex; gap:12px;">
-    <div class="cover-image-placeholder" style="height:40mm; flex:1; margin-top:0;">
-      <p class="placeholder-label">[ 공통코드 / 품목 관리 화면 ]</p>
-    </div>
-    <div class="cover-image-placeholder" style="height:40mm; flex:1; margin-top:0;">
-      <p class="placeholder-label">[ BOM / 품목별 공정 관리 화면 ]</p>
-    </div>
-  </div>
-
   <div class="page-footer">
     <span>myMES · Portfolio</span>
-    <span>02 / 05</span>
+    <span>02 / 08</span>
   </div>
 </div>
 
@@ -800,9 +1069,7 @@
   </div>
 
   <div class="section-title">전체 시스템 구조</div>
-  <div class="arch-image-placeholder">
-    <p class="placeholder-label">[ 시스템 아키텍처 다이어그램 ]<br/>React(Vite) ↔ Spring Boot ↔ Supabase(PostgreSQL · Auth · Realtime)</p>
-  </div>
+  <img class="arch-image" src="portfolio-assets/system-architecture.svg" alt="React Vite 프론트엔드, Spring Boot 백엔드, Supabase Auth PostgreSQL Realtime으로 구성된 myMES 전체 시스템 구조" />
 
   <div class="section-title">인증 흐름 (Supabase JWT · Spring Security)</div>
   <div class="flow-container">
@@ -810,12 +1077,12 @@
       <div class="flow-step">
         <span class="flow-step-num">01</span>
         <span class="flow-step-label">로그인 요청</span>
-        <span class="flow-step-desc">React에서<br/>supabase.auth<br/>.signIn() 호출</span>
+        <span class="flow-step-desc">authStore에서<br/>signInWithPassword<br/>호출</span>
       </div>
       <div class="flow-step">
         <span class="flow-step-num">02</span>
         <span class="flow-step-label">JWT 발급</span>
-        <span class="flow-step-desc">Supabase Auth가<br/>HS256 JWT 토큰<br/>발급 및 반환</span>
+        <span class="flow-step-desc">Supabase Auth가<br/>access_token<br/>발급 및 반환</span>
       </div>
       <div class="flow-step">
         <span class="flow-step-num">03</span>
@@ -829,13 +1096,44 @@
       </div>
       <div class="flow-step">
         <span class="flow-step-num">05</span>
-        <span class="flow-step-label">JWT 검증</span>
-        <span class="flow-step-desc">SupabaseJwtFilter<br/>JJWT로 서명<br/>검증</span>
+        <span class="flow-step-label">JWKS 검증</span>
+        <span class="flow-step-desc">SupabaseJwtFilter<br/>공개키 로드 후<br/>JJWT로 서명 검증</span>
       </div>
       <div class="flow-step">
         <span class="flow-step-num">06</span>
         <span class="flow-step-label">Principal 주입</span>
         <span class="flow-step-desc">SecurityContext에<br/>SupabasePrincipal<br/>저장 · 컨트롤러 주입</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:18px;">시스템 흐름 (요청 → 처리 → 갱신)</div>
+  <div class="flow-container">
+    <div class="flow-steps">
+      <div class="flow-step">
+        <span class="flow-step-num">01</span>
+        <span class="flow-step-label">화면 이벤트</span>
+        <span class="flow-step-desc">Page/Component<br/>사용자 액션</span>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">02</span>
+        <span class="flow-step-label">데이터 요청</span>
+        <span class="flow-step-desc">React Query Hook<br/>→ api 함수</span>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">03</span>
+        <span class="flow-step-label">API 처리</span>
+        <span class="flow-step-desc">Controller<br/>→ Service</span>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">04</span>
+        <span class="flow-step-label">DB 반영</span>
+        <span class="flow-step-desc">Repository<br/>→ PostgreSQL</span>
+      </div>
+      <div class="flow-step">
+        <span class="flow-step-num">05</span>
+        <span class="flow-step-label">화면 갱신</span>
+        <span class="flow-step-desc">ApiResponse<br/>+ 캐시/Realtime</span>
       </div>
     </div>
   </div>
@@ -900,7 +1198,7 @@
 
   <div class="page-footer">
     <span>myMES · Portfolio</span>
-    <span>03 / 05</span>
+    <span>03 / 08</span>
   </div>
 </div>
 
@@ -921,15 +1219,16 @@
       <span class="challenge-tag">문제</span>
       <p class="challenge-content">
         Supabase는 자체 Auth 서버가 JWT를 발급하므로, Spring Security의 기본 OAuth2 Resource Server
-        설정과 구조가 맞지 않았습니다. 특히 HS256 서명 방식과 Supabase 전용 클레임 구조를
-        표준 필터 체인에 맞게 처리해야 했습니다.
+        설정만으로는 프로젝트의 필터 구조와 클레임 매핑을 그대로 맞추기 어려웠습니다.
+        특히 Supabase JWKS 공개키 로드, 서명 검증, 전용 클레임 추출을
+        표준 필터 체인 안에서 일관되게 처리해야 했습니다.
       </p>
     </div>
     <div class="challenge-row">
       <span class="challenge-tag solution">해결</span>
       <p class="challenge-content">
         <span class="code-inline">OncePerRequestFilter</span>를 상속한 <span class="code-inline">SupabaseJwtFilter</span>를
-        직접 구현하여, JJWT 라이브러리로 HS256 검증을 수행하고
+        직접 구현하여, Supabase JWKS 엔드포인트에서 공개키를 로드하고 JJWT 라이브러리로 서명을 검증한 뒤
         <span class="code-inline">SupabasePrincipal</span>(userId, email, role)을
         SecurityContext에 주입했습니다. 컨트롤러에서는 <span class="code-inline">@AuthenticationPrincipal</span>로
         자연스럽게 접근할 수 있습니다.
@@ -1002,102 +1301,380 @@
 
   <div class="page-footer">
     <span>myMES · Portfolio</span>
-    <span>04 / 05</span>
+    <span>04 / 08</span>
   </div>
 </div>
 
 
 <!-- ══════════════════════════════════════════════
-     PAGE 5 · 설계 원칙 & 회고
+     PAGE 5 · 기술적 도전 & 해결 (계속)
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-title">Technical Challenges (continued)</span>
+    <span class="page-num">05</span>
+  </div>
+
+  <div class="challenge-block">
+    <p class="challenge-num">CHALLENGE 04</p>
+    <p class="challenge-title">BOM 버전 관리 — Copy-on-Write 설계</p>
+    <div class="challenge-row">
+      <span class="challenge-tag">문제</span>
+      <p class="challenge-content">
+        기존 구조는 <span class="code-inline">versionNo</span>가 BOM 행마다 분산 저장돼 "버전" 자체가 데이터 모델에 존재하지 않았고,
+        과거 버전은 Soft Delete로 사라져 이력 조회가 불가능했습니다.
+        진행 중인 <span class="code-inline">WorkOrder</span>가 참조하는 버전을 임의로 비활성화하면 참조 무결성이 깨지는 위험도 있었습니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag solution">해결</span>
+      <p class="challenge-content">
+        <span class="code-inline">BomVersion</span> 헤더 엔티티를 분리(A안 채택)하고 상태를 <span class="code-inline">ACTIVE</span>/<span class="code-inline">INACTIVE</span> 두 가지로 단순화했습니다.
+        재활성화는 비선형 이력을 만들기 때문에 금지하고, 대신 <strong>버전 복원(restore)</strong> 기능으로 대체하여 이력이 항상 앞으로만 진행되도록 했습니다.
+        저장은 Copy-on-Write — 기존 ACTIVE 라인 Soft Delete → 새 BomVersion 생성 → 새 라인 일괄 생성 → 기존 BomVersion INACTIVE 전이.
+        <span class="code-inline">WorkOrder</span>는 생성 시점의 ACTIVE 버전을 FK로 고정해 참조 무결성을 보장합니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag result">결과</span>
+      <p class="challenge-content">
+        버전 메타데이터 추적 가능, 진행 중 작업지시의 BOM 참조 무결성 확보, 버전 상태 변경 시 N개 라인을 갱신하던 부담 제거.
+      </p>
+    </div>
+  </div>
+
+  <div class="challenge-block">
+    <p class="challenge-num">CHALLENGE 05</p>
+    <p class="challenge-title">자동채번 통일 정책 — 운영 안정성</p>
+    <div class="challenge-row">
+      <span class="challenge-tag">문제</span>
+      <p class="challenge-content">
+        사용자 입력 코드는 형식 일관성과 충돌을 사람에게 떠맡깁니다.
+        특히 작업지시 번호는 메모리 <span class="code-inline">AtomicInteger</span>로 관리돼 서버 재기동·다중 인스턴스 환경에서 동일 번호 발급 위험이 있었고,
+        Soft Delete된 코드를 재발급하면 이력 추적성도 훼손되었습니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag solution">해결</span>
+      <p class="challenge-content">
+        마스터·운영 도메인 코드를 모두 시스템 자동채번으로 통일했습니다 — <span class="code-inline">ITEM-000001</span>, <span class="code-inline">PROC-000001</span>, <span class="code-inline">W0001</span>, <span class="code-inline">WO-yyyyMMdd-0000</span>.
+        DB의 마지막 코드를 prefix LIKE로 조회한 뒤 다음 번호를 계산하고, <span class="code-inline">saveAndFlush</span> unique 충돌 시 최대 3회 재시도, 실패 시 전용 비즈니스 에러로 응답합니다.
+        작업자 코드 채번은 native query를 사용해 <span class="code-inline">@SQLRestriction</span>(soft delete) 영향을 받지 않도록 처리 — 퇴사·삭제된 코드도 재사용 금지.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag result">결과</span>
+      <p class="challenge-content">
+        코드 정책 일관화, 다중 인스턴스 안전성 확보. 채번 시퀀스를 회귀 테스트(<span class="code-inline">BackendRegressionTests</span>)로 가드.
+      </p>
+    </div>
+  </div>
+
+  <div class="challenge-block">
+    <p class="challenge-num">CHALLENGE 06</p>
+    <p class="challenge-title">생산계획 — 일괄 확정 / 일괄 발행 Bulk API</p>
+    <div class="challenge-row">
+      <span class="challenge-tag">문제</span>
+      <p class="challenge-content">
+        생산계획은 <span class="code-inline">DRAFT → CONFIRMED → RELEASED → CLOSED</span> 4단계 상태를 가집니다.
+        N개 계획을 개별 호출로 처리하면 일부만 성공하는 부분 커밋, 작업지시 자동 생성과의 트랜잭션 분리,
+        혼합 선택 시 어떤 액션을 적용할지에 대한 UX 모호성이 모두 발생했습니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag solution">해결</span>
+      <p class="challenge-content">
+        백엔드는 단일 트랜잭션 bulk 엔드포인트 2개를 신설했습니다 — <span class="code-inline">POST /production-plans/bulk-confirm</span>, <span class="code-inline">POST /production-plans/bulk-release</span>.
+        부분 성공 대신 <strong>전체 성공 또는 전체 롤백</strong> 정책을 채택해 운영자에게 명확한 결과를 보장합니다.
+        발행 단계는 RELEASED 전이와 작업지시 자동 생성을 같은 트랜잭션에 묶었습니다.
+        프론트는 상태 필터 탭 + 탭별 단일 액션 UX(초안 탭은 일괄 확정만, 확정 탭은 일괄 발행만)로 혼합 선택 모호성을 제거했습니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag result">결과</span>
+      <p class="challenge-content">
+        한 번의 호출로 N건 상태 전이 + N건 작업지시 자동 생성을 일관성 있게 처리. UX 단순화로 사용자 의사결정 부담 감소.
+      </p>
+    </div>
+  </div>
+
+  <div class="challenge-block">
+    <p class="challenge-num">CHALLENGE 07</p>
+    <p class="challenge-title">작업자 vs 로그인 계정 — 도메인 lifecycle 분리</p>
+    <div class="challenge-row">
+      <span class="challenge-tag">문제</span>
+      <p class="challenge-content">
+        기존 백엔드의 <span class="code-inline">user</span> 도메인에 현장 작업자까지 묶으면, Supabase Auth 계정이 불필요하게 따라오고
+        작업자에게 비밀번호·권한 개념이 생겨 도메인 의미가 흐려졌습니다.
+        무엇보다 <strong>퇴사·삭제된 작업자도 생산 이력에는 남아야 한다</strong>는 요구가 로그인 계정 lifecycle과 충돌했습니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag solution">해결</span>
+      <p class="challenge-content">
+        작업자를 <span class="code-inline">worker</span> 독립 도메인으로 분리하고 상태를 <span class="code-inline">ACTIVE</span>/<span class="code-inline">ON_LEAVE</span>/<span class="code-inline">RESIGNED</span>로 정의했습니다.
+        퇴사(상태 + 퇴사일 변경)와 삭제(잘못 등록된 마스터의 Soft Delete)를 명시적으로 분리했고,
+        로그인·권한·Supabase Auth 연동은 <span class="code-inline">user</span> 도메인에 한정했습니다. <span class="code-inline">WorkerService</span> 단위 테스트로 lifecycle을 가드합니다.
+      </p>
+    </div>
+    <div class="challenge-row">
+      <span class="challenge-tag result">결과</span>
+      <p class="challenge-content">
+        인증 lifecycle과 인력 마스터 lifecycle 독립화. 작업지시·생산실적이 안정적으로 작업자를 참조할 수 있는 기반(향후 <span class="code-inline">workerId</span> FK + <span class="code-inline">workerNameSnapshot</span> 도입 여지) 마련.
+      </p>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>myMES · Portfolio</span>
+    <span>05 / 08</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 6 · 설계 원칙 & 회고
 ══════════════════════════════════════════════ -->
 <div class="page">
   <div class="page-header">
     <span class="page-header-title">Design Principles &amp; Retrospective</span>
-    <span class="page-num">05</span>
-  </div>
-
-  <div class="section-title">주요 설계 원칙</div>
-  <div class="design-grid">
-    <div class="design-card">
-      <p class="design-card-title">
-        <span class="design-icon">B</span>
-        Backend 일관성
-      </p>
-      <ul class="design-list">
-        <li>모든 응답 <span class="code-inline">ApiResponse&lt;T&gt;</span> 래핑</li>
-        <li>비즈니스 예외 <span class="code-inline">BusinessException</span> + <span class="code-inline">ErrorCode</span> enum</li>
-        <li>Soft Delete — <span class="code-inline">deletedAt</span> 필드, <span class="code-inline">entity.delete()</span> 호출</li>
-        <li>Service 기본 <span class="code-inline">@Transactional(readOnly=true)</span></li>
-        <li>동적 조건 2개↑ → QueryDSL 사용 원칙</li>
-        <li>MapStruct로 Entity↔DTO 변환 분리</li>
-      </ul>
-    </div>
-    <div class="design-card">
-      <p class="design-card-title">
-        <span class="design-icon">F</span>
-        Frontend 일관성
-      </p>
-      <ul class="design-list">
-        <li>Feature-first 폴더 — 도메인 응집도 최우선</li>
-        <li>컴포넌트에서 axios 직접 호출 금지</li>
-        <li>폼은 react-hook-form + zod + @hookform/resolvers</li>
-        <li>TypeScript <span class="code-inline">any</span> 금지 → <span class="code-inline">unknown</span> + 타입 가드</li>
-        <li>enum 대신 <span class="code-inline">as const</span> 패턴</li>
-        <li>스타일링 Tailwind만, 인라인 style 속성 금지</li>
-      </ul>
-    </div>
-    <div class="design-card">
-      <p class="design-card-title">
-        <span class="design-icon">A</span>
-        API 설계
-      </p>
-      <ul class="design-list">
-        <li>URL 복수형 명사 + 케밥케이스 기준</li>
-        <li>Swagger UI 자동 문서화 (SpringDoc OpenAPI)</li>
-        <li>Vite 프록시로 개발 CORS 없이 백엔드 연결</li>
-        <li>401 응답 시 axios 인터셉터 자동 로그아웃</li>
-        <li>공개 엔드포인트 <span class="code-inline">GET /api/health</span> 단 하나</li>
-      </ul>
-    </div>
-    <div class="design-card">
-      <p class="design-card-title">
-        <span class="design-icon">R</span>
-        Realtime
-      </p>
-      <ul class="design-list">
-        <li>Supabase Realtime — PostgreSQL 변경 구독</li>
-        <li><span class="code-inline">useSupabaseRealtime</span> 커스텀 훅으로 추상화</li>
-        <li>대시보드 지표 실시간 반영 목표</li>
-        <li>Supabase 대시보드 Replication 활성화 필요</li>
-      </ul>
-    </div>
+    <span class="page-num">06</span>
   </div>
 
   <div class="section-title">회고</div>
   <div class="retro-cols">
     <div class="retro-box good">
       <p class="retro-box-title">잘 된 점</p>
-      <p class="retro-item">도메인 기반 패키지 설계로 기능 추가 시 영향 범위를 명확히 격리할 수 있었습니다.</p>
-      <p class="retro-item">Supabase를 활용해 Auth·DB·Realtime을 별도 인프라 없이 빠르게 통합했습니다.</p>
+      <p class="retro-item">도메인 기반 패키지 구조 덕분에 마스터·생산운영·품질 도메인을 확장해도 영향 범위를 작게 유지할 수 있었습니다.</p>
+      <p class="retro-item">Supabase Auth와 Spring Security를 JWT 기준으로 연결해 프론트·백엔드 인증 흐름을 하나의 토큰 체계로 정리했습니다.</p>
+      <p class="retro-item">생산계획 일괄 확정/발행, 작업지시 자동 생성, 공정별 진행 검증처럼 MES의 상태 전이를 트랜잭션 단위로 다뤘습니다.</p>
+      <p class="retro-item">자동채번·Soft Delete·회귀 테스트를 함께 정리하면서 운영 데이터의 중복, 삭제, 이력 보존 위험을 낮췄습니다.</p>
       <p class="retro-item">React Query / Zustand 역할 분리로 상태 관리 코드가 눈에 띄게 단순해졌습니다.</p>
-      <p class="retro-item">Soft Delete 패턴으로 데이터 이력 추적과 롤백 안전성을 동시에 확보했습니다.</p>
     </div>
     <div class="retro-box improve">
       <p class="retro-box-title">아쉬운 점 / 개선 방향</p>
-      <p class="retro-item">생산 계획·작업 지시 등 핵심 MES 기능이 아직 미완성 상태입니다.</p>
-      <p class="retro-item">테스트 커버리지가 핵심 도메인에 집중되어 있어 전체적인 커버리지 확대가 필요합니다.</p>
-      <p class="retro-item">대시보드 KPI 지표와 Realtime 연동 기능 구현이 남아 있습니다.</p>
-      <p class="retro-item">운영 배포 시 ddl-auto: validate 전환 및 마이그레이션 전략 수립이 필요합니다.</p>
+      <p class="retro-item">현재는 CRUD·상태 전이 중심이므로, 실제 현장 적용을 위해 권한 세분화와 승인/감사 로그 흐름을 더 보강해야 합니다.</p>
+      <p class="retro-item">대시보드는 KPI와 차트 중심으로 구현되어 있어, 병목 원인 분석이나 기간 비교 같은 분석 기능 확장이 필요합니다.</p>
+      <p class="retro-item">테스트는 주요 서비스와 회귀 케이스에 집중되어 있어, 프론트 폼·React Query 훅·권한별 API 시나리오까지 넓힐 여지가 있습니다.</p>
+      <p class="retro-item">운영 배포 단계에서는 <span class="code-inline">ddl-auto: validate</span> 전환, 명시적 마이그레이션, Supabase Realtime replication 정책을 분리 관리해야 합니다.</p>
     </div>
   </div>
 
-  <div class="cover-image-placeholder" style="height:36mm; margin-top: 0;">
-    <p class="placeholder-label">[ ERD 또는 주요 도메인 관계도 ]</p>
+  <img class="portfolio-image" style="height:44mm; margin-top:0;" src="portfolio-assets/domain-relationship-clear.svg" alt="마스터, 라우팅과 BOM, 생산 운영, 품질 영역으로 나눈 myMES 주요 도메인 관계도" />
+
+  <div class="page-footer">
+    <span>myMES · Portfolio</span>
+    <span>06 / 08</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 7 · 개발 타임라인
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-title">Development Timeline</span>
+    <span class="page-num">07</span>
+  </div>
+
+  <div class="section-title">개발 진행 흐름</div>
+  <p class="ts-intro">
+    초기에는 인증·공통 인프라와 마스터 도메인 안정화에 집중했고,
+    이후 운영 도메인(생산계획·작업지시·생산실적·품질·작업자)을 차례로 확장했으며,
+    최근에는 대시보드 가시화와 BOM 버전 관리, 설비-작업지시 배정 가시화로 마무리되었습니다.
+  </p>
+
+  <div class="timeline">
+
+    <div class="timeline-row">
+      <p class="timeline-title">인증 기반 · 공통 인프라 안정화</p>
+      <ul class="timeline-list">
+        <li>Supabase JWT를 Spring Security에 직접 통합 — <span class="code-inline">SupabaseJwtFilter</span> 구현</li>
+        <li>Soft Delete 필터 위치 정리 — <span class="code-inline">@SQLRestriction</span>을 각 엔티티로 이동<span class="timeline-tag">P1</span></li>
+        <li>Item / Process 수정 시 중복 코드 검증 누락 보완 (409 흐름 복원)<span class="timeline-tag">P2</span></li>
+        <li>Defect 생성 시 작업지시-생산실적 정합성 검증 추가<span class="timeline-tag">P2</span></li>
+        <li>Gradle build 테스트 환경 분리 — H2 + <span class="code-inline">@ActiveProfiles("test")</span><span class="timeline-tag">P2</span></li>
+      </ul>
+    </div>
+
+    <div class="timeline-row">
+      <p class="timeline-title">코드 운영 정책 · 인증 의사결정</p>
+      <ul class="timeline-list">
+        <li>품목 / 공정 코드 사용자 입력 폐기 → 시스템 자동채번 정책 전환<span class="timeline-tag">P1</span></li>
+        <li>작업지시 번호 메모리 카운터 → DB 기반 채번 + 유니크 충돌 시 최대 3회 재시도<span class="timeline-tag">P1</span></li>
+        <li>JWT 직접 운영 vs Supabase Auth — 의사결정 정리, Supabase Auth 채택 유지<span class="timeline-tag">기타</span></li>
+      </ul>
+    </div>
+
+    <div class="timeline-row">
+      <p class="timeline-title">운영 도메인 확장 · BOM 버전 관리</p>
+      <ul class="timeline-list">
+        <li>생산계획 화면 신규 구현 (DataGrid + DatePicker) 및 일괄 확정·일괄 발행 bulk API 추가</li>
+        <li>품질관리 1차 MVP — <span class="code-inline">qualityInspection</span> 도메인 신설, 사이드바 그룹 분리</li>
+        <li>작업자 관리 도메인을 로그인 계정과 분리 — <span class="code-inline">worker</span> 독립 도메인 + 자동채번(W0001~)</li>
+        <li>생산실적 도메인 단위 테스트 12건 추가 (수량 검증·상태 전이·경계값)</li>
+        <li>대시보드 도메인 설계 — KPI 4종 + Bar/Line/Pie 차트 + 이슈 목록 + Realtime 무효화</li>
+        <li>BOM 버전 도입 시 마이그레이션 오류 — nullable 추가 → 데이터 채움 → NOT NULL 단계화<span class="timeline-tag">P2</span></li>
+      </ul>
+    </div>
+
+    <div class="timeline-row">
+      <p class="timeline-title">가시화 · 검증 강화 · UX 정리</p>
+      <ul class="timeline-list">
+        <li>설비-작업지시 배정 가시화 기능 — 공정-설비 매핑 화면 보강</li>
+        <li>작업지시 발행 시 공정별 다중 행 자동 생성 + 공정 미등록 예외 처리</li>
+        <li>작업지시 진행 시 이전 공정 완료 여부 검증 추가</li>
+        <li>품질검사 연결 시점 설계 — 어느 단계에서 검사를 트리거할지 정리</li>
+        <li>생산실적 등록 폼의 공정 셀렉트박스 중복 항목 제거</li>
+      </ul>
+    </div>
+
   </div>
 
   <div class="page-footer">
     <span>myMES · Portfolio</span>
-    <span>05 / 05</span>
+    <span>07 / 08</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAGE 8 · 트러블슈팅 하이라이트
+══════════════════════════════════════════════ -->
+<div class="page">
+  <div class="page-header">
+    <span class="page-header-title">Troubleshooting Highlights</span>
+    <span class="page-num">08</span>
+  </div>
+
+  <div class="section-title">우선순위별 사례</div>
+  <p class="ts-intro">
+    개발 중 마주친 이슈를 P1·P2·기타로 분류했습니다.
+    P1은 데이터 정합성·운영 안정성에 직접 영향을 주는 이슈, P2는 정합성·DX·배포 환경 이슈,
+    기타는 의사결정·정책 정리 항목입니다. 각 카드는 <strong>원인 → 해결 → 검증</strong> 흐름으로
+    실제 코드와 회귀 테스트(<span class="code-inline">BackendRegressionTests</span>)에 반영되어 있습니다.
+  </p>
+
+  <!-- ── P1 ── -->
+  <div class="ts-priority-block">
+    <div class="ts-priority-header">
+      <span class="ts-priority-tag">P1</span>
+      <span class="ts-priority-label">정합성 · 운영 안정성</span>
+      <span class="ts-priority-count">04 cases</span>
+    </div>
+    <div class="ts-grid">
+
+      <div class="ts-card">
+        <p class="ts-card-title">작업지시 번호 중복 생성 위험</p>
+        <p class="ts-card-loc">backend/workorder/WorkOrderService</p>
+        <p class="ts-card-body">
+          메모리 <span class="code-inline">AtomicInteger</span> 카운터가 서버 재기동·다중 인스턴스 환경에서 충돌 위험. <strong>DB의 마지막 번호 조회 → 다음 번호 계산</strong> 방식으로 전환하고 <span class="code-inline">saveAndFlush</span> 충돌 시 최대 3회 재시도, 실패 시 <span class="code-inline">WORK_ORDER_NO_GENERATION_FAILED</span> 반환.
+        </p>
+      </div>
+
+      <div class="ts-card">
+        <p class="ts-card-title">Soft Delete 필터가 조회에서 누락되지 않던 문제</p>
+        <p class="ts-card-loc">backend/common/entity</p>
+        <p class="ts-card-body">
+          <span class="code-inline">@SQLRestriction</span>을 <span class="code-inline">@MappedSuperclass</span>(BaseEntity)에 두면 각 엔티티에 안전하게 적용되지 않는 케이스가 존재. <strong>각 concrete entity</strong>(Item·MfgProcess·WorkOrder·ProductionRecord·DefectRecord)에 직접 선언으로 변경 + 회귀 테스트 추가.
+        </p>
+      </div>
+
+      <div class="ts-card">
+        <p class="ts-card-title">품목/공정 코드 자동채번 정책 전환</p>
+        <p class="ts-card-loc">backend/item, backend/process</p>
+        <p class="ts-card-body">
+          사용자 입력 코드는 충돌·정책 일관성 문제 유발. <strong>코드 입력 자체를 폐기</strong>하고 <span class="code-inline">ITEM-000001</span> / <span class="code-inline">PROC-000001</span> 시스템 자동채번으로 전환, 수정 API에서는 코드 변경을 허용하지 않도록 도메인 정책 정리.
+        </p>
+      </div>
+
+      <div class="ts-card">
+        <p class="ts-card-title">소프트 삭제 누락 + 수정 시 정합성 검증 통합 보강</p>
+        <p class="ts-card-loc">backend entity / service / repository</p>
+        <p class="ts-card-body">
+          서로 연결된 4가지 정합성 이슈(소프트 삭제·Item 중복·Process 중복·Defect 작업지시 mismatch)를 한 번에 정리. <strong>회귀 테스트 묶음</strong>(<span class="code-inline">BackendRegressionTests</span>)으로 재발 방지 라인을 구축.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── P2 ── -->
+  <div class="ts-priority-block">
+    <div class="ts-priority-header">
+      <span class="ts-priority-tag p2">P2</span>
+      <span class="ts-priority-label">API 정합성 · 마이그레이션 · DX</span>
+      <span class="ts-priority-count">05 cases</span>
+    </div>
+    <div class="ts-grid">
+
+      <div class="ts-card">
+        <p class="ts-card-title">BOM 버전 도입 시 기존 데이터 마이그레이션 오류</p>
+        <p class="ts-card-loc">backend/bom/config/BomIndexConfig, entity/Bom</p>
+        <p class="ts-card-body">
+          <span class="code-inline">ddl-auto: update</span>가 기존 행이 있는 테이블에 <span class="code-inline">NOT NULL</span> FK를 즉시 추가하다 실패. <strong>nullable 컬럼으로 추가 → 마이그레이션으로 채움 → NOT NULL 제약</strong> 3단계로 분리. 마이그레이션은 <span class="code-inline">mymes.bom-migration.enabled</span> 플래그로 제어.
+        </p>
+      </div>
+
+      <div class="ts-card">
+        <p class="ts-card-title">Gradle build의 contextLoads 초기화 실패</p>
+        <p class="ts-card-loc">backend test/build 환경</p>
+        <p class="ts-card-body">
+          <span class="code-inline">.env</span>가 <span class="code-inline">bootRun</span>에만 연결되어 테스트에서는 DataSource·JWKS 초기화 실패. <strong>테스트 전용 프로필</strong>(<span class="code-inline">test</span>) + H2 인메모리 DB 도입, <span class="code-inline">SupabaseJwtFilter</span>는 <span class="code-inline">@MockBean</span>으로 대체.
+        </p>
+      </div>
+
+      <div class="ts-card">
+        <p class="ts-card-title">Item 수정 시 중복 itemCode 409 미차단</p>
+        <p class="ts-card-loc">backend item/service</p>
+        <p class="ts-card-body">
+          <span class="code-inline">create()</span>에만 중복 검사가 있고 <span class="code-inline">update()</span>는 곧장 덮어써 DB unique 제약 → 500으로 새어나감. <span class="code-inline">existsByItemCodeAndIdNot</span>를 추가해 자기 자신을 제외한 중복을 사전 차단, <strong>비즈니스 에러 흐름</strong>으로 일관화.
+        </p>
+      </div>
+
+      <div class="ts-card">
+        <p class="ts-card-title">Process 수정 시 중복 processCode 409 미차단</p>
+        <p class="ts-card-loc">backend process/service</p>
+        <p class="ts-card-body">
+          품목과 동일 패턴. <span class="code-inline">existsByProcessCodeAndIdNot</span> 추가 후 자기 자신 제외 중복 검증을 우선 수행하도록 변경. 중복 시 <span class="code-inline">PROCESS_CODE_DUPLICATED</span>로 일관된 응답.
+        </p>
+      </div>
+
+      <div class="ts-card">
+        <p class="ts-card-title">Defect — 다른 작업지시의 생산실적 연결 가능</p>
+        <p class="ts-card-loc">backend defect/service</p>
+        <p class="ts-card-body">
+          <span class="code-inline">/work-orders/A/defect-records</span> 요청에 작업지시 B의 생산실적이 들어와도 막지 못하던 구멍. 조회한 <span class="code-inline">productionRecord.workOrder.id</span>와 요청 경로의 <span class="code-inline">workOrderId</span>를 비교, 불일치 시 즉시 비즈니스 예외.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── 기타 ── -->
+  <div class="ts-priority-block">
+    <div class="ts-priority-header">
+      <span class="ts-priority-tag etc">기타</span>
+      <span class="ts-priority-label">설계 · 의사결정</span>
+      <span class="ts-priority-count">01 case</span>
+    </div>
+    <div class="ts-grid">
+
+      <div class="ts-card" style="grid-column: 1 / -1;">
+        <p class="ts-card-title">JWT 직접 운영 vs Supabase Auth — 선택 기준 정리</p>
+        <p class="ts-card-loc">인증 설계 / Supabase Auth</p>
+        <p class="ts-card-body">
+          Supabase Auth도 내부적으로 JWT를 사용하므로 양자택일 구도가 아님을 확인. 본 프로젝트는 이미 Auth·DB·Realtime을 Supabase 중심으로 묶은 구조이고, <strong>인증 운영 부담 절감 vs 인프라 종속성</strong>을 견주어 Supabase Auth 유지로 결정. 서버는 리소스 서버 역할에 집중하고, JWT 검증은 자체 <span class="code-inline">SupabaseJwtFilter</span>로 통합.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span>myMES · Portfolio</span>
+    <span>08 / 08</span>
   </div>
 </div>
 
