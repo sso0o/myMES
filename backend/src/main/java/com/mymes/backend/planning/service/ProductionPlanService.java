@@ -4,6 +4,7 @@ import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
 import com.mymes.backend.item.entity.Item;
 import com.mymes.backend.item.service.ItemService;
+import com.mymes.backend.itemprocess.service.ItemProcessService;
 import com.mymes.backend.planning.dto.ProductionPlanBulkConfirmResponse;
 import com.mymes.backend.planning.dto.ProductionPlanBulkReleaseResponse;
 import com.mymes.backend.planning.dto.ProductionPlanCreateRequest;
@@ -40,6 +41,7 @@ public class ProductionPlanService {
     private final ItemService itemService;
     private final UserService userService;
     private final WorkOrderService workOrderService;
+    private final ItemProcessService itemProcessService;
     private final ProductionPlanMapper productionPlanMapper;
 
     public List<ProductionPlanResponse> findAll() {
@@ -101,12 +103,11 @@ public class ProductionPlanService {
         ProductionPlan plan = getPlan(id);
 
         if (newStatus == PlanStatus.RELEASED) {
-            if (plan.getWorkOrder() != null) {
+            if (!plan.getWorkOrders().isEmpty()) {
                 throw new BusinessException(ErrorCode.PLAN_ALREADY_RELEASED);
             }
-            WorkOrder workOrder = workOrderService.createForPlan(
-                    plan.getItem(), plan.getPlannedQty(), plan.getPlannedDate());
-            plan.linkWorkOrder(workOrder);
+            List<WorkOrder> workOrders = workOrderService.createAllForPlan(plan);
+            plan.addWorkOrders(workOrders);
         }
 
         plan.changeStatus(newStatus);
@@ -156,16 +157,26 @@ public class ProductionPlanService {
     @Transactional
     public ProductionPlanBulkReleaseResponse bulkRelease(List<Long> planIds) {
         List<ProductionPlan> plans = productionPlanRepository.findAllById(planIds);
+
+        // 공정 미등록 품목 사전 검증 — 있으면 전체 실패
+        List<String> noProcessItemCodes = plans.stream()
+                .filter(plan -> itemProcessService.findAllEntitiesByItemId(plan.getItem().getId()).isEmpty())
+                .map(plan -> plan.getItem().getItemCode())
+                .toList();
+        if (!noProcessItemCodes.isEmpty()) {
+            throw new BusinessException(ErrorCode.PLAN_NO_PROCESS_FOR_ITEM,
+                    String.join(", ", noProcessItemCodes));
+        }
+
         int workOrderCount = 0;
         for (ProductionPlan plan : plans) {
-            if (plan.getWorkOrder() != null) {
+            if (!plan.getWorkOrders().isEmpty()) {
                 throw new BusinessException(ErrorCode.PLAN_ALREADY_RELEASED);
             }
-            WorkOrder workOrder = workOrderService.createForPlan(
-                    plan.getItem(), plan.getPlannedQty(), plan.getPlannedDate());
-            plan.linkWorkOrder(workOrder);
+            List<WorkOrder> workOrders = workOrderService.createAllForPlan(plan);
+            plan.addWorkOrders(workOrders);
             plan.changeStatus(PlanStatus.RELEASED);
-            workOrderCount++;
+            workOrderCount += workOrders.size();
         }
         log.info("생산계획 일괄 발행 완료: planCount={}, workOrderCount={}", plans.size(), workOrderCount);
         return ProductionPlanBulkReleaseResponse.builder()

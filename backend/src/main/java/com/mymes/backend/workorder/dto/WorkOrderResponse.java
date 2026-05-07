@@ -29,6 +29,8 @@ public class WorkOrderResponse {
     private LocalDate dueDate;
     private Long bomVersionId;
     private Integer bomVersionNo;
+    private Integer sequence;
+    private String planNo;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

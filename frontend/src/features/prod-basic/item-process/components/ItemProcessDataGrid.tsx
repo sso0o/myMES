@@ -1,7 +1,15 @@
+import { useEffect, useState } from 'react'
 import { Check, Pencil, Trash2, X } from 'lucide-react'
-import type { GridColDef } from '@mui/x-data-grid'
+import type { GridColDef, GridEventListener, GridRowId, GridRowModesModel } from '@mui/x-data-grid'
+import {
+  GridRowModes,
+  GridRowEditStopReasons,
+  useGridApiRef,
+  useGridApiContext,
+  useGridSelector,
+} from '@mui/x-data-grid'
+import type { SelectChangeEvent } from '@mui/material'
 import AppDataGrid from '@/common/components/AppDataGrid'
-import AppGridInput from '@/common/components/AppGridInput'
 import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
 import {
   cancelIconButtonClass,
@@ -12,74 +20,187 @@ import {
 import type { ProcessResponse } from '@/features/prod-basic/process/types'
 import type { ItemProcessResponse } from '@/features/prod-basic/item-process/types'
 
-export interface ItemProcessInlineRow {
-  processId: string
-  sequence: string
-}
+export type ItemProcessGridRow = ItemProcessResponse & { isNew?: boolean }
 
 const NEW_ROW_ID = -1
 const DATA_GRID_DEFAULT_PAGE_SIZE = 25
 const DATA_GRID_PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
-const actionCellClass = 'flex h-full w-full items-center justify-center gap-2'
 const compactActionCellClass = 'flex h-full w-full items-center justify-center gap-1'
-interface ItemProcessDataGridProps {
+const actionCellClass = 'flex h-full w-full items-center justify-center gap-2'
+
+interface ProcessSelectEditCellProps {
+  id: GridRowId
+  field: string
+  processOptions: ProcessResponse[]
+  onProcessIdChange: (id: GridRowId, processId: number) => void
+}
+
+const ProcessSelectEditCell = ({
+  id,
+  field,
+  processOptions,
+  onProcessIdChange,
+}: ProcessSelectEditCellProps) => {
+  const apiRef = useGridApiContext()
+  // v9에서는 gridEditRowsStateSelector 대신 안정적인 API 사용
+  const value = useGridSelector(
+    apiRef,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (state: any) => state.editRows?.[id]?.[field]?.value ?? '',
+  )
+
+  const handleChange = (event: SelectChangeEvent<unknown>) => {
+    const newValue = event.target.value as string
+    void apiRef.current.setEditCellValue({ id, field, value: newValue })
+    onProcessIdChange(id, Number(newValue))
+  }
+
+  return (
+    <AppSelect value={String(value)} onChange={handleChange}>
+      <AppMenuItem value="">공정 선택</AppMenuItem>
+      {processOptions
+        .filter((p) => p.isActive)
+        .map((p) => (
+          <AppMenuItem key={p.id} value={String(p.id)}>
+            {p.processCode} - {p.processName}
+          </AppMenuItem>
+        ))}
+    </AppSelect>
+  )
+}
+
+interface DerivedValueCellProps {
+  row: ItemProcessResponse
+  isEditing: boolean
+  currentProcessId: number | undefined
+  processOptions: ProcessResponse[]
+  getter: (p: ProcessResponse) => string | number | null | undefined
+  className?: string
+}
+
+/** edit 중일 때 현재 선택된 processId 기준으로 파생값을 실시간 반영 */
+const DerivedValueCell = ({
+  row,
+  isEditing,
+  currentProcessId,
+  processOptions,
+  getter,
+  className,
+}: DerivedValueCellProps) => {
+  const processId =
+    isEditing && currentProcessId !== undefined ? currentProcessId : row.processId
+
+  const process = processOptions.find((p) => p.id === processId)
+  const val = process ? getter(process) : undefined
+  return <span className={className ?? 'text-[var(--text-muted)]'}>{val ?? '-'}</span>
+}
+
+export interface ItemProcessDataGridProps {
   itemProcesses: ItemProcessResponse[]
   processOptions: ProcessResponse[]
   loading: boolean
   addingRow: boolean
-  editingId: number | null
-  newRow: ItemProcessInlineRow
-  editRow: ItemProcessInlineRow
-  isCreating: boolean
-  isUpdating: boolean
+  initialSequence: number
   onCancelAdd: () => void
-  onChangeNewRow: (row: ItemProcessInlineRow) => void
-  onSaveAdd: () => void
-  onStartEdit: (itemProcess: ItemProcessResponse) => void
-  onCancelEdit: () => void
-  onChangeEditRow: (row: ItemProcessInlineRow) => void
-  onSaveEdit: (itemProcess: ItemProcessResponse) => void
+  onProcessRowUpdate: (
+    newRow: ItemProcessGridRow,
+    oldRow: ItemProcessGridRow,
+  ) => Promise<ItemProcessGridRow>
   onDelete: (itemProcess: ItemProcessResponse) => void
 }
-
-const createNewRow = (): ItemProcessResponse => ({
-  id: NEW_ROW_ID,
-  itemId: 0,
-  itemCode: '',
-  itemName: '',
-  processId: 0,
-  processCode: '',
-  processName: '',
-  sequence: 0,
-  createdAt: '',
-})
 
 const ItemProcessDataGrid = ({
   itemProcesses,
   processOptions,
   loading,
   addingRow,
-  editingId,
-  newRow,
-  editRow,
-  isCreating,
-  isUpdating,
+  initialSequence,
   onCancelAdd,
-  onChangeNewRow,
-  onSaveAdd,
-  onStartEdit,
-  onCancelEdit,
-  onChangeEditRow,
-  onSaveEdit,
+  onProcessRowUpdate,
   onDelete,
 }: ItemProcessDataGridProps) => {
-  const activeProcesses = processOptions.filter((process) => process.isActive)
-  const getProcess = (processId: number) =>
-    processOptions.find((process) => process.id === processId)
-  const sortedProcesses = itemProcesses.slice().sort((a, b) => a.sequence - b.sequence)
-  const rows = addingRow ? [...sortedProcesses, createNewRow()] : sortedProcesses
+  const apiRef = useGridApiRef()
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
+  // edit 중인 행의 현재 선택된 processId를 로컬 state로 추적 (v9 내부 state 직접 접근 회피)
+  const [editedProcessIds, setEditedProcessIds] = useState<Partial<Record<GridRowId, number>>>({})
 
-  const columns: GridColDef<ItemProcessResponse>[] = [
+  const sortedProcesses: ItemProcessGridRow[] = itemProcesses
+    .slice()
+    .sort((a, b) => a.sequence - b.sequence)
+
+  const rows: ItemProcessGridRow[] = addingRow
+    ? [
+        ...sortedProcesses,
+        {
+          id: NEW_ROW_ID,
+          itemId: 0,
+          itemCode: '',
+          itemName: '',
+          processId: 0,
+          processCode: '',
+          processName: '',
+          sequence: initialSequence,
+          createdAt: '',
+          isNew: true,
+        },
+      ]
+    : sortedProcesses
+
+  useEffect(() => {
+    if (addingRow) {
+      setTimeout(() => {
+        apiRef.current?.startRowEditMode({ id: NEW_ROW_ID, fieldToFocus: 'processId' })
+      }, 0)
+    }
+  }, [addingRow, apiRef])
+
+  // edit mode를 벗어난 행의 추적값 정리
+  useEffect(() => {
+    setEditedProcessIds((prev) => {
+      const next = { ...prev }
+      Object.keys(next).forEach((id) => {
+        if (rowModesModel[id]?.mode !== GridRowModes.Edit) {
+          delete next[id]
+        }
+      })
+      return next
+    })
+  }, [rowModesModel])
+
+  const handleRowModesModelChange = (model: GridRowModesModel) => {
+    setRowModesModel(model)
+  }
+
+  const handleProcessIdChange = (id: GridRowId, processId: number) => {
+    setEditedProcessIds((prev) => ({ ...prev, [id]: processId }))
+  }
+
+  const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
+    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+      event.defaultMuiPrevented = true
+    }
+    if (params.reason === GridRowEditStopReasons.escapeKeyDown && params.id === NEW_ROW_ID) {
+      onCancelAdd()
+    }
+  }
+
+  const handleSaveClick = (id: GridRowId) => () => {
+    apiRef.current?.stopRowEditMode({ id })
+  }
+
+  const handleCancelClick = (id: GridRowId) => () => {
+    apiRef.current?.stopRowEditMode({ id, ignoreModifications: true })
+    if (id === NEW_ROW_ID) onCancelAdd()
+  }
+
+  const handleEditClick = (id: GridRowId) => () => {
+    apiRef.current?.startRowEditMode({ id })
+    // 편집 시작 시 현재 processId를 초기값으로 세팅
+    const row = itemProcesses.find((ip) => ip.id === id)
+    if (row) setEditedProcessIds((prev) => ({ ...prev, [id]: row.processId }))
+  }
+
+  const columns: GridColDef<ItemProcessGridRow>[] = [
     {
       field: 'sequence',
       headerName: '순서',
@@ -87,35 +208,8 @@ const ItemProcessDataGrid = ({
       sortable: false,
       headerAlign: 'center',
       align: 'center',
-      renderCell: (params) => {
-        if (params.row.id === NEW_ROW_ID) {
-          return (
-            <AppGridInput
-              type="number"
-              value={newRow.sequence}
-              onChange={(event) => onChangeNewRow({ ...newRow, sequence: event.target.value })}
-              placeholder="1"
-              slotProps={{ htmlInput: { min: 1 } }}
-              sx={{ minWidth: 80, '& .MuiInputBase-input': { textAlign: 'center' } }}
-            />
-          )
-        }
-
-        if (params.row.id === editingId) {
-          return (
-            <AppGridInput
-              type="number"
-              value={editRow.sequence}
-              onChange={(event) => onChangeEditRow({ ...editRow, sequence: event.target.value })}
-              autoFocus
-              slotProps={{ htmlInput: { min: 1 } }}
-              sx={{ minWidth: 80, '& .MuiInputBase-input': { textAlign: 'center' } }}
-            />
-          )
-        }
-
-        return <span className="text-[var(--text-base)]">{params.row.sequence}</span>
-      },
+      editable: true,
+      type: 'number',
     },
     {
       field: 'processCode',
@@ -123,61 +217,37 @@ const ItemProcessDataGrid = ({
       width: 150,
       sortable: false,
       renderCell: (params) => {
-        if (params.row.id === NEW_ROW_ID) {
-          return <span className="font-mono text-xs text-[var(--text-muted)]">공정 선택</span>
-        }
-
-        if (params.row.id === editingId) {
-          return <span className="font-mono text-xs text-[var(--text-muted)]">공정 변경</span>
-        }
-
+        const isEditing = rowModesModel[params.id]?.mode === GridRowModes.Edit
         return (
-          <span className="font-mono text-[var(--text-base)]">{params.row.processCode}</span>
+          <DerivedValueCell
+            row={params.row}
+            isEditing={isEditing}
+            currentProcessId={editedProcessIds[params.id]}
+            processOptions={processOptions}
+            getter={(p) => p.processCode}
+            className="font-mono text-[var(--text-base)]"
+          />
         )
       },
     },
     {
-      field: 'processName',
+      field: 'processId',
       headerName: '공정명',
       flex: 1,
       minWidth: 220,
       sortable: false,
-      renderCell: (params) => {
-        if (params.row.id === NEW_ROW_ID) {
-          return (
-            <AppSelect
-              value={newRow.processId}
-              onChange={(event) => onChangeNewRow({ ...newRow, processId: event.target.value })}
-              autoFocus
-            >
-              <AppMenuItem value="">공정 선택</AppMenuItem>
-              {activeProcesses.map((process) => (
-                <AppMenuItem key={process.id} value={String(process.id)}>
-                  {process.processCode} - {process.processName}
-                </AppMenuItem>
-              ))}
-            </AppSelect>
-          )
-        }
-
-        if (params.row.id === editingId) {
-          return (
-            <AppSelect
-              value={editRow.processId}
-              onChange={(event) => onChangeEditRow({ ...editRow, processId: event.target.value })}
-            >
-              <AppMenuItem value="">공정 선택</AppMenuItem>
-              {activeProcesses.map((process) => (
-                <AppMenuItem key={process.id} value={String(process.id)}>
-                  {process.processCode} - {process.processName}
-                </AppMenuItem>
-              ))}
-            </AppSelect>
-          )
-        }
-
-        return <span className="truncate text-[var(--text-strong)]">{params.row.processName}</span>
-      },
+      editable: true,
+      renderCell: (params) => (
+        <span className="truncate text-[var(--text-strong)]">{params.row.processName}</span>
+      ),
+      renderEditCell: (params) => (
+        <ProcessSelectEditCell
+          id={params.id}
+          field={params.field}
+          processOptions={processOptions}
+          onProcessIdChange={handleProcessIdChange}
+        />
+      ),
     },
     {
       field: 'processTypeName',
@@ -186,20 +256,15 @@ const ItemProcessDataGrid = ({
       sortable: false,
       headerAlign: 'center',
       align: 'center',
-      renderCell: (params) => {
-        const processId =
-          params.row.id === NEW_ROW_ID
-            ? parseInt(newRow.processId, 10)
-            : params.row.id === editingId
-              ? parseInt(editRow.processId, 10)
-              : params.row.processId
-
-        return (
-          <span className="text-[var(--text-muted)]">
-            {Number.isNaN(processId) ? '-' : (getProcess(processId)?.processTypeName ?? '-')}
-          </span>
-        )
-      },
+      renderCell: (params) => (
+        <DerivedValueCell
+          row={params.row}
+          isEditing={rowModesModel[params.id]?.mode === GridRowModes.Edit}
+          currentProcessId={editedProcessIds[params.id]}
+          processOptions={processOptions}
+          getter={(p) => p.processTypeName}
+        />
+      ),
     },
     {
       field: 'standardTime',
@@ -208,40 +273,30 @@ const ItemProcessDataGrid = ({
       sortable: false,
       headerAlign: 'center',
       align: 'center',
-      renderCell: (params) => {
-        const processId =
-          params.row.id === NEW_ROW_ID
-            ? parseInt(newRow.processId, 10)
-            : params.row.id === editingId
-              ? parseInt(editRow.processId, 10)
-              : params.row.processId
-
-        return (
-          <span className="text-[var(--text-muted)]">
-            {Number.isNaN(processId) ? '-' : (getProcess(processId)?.standardTime ?? '-')}
-          </span>
-        )
-      },
+      renderCell: (params) => (
+        <DerivedValueCell
+          row={params.row}
+          isEditing={rowModesModel[params.id]?.mode === GridRowModes.Edit}
+          currentProcessId={editedProcessIds[params.id]}
+          processOptions={processOptions}
+          getter={(p) => p.standardTime}
+        />
+      ),
     },
     {
       field: 'description',
       headerName: '비고/설명',
       width: 220,
       sortable: false,
-      renderCell: (params) => {
-        const processId =
-          params.row.id === NEW_ROW_ID
-            ? parseInt(newRow.processId, 10)
-            : params.row.id === editingId
-              ? parseInt(editRow.processId, 10)
-              : params.row.processId
-
-        return (
-          <span className="truncate text-[var(--text-muted)]">
-            {Number.isNaN(processId) ? '-' : (getProcess(processId)?.description ?? '-')}
-          </span>
-        )
-      },
+      renderCell: (params) => (
+        <DerivedValueCell
+          row={params.row}
+          isEditing={rowModesModel[params.id]?.mode === GridRowModes.Edit}
+          currentProcessId={editedProcessIds[params.id]}
+          processOptions={processOptions}
+          getter={(p) => p.description}
+        />
+      ),
     },
     {
       field: 'actions',
@@ -252,15 +307,14 @@ const ItemProcessDataGrid = ({
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => {
-        const itemProcess = params.row
+        const isEditing = rowModesModel[params.id]?.mode === GridRowModes.Edit
 
-        if (itemProcess.id === NEW_ROW_ID) {
+        if (isEditing) {
           return (
             <div className={compactActionCellClass}>
               <button
                 type="button"
-                onClick={onSaveAdd}
-                disabled={isCreating}
+                onClick={handleSaveClick(params.id)}
                 className={saveIconButtonClass}
                 title="저장"
               >
@@ -268,31 +322,7 @@ const ItemProcessDataGrid = ({
               </button>
               <button
                 type="button"
-                onClick={onCancelAdd}
-                className={cancelIconButtonClass}
-                title="취소"
-              >
-                <X size={15} />
-              </button>
-            </div>
-          )
-        }
-
-        if (itemProcess.id === editingId) {
-          return (
-            <div className={compactActionCellClass}>
-              <button
-                type="button"
-                onClick={() => onSaveEdit(itemProcess)}
-                disabled={isUpdating}
-                className={saveIconButtonClass}
-                title="저장"
-              >
-                <Check size={15} />
-              </button>
-              <button
-                type="button"
-                onClick={onCancelEdit}
+                onClick={handleCancelClick(params.id)}
                 className={cancelIconButtonClass}
                 title="취소"
               >
@@ -306,7 +336,7 @@ const ItemProcessDataGrid = ({
           <div className={actionCellClass}>
             <button
               type="button"
-              onClick={() => onStartEdit(itemProcess)}
+              onClick={handleEditClick(params.id)}
               className={editIconButtonClass}
               title="수정"
             >
@@ -314,7 +344,7 @@ const ItemProcessDataGrid = ({
             </button>
             <button
               type="button"
-              onClick={() => onDelete(itemProcess)}
+              onClick={() => onDelete(params.row)}
               className={deleteIconButtonClass}
               title="삭제"
             >
@@ -327,13 +357,20 @@ const ItemProcessDataGrid = ({
   ]
 
   return (
-    <AppDataGrid<ItemProcessResponse>
+    <AppDataGrid<ItemProcessGridRow>
+      apiRef={apiRef}
+      editMode="row"
       rows={rows}
       columns={columns}
       loading={loading}
       getRowId={(row) => row.id}
+      rowModesModel={rowModesModel}
+      onRowModesModelChange={handleRowModesModelChange}
+      onRowEditStop={handleRowEditStop}
+      processRowUpdate={onProcessRowUpdate}
+      onProcessRowUpdateError={(error) => console.error('row update error:', error)}
       getRowClassName={(params) =>
-        params.row.id === NEW_ROW_ID || params.row.id === editingId ? 'inline-editing' : ''
+        rowModesModel[params.id]?.mode === GridRowModes.Edit ? 'inline-editing' : ''
       }
       pageSizeOptions={DATA_GRID_PAGE_SIZE_OPTIONS}
       initialState={{

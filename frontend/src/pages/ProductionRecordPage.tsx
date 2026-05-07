@@ -36,6 +36,15 @@ const workOrderColumns: GridColDef<WorkOrderResponse>[] = [
     ),
   },
   {
+    field: 'processName',
+    headerName: '공정명',
+    width: 140,
+    sortable: false,
+    renderCell: (params) => (
+      <span className="text-[var(--text-base)]">{params.row.processName ?? '-'}</span>
+    ),
+  },
+  {
     field: 'itemCode',
     headerName: '품목코드',
     width: 130,
@@ -161,7 +170,7 @@ const ProductionRecordPage = () => {
   return (
     <div className="space-y-5 p-6">
       <PageHeader
-        title="생산실적 관리"
+        title="생산 실적"
         description="진행 중인 작업지시를 선택하여 생산 실적을 등록합니다."
       />
 

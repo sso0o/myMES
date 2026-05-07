@@ -8,7 +8,9 @@ import com.mymes.backend.equipment.entity.Equipment;
 import com.mymes.backend.equipment.service.EquipmentService;
 import com.mymes.backend.item.entity.Item;
 import com.mymes.backend.item.service.ItemService;
+import com.mymes.backend.itemprocess.entity.ItemProcess;
 import com.mymes.backend.itemprocess.service.ItemProcessService;
+import com.mymes.backend.planning.entity.ProductionPlan;
 import com.mymes.backend.process.entity.MfgProcess;
 import com.mymes.backend.process.service.MfgProcessService;
 import com.mymes.backend.processEquipment.service.ProcessEquipmentService;
@@ -154,14 +156,26 @@ public class WorkOrderService {
 
     /**
      * 작업지시 상태를 다음 단계로 변경합니다.
+     * 대기→진행 전이 시 2번째 이상 공정은 이전 공정(sequence - 1)이 완료 상태여야 합니다.
      *
      * @param id 작업지시 ID
      * @param newStatus 변경할 상태
      * @return 상태가 변경된 작업지시 응답 DTO
+     * @throws BusinessException 이전 공정이 완료되지 않은 경우 (WORK_ORDER_PREV_PROCESS_NOT_COMPLETED)
      */
     @Transactional
     public WorkOrderResponse changeStatus(Long id, WorkOrderStatus newStatus) {
         WorkOrder workOrder = getWorkOrder(id);
+        if (newStatus == WorkOrderStatus.IN_PROGRESS
+                && workOrder.getSequence() != null
+                && workOrder.getSequence() > 1) {
+            workOrderRepository.findByWorkOrderNoAndSequence(workOrder.getWorkOrderNo(), workOrder.getSequence() - 1)
+                    .ifPresent(prev -> {
+                        if (prev.getStatus() != WorkOrderStatus.COMPLETED) {
+                            throw new BusinessException(ErrorCode.WORK_ORDER_PREV_PROCESS_NOT_COMPLETED);
+                        }
+                    });
+        }
         workOrder.changeStatus(newStatus);
         log.info("작업지시 상태 변경 완료: id={}, status={}", id, newStatus);
         return workOrderMapper.toResponse(workOrder);
@@ -183,44 +197,42 @@ public class WorkOrderService {
     }
 
     /**
-     * 생산계획 발행 시 작업지시를 생성합니다.
-     * 품목의 첫 번째 공정이 있으면 작업지시에 함께 연결합니다.
+     * 생산계획 발행 시 품목의 공정 수만큼 작업지시를 생성합니다.
+     * 생성된 작업지시는 모두 동일한 작업지시번호를 공유하며, 각 공정·순번 정보를 개별 보유합니다.
+     * 품목에 등록된 공정이 없으면 예외를 던집니다.
      *
-     * @param item 품목
-     * @param plannedQty 계획 수량
-     * @param plannedDate 계획 일자
-     * @return 생성된 작업지시 엔티티
+     * @param plan 발행할 생산계획 엔티티
+     * @return 생성된 작업지시 엔티티 목록 (공정 순번 ASC)
+     * @throws BusinessException 품목에 등록된 공정이 없는 경우 (PLAN_NO_PROCESS_FOR_ITEM)
      */
     @Transactional
-    public WorkOrder createForPlan(Item item, Integer plannedQty, LocalDate plannedDate) {
-        BomVersion bomVersion = bomVersionService.findActiveVersion(item.getId()).orElse(null);
-        MfgProcess firstProcess = itemProcessService.findFirstByItemId(item.getId())
-                .map(itemProcess -> itemProcess.getProcess())
-                .orElse(null);
-
-        for (int attempt = 1; attempt <= MAX_WORK_ORDER_NO_RETRIES; attempt++) {
-            String workOrderNo = generateWorkOrderNo();
-            WorkOrder workOrder = WorkOrder.builder()
-                    .workOrderNo(workOrderNo)
-                    .item(item)
-                    .plannedQty(plannedQty)
-                    .priority(Priority.MEDIUM)
-                    .process(firstProcess)
-                    .dueDate(plannedDate)
-                    .bomVersion(bomVersion)
-                    .build();
-            try {
-                WorkOrder saved = workOrderRepository.saveAndFlush(workOrder);
-                log.info("생산계획 발행으로 작업지시 생성 완료: id={}, no={}", saved.getId(), saved.getWorkOrderNo());
-                return saved;
-            } catch (DataIntegrityViolationException e) {
-                log.warn("작업지시 번호 충돌로 재시도합니다. attempt={}", attempt);
-                if (attempt == MAX_WORK_ORDER_NO_RETRIES) {
-                    throw new BusinessException(ErrorCode.WORK_ORDER_NO_GENERATION_FAILED);
-                }
-            }
+    public List<WorkOrder> createAllForPlan(ProductionPlan plan) {
+        List<ItemProcess> itemProcesses = itemProcessService.findAllEntitiesByItemId(plan.getItem().getId());
+        if (itemProcesses.isEmpty()) {
+            throw new BusinessException(ErrorCode.PLAN_NO_PROCESS_FOR_ITEM);
         }
-        throw new BusinessException(ErrorCode.WORK_ORDER_NO_GENERATION_FAILED);
+
+        BomVersion bomVersion = bomVersionService.findActiveVersion(plan.getItem().getId()).orElse(null);
+        String workOrderNo = generateWorkOrderNo();
+
+        List<WorkOrder> workOrders = itemProcesses.stream()
+                .map(ip -> WorkOrder.builder()
+                        .workOrderNo(workOrderNo)
+                        .item(plan.getItem())
+                        .plannedQty(plan.getPlannedQty())
+                        .priority(Priority.MEDIUM)
+                        .process(ip.getProcess())
+                        .sequence(ip.getSequence())
+                        .dueDate(plan.getPlannedDate())
+                        .bomVersion(bomVersion)
+                        .productionPlan(plan)
+                        .build())
+                .toList();
+
+        List<WorkOrder> saved = workOrderRepository.saveAll(workOrders);
+        log.info("생산계획 발행으로 작업지시 생성 완료: planId={}, workOrderNo={}, processCount={}",
+                plan.getId(), workOrderNo, saved.size());
+        return saved;
     }
 
     /**

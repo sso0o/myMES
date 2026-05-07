@@ -50,6 +50,7 @@ public enum ErrorCode {
     WORK_ORDER_PROCESS_REQUIRED_FOR_EQUIPMENT(400, "설비를 배정하려면 공정이 필요합니다."),
     WORK_ORDER_EQUIPMENT_NOT_AVAILABLE(400, "선택한 설비는 해당 공정에 배정된 설비가 아닙니다."),
     WORK_ORDER_NO_GENERATION_FAILED(500, "작업지시 번호 생성에 실패했습니다."),
+    WORK_ORDER_PREV_PROCESS_NOT_COMPLETED(409, "이전 공정이 완료되지 않아 진행을 시작할 수 없습니다."),
 
     // Production
     PRODUCTION_NOT_FOUND(404, "생산 실적을 찾을 수 없습니다."),
@@ -82,6 +83,7 @@ public enum ErrorCode {
     PLAN_NOT_DELETABLE(409, "초안 상태의 생산계획만 삭제할 수 있습니다."),
     PLAN_NO_GENERATION_FAILED(500, "생산계획 번호 생성에 실패했습니다."),
     PLAN_ALREADY_RELEASED(409, "이미 작업지시가 발행된 생산계획입니다."),
+    PLAN_NO_PROCESS_FOR_ITEM(400, "해당 품목에 등록된 공정이 없어 작업지시를 발행할 수 없습니다."),
 
     // Equipment
     EQUIPMENT_NOT_FOUND(404, "설비를 찾을 수 없습니다."),

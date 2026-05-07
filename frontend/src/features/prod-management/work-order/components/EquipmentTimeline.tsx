@@ -5,6 +5,7 @@ import { WorkOrderStatus } from '../types'
 interface EquipmentTimelineProps {
   equipments: EquipmentResponse[]
   workOrders: WorkOrderResponse[]
+  onStartWorkOrder?: (workOrder: WorkOrderResponse) => void
 }
 
 const statusClass: Record<WorkOrderStatus, string> = {
@@ -52,7 +53,7 @@ const buildDateRange = (workOrders: WorkOrderResponse[]) => {
   return result
 }
 
-const EquipmentTimeline = ({ equipments, workOrders }: EquipmentTimelineProps) => {
+const EquipmentTimeline = ({ equipments, workOrders, onStartWorkOrder }: EquipmentTimelineProps) => {
   const dates = buildDateRange(workOrders)
   const assignedEquipmentIds = new Set(workOrders.map((workOrder) => workOrder.equipmentId).filter(Boolean))
   const timelineRows = equipments
@@ -107,17 +108,21 @@ const EquipmentTimeline = ({ equipments, workOrders }: EquipmentTimelineProps) =
                     className="min-w-36 border-l border-[var(--border)] px-2 py-3 align-top"
                   >
                     <div className="flex min-h-16 flex-col gap-2">
-                      {dayOrders.map((workOrder) => (
-                        <div
-                          key={workOrder.id}
-                          className={`rounded-md border px-2 py-1.5 ${statusClass[workOrder.status]}`}
-                          title={workOrder.workOrderNo}
-                        >
-                          <div className="truncate text-xs font-semibold">{workOrder.workOrderNo}</div>
-                          <div className="truncate text-[11px]">{workOrder.itemName}</div>
-                          <div className="mt-1 text-[10px]">{statusLabel[workOrder.status]}</div>
-                        </div>
-                      ))}
+                      {dayOrders.map((workOrder) => {
+                        const isWaiting = workOrder.status === WorkOrderStatus.WAITING
+                        return (
+                          <div
+                            key={workOrder.id}
+                            className={`rounded-md border px-2 py-1.5 ${statusClass[workOrder.status]} ${isWaiting ? 'cursor-pointer hover:brightness-95' : ''}`}
+                            title={isWaiting ? '클릭하여 작업 시작' : workOrder.workOrderNo}
+                            onClick={() => isWaiting && onStartWorkOrder?.(workOrder)}
+                          >
+                            <div className="truncate text-xs font-semibold">{workOrder.workOrderNo}</div>
+                            <div className="truncate text-[11px]">{workOrder.itemName}</div>
+                            <div className="mt-1 text-[10px]">{statusLabel[workOrder.status]}</div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </td>
                 )

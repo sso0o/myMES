@@ -1,9 +1,13 @@
 import { useMemo, useState } from 'react'
-import { Plus } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, ClipboardList, Plus, ThumbsUp } from 'lucide-react'
+import { KpiCard } from '@/common/components/KpiCard'
 import InlineAlert from '@/common/components/InlineAlert'
 import PageHeader from '@/common/components/PageHeader'
 import { useFeedback } from '@/common/hooks/useFeedback'
 import { pagePrimaryActionButtonClass } from '@/common/styles/button'
+import InspectionStatusTabs, {
+  type InspectionStatusFilter,
+} from '@/features/quality/inspection/components/InspectionStatusTabs'
 import QualityInspectionDataGrid from '@/features/quality/inspection/components/QualityInspectionDataGrid'
 import QualityInspectionFormModal from '@/features/quality/inspection/components/QualityInspectionFormModal'
 import {
@@ -15,35 +19,22 @@ import {
 import type {
   QualityInspectionCreateRequest,
   QualityInspectionResponse,
-  QualityInspectionStatus,
   QualityInspectionUpdateRequest,
 } from '@/features/quality/inspection/types'
 import {
   QualityInspectionResult,
-  QualityInspectionStatus as InspectionStatus,
+  QualityInspectionStatus,
 } from '@/features/quality/inspection/types'
 
-type StatusFilter = QualityInspectionStatus | 'ALL'
-
-const statusFilters: Array<{ value: StatusFilter; label: string }> = [
-  { value: 'ALL', label: '전체' },
-  { value: InspectionStatus.WAITING, label: '대기' },
-  { value: InspectionStatus.IN_PROGRESS, label: '검사중' },
-  { value: InspectionStatus.COMPLETED, label: '완료' },
-]
-
-const filterButtonBaseClass =
-  'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors'
-
 const QualityInspectionPage = () => {
+  const [activeTab, setActiveTab] = useState<InspectionStatusFilter>('ALL')
   const [modalOpen, setModalOpen] = useState(false)
   const [editTarget, setEditTarget] = useState<QualityInspectionResponse | null>(null)
   const [page, setPage] = useState(0)
   const [size, setSize] = useState(10)
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL')
 
   const { showToast, showAlert } = useFeedback()
-  const statusParam = statusFilter === 'ALL' ? undefined : statusFilter
+  const statusParam = activeTab === 'ALL' ? undefined : activeTab
   const {
     data: inspections = [],
     isLoading,
@@ -55,9 +46,9 @@ const QualityInspectionPage = () => {
   const deleteInspection = useDeleteQualityInspection()
 
   const summary = useMemo(() => {
-    const completed = inspections.filter((inspection) => inspection.status === InspectionStatus.COMPLETED)
-    const passCount = inspections.filter((inspection) => inspection.result === QualityInspectionResult.PASS).length
-    const defectQty = inspections.reduce((sum, inspection) => sum + inspection.defectQty, 0)
+    const completed = inspections.filter((i) => i.status === QualityInspectionStatus.COMPLETED)
+    const passCount = inspections.filter((i) => i.result === QualityInspectionResult.PASS).length
+    const defectQty = inspections.reduce((sum, i) => sum + i.defectQty, 0)
 
     return {
       total: inspections.length,
@@ -67,13 +58,21 @@ const QualityInspectionPage = () => {
     }
   }, [inspections])
 
-  const handlePageSizeChange = (newSize: number) => {
-    setSize(newSize)
+  const counts = useMemo(() => {
+    const result: Partial<Record<InspectionStatusFilter, number>> = { ALL: inspections.length }
+    for (const status of Object.values(QualityInspectionStatus)) {
+      result[status] = inspections.filter((i) => i.status === status).length
+    }
+    return result
+  }, [inspections])
+
+  const handleTabChange = (tab: InspectionStatusFilter) => {
+    setActiveTab(tab)
     setPage(0)
   }
 
-  const handleStatusFilterChange = (value: StatusFilter) => {
-    setStatusFilter(value)
+  const handlePageSizeChange = (newSize: number) => {
+    setSize(newSize)
     setPage(0)
   }
 
@@ -159,56 +158,43 @@ const QualityInspectionPage = () => {
         }
       />
 
-      <div className="grid gap-3 md:grid-cols-4">
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-4 py-3">
-          <p className="text-xs text-[var(--text-muted)]">검사 건수</p>
-          <p className="mt-1 text-xl font-semibold text-[var(--text-strong)]">
-            {summary.total.toLocaleString()}
-          </p>
-        </div>
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-4 py-3">
-          <p className="text-xs text-[var(--text-muted)]">완료</p>
-          <p className="mt-1 text-xl font-semibold text-[var(--text-strong)]">
-            {summary.completed.toLocaleString()}
-          </p>
-        </div>
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-4 py-3">
-          <p className="text-xs text-[var(--text-muted)]">합격률</p>
-          <p className="mt-1 text-xl font-semibold text-[var(--text-strong)]">
-            {summary.passRate}%
-          </p>
-        </div>
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-4 py-3">
-          <p className="text-xs text-[var(--text-muted)]">불량수량</p>
-          <p className="mt-1 text-xl font-semibold text-[var(--text-strong)]">
-            {summary.defectQty.toLocaleString()}
-          </p>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {statusFilters.map((filter) => {
-          const active = statusFilter === filter.value
-          return (
-            <button
-              key={filter.value}
-              type="button"
-              onClick={() => handleStatusFilterChange(filter.value)}
-              className={`${filterButtonBaseClass} ${
-                active
-                  ? 'bg-[var(--primary)] text-[var(--text-inverse)]'
-                  : 'bg-[var(--surface)] text-[var(--text-base)] hover:bg-[var(--surface-alt)]'
-              }`}
-            >
-              {filter.label}
-            </button>
-          )
-        })}
+      <div className="grid gap-4 md:grid-cols-4">
+        <KpiCard
+          title="검사 건수"
+          value={summary.total.toLocaleString()}
+          unit="건"
+          icon={<ClipboardList size={20} />}
+          color="blue"
+        />
+        <KpiCard
+          title="완료"
+          value={summary.completed.toLocaleString()}
+          unit="건"
+          icon={<CheckCircle2 size={20} />}
+          color="green"
+          description={`미완료 ${summary.total - summary.completed}건`}
+        />
+        <KpiCard
+          title="불량수량"
+          value={summary.defectQty.toLocaleString()}
+          unit="EA"
+          icon={<AlertTriangle size={20} />}
+          color="red"
+        />
+        <KpiCard
+          title="합격률"
+          value={summary.passRate}
+          unit="%"
+          icon={<ThumbsUp size={20} />}
+          color="green"
+        />
       </div>
 
       {isError && (
         <InlineAlert>품질검사 목록을 불러오는 중 오류가 발생했습니다.</InlineAlert>
       )}
+
+      <InspectionStatusTabs activeTab={activeTab} counts={counts} onChange={handleTabChange} />
 
       <QualityInspectionDataGrid
         inspections={inspections}

@@ -26,7 +26,17 @@
       "Bash(./gradlew compileJava compileTestJava)",
       "Bash(./gradlew compileTestJava)",
       "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
-      "Bash(./gradlew cleanTest test --tests \"com.mymes.backend.production.ProductionServiceTest\")"
+      "Bash(./gradlew cleanTest test --tests \"com.mymes.backend.production.ProductionServiceTest\")",
+      "Bash(inspection)",
+      "Bash(planning)",
+      "Bash(prod\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\IDEAWorkspace\\\\SYCHOI\\\\myMES\\\\frontend\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\IDEAWorkspace\\\\SYCHOI\\\\myMES\\\\backend\\\\src\\\\main\\\\java\\\\com\\\\mymes\\\\backend\\\\\" -Directory | Select-Object Name)",
+      "Bash(Get-ChildItem -Path \"C:\\\\IDEAWorkspace\\\\SYCHOI\\\\myMES\\\\frontend\\\\src\\\\features\\\\prod-management\\\\production-record\" -File -Recurse)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(xargs grep -l \"ItemProcessDataGrid\\\\|ItemProcessTable\")",
+      "Bash(xargs grep -l \"ItemProcessDataGrid\\\\|ItemProcessTable\\\\|item-process\")"
     ]
   }
 }
