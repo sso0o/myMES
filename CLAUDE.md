@@ -58,7 +58,7 @@ Supabase Auth가 JWT를 발급하고, 프론트와 백엔드 모두 이 토큰�
 
 **도메인 기준(Domain-first)** 패키지 구조. 각 도메인 패키지 내부는 `controller/`, `service/`, `repository/`, `entity/`, `dto/`, `mapper/` 레이어로 분리.
 
-현재 도메인: `bom`, `code`, `defect`, `equipment`, `item`, `itemprocess`, `planning`, `process`, `production`, `user`, `workorder`  
+현재 도메인: `bom`, `code`, `dashboard`, `defect`, `equipment`, `item`, `itemprocess`, `planning`, `process`, `processEquipment`, `production`, `quality`, `user`, `worker`, `workorder`  
 공통: `common/` (ApiResponse, BusinessException, ErrorCode, GlobalExceptionHandler)  
 인증: `security/` (SecurityConfig, SupabaseJwtFilter, SupabasePrincipal)
 
@@ -82,18 +82,17 @@ Supabase Auth가 JWT를 발급하고, 프론트와 백엔드 모두 이 토큰�
 ```
 features/
   auth/                     # 인증
-  master/{subdomain}/       # 마스터 데이터 (item, commonCode, bom, equipment, item-process, process, planning)
-  prod-basic/{subdomain}/   # 생산 기초 (bom, equipment, item-process, process, planning)
-    components/             # 그룹 내 공유 컴포넌트
-    hooks/                  # 그룹 내 공유 훅
-    types/                  # 그룹 내 공유 타입
-  prod-management/{subdomain}/ # 생산 관리 (planning 등)
-각 subdomain 내부:
-  api/        # axios 호출 순수 함수
-  components/ # 도메인 전용 컴포넌트
-  hooks/      # React Query 훅
-  schemas/    # zod 폼 유효성 검증 스키마
-  types/      # 도메인 타입 정의
+  dashboard/                # 대시보드
+  master/{subdomain}/       # 마스터 데이터 (item, commonCode)
+  prod-basic/{subdomain}/   # 생산 기초 (bom, equipment, item-process, process, process-equipment)
+  operation/{subdomain}/    # 생산 운영 (planning, production-record, work-order, worker, inspection)
+  quality/{subdomain}/      # 품질 관리
+각 그룹 폴더 및 subdomain 내부:
+  components/   # 그룹/도메인 전용 컴포넌트
+  hooks/        # React Query 훅 (그룹 공유 또는 도메인 전용)
+  types/        # 타입 정의
+  api/          # axios 호출 순수 함수 (subdomain 레벨)
+  schemas/      # zod 폼 유효성 검증 스키마 (subdomain 레벨)
 common/       # 여러 도메인에서 공유하는 컴포넌트·훅
 pages/        # 라우트 단위 진입 컴포넌트
 store/        # Zustand 전역 상태 (authStore, uiStore)
@@ -104,12 +103,20 @@ types/        # 전역 공통 타입 (ApiResponse<T> 등)
 
 **실제 사용 중인 라우트** (`router/index.tsx`):
 ```
-/master/items               → ItemManagementPage
-/master/common-codes        → CommonCodeManagementPage
-/prod-basic/processes       → ProcessManagementPage
-/prod-basic/equipment       → EquipmentManagementPage
-/prod-basic/item-processes  → ItemProcessManagementPage
-/prod-basic/boms            → BomManagementPage
+/dashboard                      → DashboardPage
+/planning                       → PlanningManagementPage
+/work-orders                    → WorkOrderTimelinePage
+/production                     → ProductionRecordPage
+/quality/inspections            → QualityInspectionPage
+/quality/defects                → DefectManagementPage
+/master/items                   → ItemManagementPage
+/master/common-codes            → CommonCodeManagementPage
+/prod-basic/processes           → ProcessManagementPage
+/prod-basic/equipment           → EquipmentManagementPage
+/prod-basic/item-processes      → ItemProcessManagementPage
+/prod-basic/boms                → BomManagementPage
+/prod-basic/process-equipment   → ProcessEquipmentManagementPage
+/operation/workers              → WorkerManagementPage
 ```
 
 - `lib/axios.ts` — baseURL `/api`, 401 응답 시 자동 로그아웃 및 `/login` 리다이렉트
