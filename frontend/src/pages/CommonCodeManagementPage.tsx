@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
+import { GridRowModes } from '@mui/x-data-grid'
+import type { GridRowId, GridRowModesModel } from '@mui/x-data-grid'
 import EmptyState from '@/common/components/EmptyState'
 import PageHeader from '@/common/components/PageHeader'
 import { primaryActionButtonClass } from '@/common/styles/button'
@@ -8,8 +10,6 @@ import CodeGroupFormModal from '@/features/master/commonCode/components/CodeGrou
 import CodeGroupDataGrid from '@/features/master/commonCode/components/CodeGroupDataGrid'
 import CommonCodeDataGrid, {
   NEW_ROW_ID,
-  type EditCodeRow,
-  type NewCodeRow,
 } from '@/features/master/commonCode/components/CommonCodeDataGrid'
 import {
   useCodeGroupDetail,
@@ -33,9 +33,7 @@ const CommonCodeManagementPage = () => {
   const [groupModalOpen, setGroupModalOpen] = useState(false)
   const [editGroup, setEditGroup] = useState<CodeGroupResponse | null>(null)
   const [addingRow, setAddingRow] = useState(false)
-  const [newRow, setNewRow] = useState<NewCodeRow>({ codeName: '', sortOrder: '', numberingPrefix: '' })
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [editRow, setEditRow] = useState<EditCodeRow>({ codeName: '', sortOrder: '', numberingPrefix: '' })
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
   const { showToast, showAlert } = useFeedback()
 
@@ -52,7 +50,7 @@ const CommonCodeManagementPage = () => {
   const handleSelectGroup = (groupId: string) => {
     setSelectedGroupId(groupId)
     setAddingRow(false)
-    setEditingId(null)
+    setRowModesModel({})
   }
 
   const handleOpenCreateGroup = () => {
@@ -108,87 +106,55 @@ const CommonCodeManagementPage = () => {
   }
 
   const handleStartAdd = () => {
-    setEditingId(null)
-    setNewRow({ codeName: '', sortOrder: '', numberingPrefix: '' })
     setAddingRow(true)
+    setRowModesModel({ [NEW_ROW_ID]: { mode: GridRowModes.Edit, fieldToFocus: 'codeName' } })
   }
 
-  const handleCancelAdd = () => {
+  const handleEditRow = (id: number) => {
     setAddingRow(false)
-    setNewRow({ codeName: '', sortOrder: '', numberingPrefix: '' })
+    setRowModesModel({ [id]: { mode: GridRowModes.Edit, fieldToFocus: 'codeName' } })
   }
 
-  const handleSaveAdd = () => {
-    if (!selectedGroupId) return
+  const handleSaveRow = (id: GridRowId) => {
+    setRowModesModel((prev) => ({ ...prev, [id]: { mode: GridRowModes.View } }))
+  }
 
-    const order = parseInt(newRow.sortOrder, 10)
-    if (!newRow.codeName.trim() || isNaN(order) || order < 1) {
-      showToast({ title: '코드명과 정렬 순서를 입력해주세요.', variant: 'error' })
-      return
+  const handleCancelRow = (id: GridRowId) => {
+    setRowModesModel((prev) => ({
+      ...prev,
+      [id]: { mode: GridRowModes.View, ignoreModifications: true },
+    }))
+    if (id === NEW_ROW_ID) setAddingRow(false)
+  }
+
+  const handleProcessRowUpdate = async (
+    updatedRow: CommonCodeResponse,
+  ): Promise<CommonCodeResponse> => {
+    if (!updatedRow.codeName.trim()) throw new Error('코드명을 입력해주세요.')
+    if (!updatedRow.sortOrder || updatedRow.sortOrder < 1)
+      throw new Error('정렬 순서를 1 이상으로 입력해주세요.')
+
+    const data = {
+      codeName: updatedRow.codeName.trim(),
+      sortOrder: updatedRow.sortOrder,
+      numberingPrefix: updatedRow.numberingPrefix?.trim().toUpperCase() || undefined,
     }
 
-    createCode.mutate(
-      {
-        groupId: selectedGroupId,
-        data: {
-          codeName: newRow.codeName.trim(),
-          sortOrder: order,
-          numberingPrefix: newRow.numberingPrefix.trim().toUpperCase() || undefined,
-        },
-      },
-      {
-        onSuccess: () => {
-          showToast({ title: '코드가 등록되었습니다.', variant: 'success' })
-          setAddingRow(false)
-          setNewRow({ codeName: '', sortOrder: '', numberingPrefix: '' })
-        },
-        onError: () => showToast({ title: '등록 중 오류가 발생했습니다.', variant: 'error' }),
-      },
-    )
-  }
-
-  const handleStartEdit = (code: CommonCodeResponse) => {
-    setAddingRow(false)
-    setEditingId(code.id)
-    setEditRow({
-      codeName: code.codeName,
-      sortOrder: String(code.sortOrder),
-      numberingPrefix: code.numberingPrefix ?? '',
-    })
-  }
-
-  const handleCancelEdit = () => {
-    setEditingId(null)
-    setEditRow({ codeName: '', sortOrder: '', numberingPrefix: '' })
-  }
-
-  const handleSaveEdit = (codeId: number) => {
-    if (!selectedGroupId) return
-
-    const order = parseInt(editRow.sortOrder, 10)
-    if (!editRow.codeName.trim() || isNaN(order) || order < 1) {
-      showToast({ title: '코드명과 정렬 순서를 입력해주세요.', variant: 'error' })
-      return
+    if (updatedRow.id === NEW_ROW_ID) {
+      await createCode.mutateAsync({ groupId: selectedGroupId!, data })
+      setAddingRow(false)
+      showToast({ title: '코드가 등록되었습니다.', variant: 'success' })
+    } else {
+      await updateCode.mutateAsync({ groupId: selectedGroupId!, codeId: updatedRow.id, data })
+      showToast({ title: '코드가 수정되었습니다.', variant: 'success' })
     }
 
-    updateCode.mutate(
-      {
-        groupId: selectedGroupId,
-        codeId,
-        data: {
-          codeName: editRow.codeName.trim(),
-          sortOrder: order,
-          numberingPrefix: editRow.numberingPrefix.trim().toUpperCase() || undefined,
-        },
-      },
-      {
-        onSuccess: () => {
-          showToast({ title: '코드가 수정되었습니다.', variant: 'success' })
-          setEditingId(null)
-        },
-        onError: () => showToast({ title: '수정 중 오류가 발생했습니다.', variant: 'error' }),
-      },
-    )
+    return updatedRow
+  }
+
+  const handleProcessRowUpdateError = (error: unknown) => {
+    const message = error instanceof Error ? error.message : '저장 중 오류가 발생했습니다.'
+    showToast({ title: message, variant: 'error' })
   }
 
   const handleDeleteCode = async (code: CommonCodeResponse) => {
@@ -212,15 +178,15 @@ const CommonCodeManagementPage = () => {
 
   const selectedGroup = groups.find((group) => group.groupId === selectedGroupId)
   const codes = groupDetail?.codes ?? []
-  const canAddCode = Boolean(selectedGroupId) && !addingRow
+  const isAnyRowEditing = Object.values(rowModesModel).some((m) => m.mode === GridRowModes.Edit)
+  const canAddCode = Boolean(selectedGroupId) && !isAnyRowEditing
 
-  // 추가 중일 때 센티넬 행을 rows 끝에 삽입
   const newRowSentinel: CommonCodeResponse = {
     id: NEW_ROW_ID,
     groupId: selectedGroupId ?? '',
     code: '',
     codeName: '',
-    sortOrder: 0,
+    sortOrder: 1,
     isActive: true,
     numberingPrefix: null,
     createdAt: '',
@@ -247,7 +213,9 @@ const CommonCodeManagementPage = () => {
           </div>
 
           {groupsError && (
-            <p className="px-4 py-3 text-xs text-[var(--danger)]">그룹 목록을 불러오지 못했습니다.</p>
+            <p className="px-4 py-3 text-xs text-[var(--danger)]">
+              그룹 목록을 불러오지 못했습니다.
+            </p>
           )}
 
           <div className="min-h-0 flex-1">
@@ -293,18 +261,14 @@ const CommonCodeManagementPage = () => {
             <div className="min-h-0 flex-1">
               <CommonCodeDataGrid
                 rows={codeRows}
-                editingId={editingId}
-                newRow={newRow}
-                editRow={editRow}
-                createPending={createCode.isPending}
-                updatePending={updateCode.isPending}
-                onNewRowChange={setNewRow}
-                onEditRowChange={setEditRow}
-                onSaveAdd={handleSaveAdd}
-                onCancelAdd={handleCancelAdd}
-                onStartEdit={handleStartEdit}
-                onSaveEdit={handleSaveEdit}
-                onCancelEdit={handleCancelEdit}
+                rowModesModel={rowModesModel}
+                isPending={createCode.isPending || updateCode.isPending}
+                onRowModesModelChange={setRowModesModel}
+                processRowUpdate={handleProcessRowUpdate}
+                onProcessRowUpdateError={handleProcessRowUpdateError}
+                onEditRow={handleEditRow}
+                onSaveRow={handleSaveRow}
+                onCancelRow={handleCancelRow}
                 onDeleteCode={handleDeleteCode}
               />
             </div>

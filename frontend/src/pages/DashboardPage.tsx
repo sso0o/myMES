@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ClipboardList, CheckCircle2, AlertCircle, Cpu } from 'lucide-react';
-import { KpiCard } from '@/features/dashboard/components/KpiCard';
+import { KpiCard } from '@/common/components/KpiCard';
 import { WorkOrderStatusChart } from '@/features/dashboard/components/WorkOrderStatusChart';
 import { ProductionTrendChart } from '@/features/dashboard/components/ProductionTrendChart';
 import { DefectDistributionChart } from '@/features/dashboard/components/DefectDistributionChart';

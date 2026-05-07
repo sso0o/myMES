@@ -41,6 +41,16 @@ public class ItemProcessService {
     }
 
     /**
+     * 품목의 전체 공정 목록을 순서 기준으로 엔티티로 조회합니다.
+     *
+     * @param itemId 품목 ID
+     * @return 품목-공정 매핑 엔티티 목록 (sequence ASC)
+     */
+    public List<ItemProcess> findAllEntitiesByItemId(Long itemId) {
+        return itemProcessRepository.findByItemIdOrderBySequenceAsc(itemId);
+    }
+
+    /**
      * 품목의 첫 번째 공정을 순서 기준으로 조회합니다.
      *
      * @param itemId 품목 ID

@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react'
 import InlineAlert from '@/common/components/InlineAlert'
 import PageHeader from '@/common/components/PageHeader'
 import { useFeedback } from '@/common/hooks/useFeedback'
+import { getApiErrorMessage } from '@/common/utils/apiError'
 import { pagePrimaryActionButtonClass } from '@/common/styles/button'
 import BulkActionBar from '@/features/prod-management/planning/components/BulkActionBar'
 import BulkActionDialog from '@/features/prod-management/planning/components/BulkActionDialog'
@@ -93,8 +94,8 @@ const PlanningManagementPage = () => {
             showToast({ title: '생산계획을 수정했습니다.', variant: 'success' })
             handleCloseModal()
           },
-          onError: () => {
-            showToast({ title: '수정 중 오류가 발생했습니다.', variant: 'error' })
+          onError: (error) => {
+            showToast({ title: getApiErrorMessage(error, '수정 중 오류가 발생했습니다.'), variant: 'error' })
           },
         },
       )
@@ -106,8 +107,8 @@ const PlanningManagementPage = () => {
         showToast({ title: '생산계획을 등록했습니다.', variant: 'success' })
         handleCloseModal()
       },
-      onError: () => {
-        showToast({ title: '등록 중 오류가 발생했습니다.', variant: 'error' })
+      onError: (error) => {
+        showToast({ title: getApiErrorMessage(error, '등록 중 오류가 발생했습니다.'), variant: 'error' })
       },
     })
   }
@@ -122,7 +123,8 @@ const PlanningManagementPage = () => {
 
     deletePlan.mutate(plan.id, {
       onSuccess: () => showToast({ title: '생산계획을 삭제했습니다.', variant: 'success' }),
-      onError: () => showToast({ title: '삭제 중 오류가 발생했습니다.', variant: 'error' }),
+      onError: (error) =>
+        showToast({ title: getApiErrorMessage(error, '삭제 중 오류가 발생했습니다.'), variant: 'error' }),
     })
   }
 
@@ -139,8 +141,8 @@ const PlanningManagementPage = () => {
           showToast({ title: '상태를 변경했습니다.', variant: 'success' })
           setStatusChangeTarget(null)
         },
-        onError: () => {
-          showToast({ title: '상태 변경 중 오류가 발생했습니다.', variant: 'error' })
+        onError: (error) => {
+          showToast({ title: getApiErrorMessage(error, '상태 변경 중 오류가 발생했습니다.'), variant: 'error' })
           setStatusChangeTarget(null)
         },
       },
@@ -164,8 +166,8 @@ const PlanningManagementPage = () => {
           setSelectedIds([])
           setBulkDialogOpen(false)
         },
-        onError: () => {
-          showToast({ title: '일괄 확정 중 오류가 발생했습니다.', variant: 'error' })
+        onError: (error) => {
+          showToast({ title: getApiErrorMessage(error, '일괄 확정 중 오류가 발생했습니다.'), variant: 'error' })
           setBulkDialogOpen(false)
         },
       })
@@ -179,8 +181,8 @@ const PlanningManagementPage = () => {
           setSelectedIds([])
           setBulkDialogOpen(false)
         },
-        onError: () => {
-          showToast({ title: '일괄 발행 중 오류가 발생했습니다.', variant: 'error' })
+        onError: (error) => {
+          showToast({ title: getApiErrorMessage(error, '일괄 발행 중 오류가 발생했습니다.'), variant: 'error' })
           setBulkDialogOpen(false)
         },
       })
@@ -193,7 +195,7 @@ const PlanningManagementPage = () => {
   return (
     <div className="space-y-5 p-6">
       <PageHeader
-        title="생산계획"
+        title="생산 계획"
         description="생산 계획을 등록하고 작업지시로 발행합니다."
         actions={
           <button

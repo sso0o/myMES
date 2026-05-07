@@ -8,12 +8,12 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ProductionPlanMapper {
 
-    @Mapping(source = "item.id",            target = "itemId")
-    @Mapping(source = "item.itemCode",      target = "itemCode")
-    @Mapping(source = "item.itemName",      target = "itemName")
-    @Mapping(source = "workOrder.id",       target = "workOrderId")
-    @Mapping(source = "workOrder.workOrderNo", target = "workOrderNo")
-    @Mapping(source = "createdBy.id",       target = "createdById")
-    @Mapping(source = "createdBy.name",     target = "createdByName")
+    @Mapping(source = "item.id",                      target = "itemId")
+    @Mapping(source = "item.itemCode",                target = "itemCode")
+    @Mapping(source = "item.itemName",                target = "itemName")
+    @Mapping(source = "firstWorkOrder.id",            target = "workOrderId")
+    @Mapping(source = "firstWorkOrder.workOrderNo",   target = "workOrderNo")
+    @Mapping(source = "createdBy.id",                 target = "createdById")
+    @Mapping(source = "createdBy.name",               target = "createdByName")
     ProductionPlanResponse toResponse(ProductionPlan productionPlan);
 }

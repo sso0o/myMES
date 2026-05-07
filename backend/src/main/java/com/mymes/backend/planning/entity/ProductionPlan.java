@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "production_plans")
@@ -43,9 +45,8 @@ public class ProductionPlan extends BaseEntity {
     @Column(nullable = false, length = 20)
     private PlanStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "work_order_id")
-    private WorkOrder workOrder;
+    @OneToMany(mappedBy = "productionPlan", fetch = FetchType.LAZY)
+    private List<WorkOrder> workOrders = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_id", nullable = false)
@@ -90,7 +91,21 @@ public class ProductionPlan extends BaseEntity {
         this.status = newStatus;
     }
 
-    public void linkWorkOrder(WorkOrder workOrder) {
-        this.workOrder = workOrder;
+    /**
+     * 생산계획에 작업지시 목록을 연결합니다.
+     *
+     * @param workOrders 연결할 작업지시 엔티티 목록
+     */
+    public void addWorkOrders(List<WorkOrder> workOrders) {
+        this.workOrders.addAll(workOrders);
+    }
+
+    /**
+     * 연결된 첫 번째 작업지시를 반환합니다. 매퍼에서 작업지시번호 참조용으로 사용합니다.
+     *
+     * @return 첫 번째 작업지시 엔티티, 없으면 null
+     */
+    public WorkOrder getFirstWorkOrder() {
+        return workOrders.isEmpty() ? null : workOrders.get(0);
     }
 }

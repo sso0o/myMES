@@ -13,7 +13,6 @@ export interface ProductionRecordResponse {
 }
 
 export interface ProductionRecordCreateRequest {
-  processId: number
   startedAt?: string
   endedAt?: string
   inputQty: number
@@ -22,7 +21,6 @@ export interface ProductionRecordCreateRequest {
 }
 
 export interface ProductionRecordUpdateRequest {
-  processId: number
   startedAt?: string
   endedAt?: string
   inputQty: number
