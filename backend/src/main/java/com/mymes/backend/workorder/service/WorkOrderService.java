@@ -156,14 +156,26 @@ public class WorkOrderService {
 
     /**
      * 작업지시 상태를 다음 단계로 변경합니다.
+     * 대기→진행 전이 시 2번째 이상 공정은 이전 공정(sequence - 1)이 완료 상태여야 합니다.
      *
      * @param id 작업지시 ID
      * @param newStatus 변경할 상태
      * @return 상태가 변경된 작업지시 응답 DTO
+     * @throws BusinessException 이전 공정이 완료되지 않은 경우 (WORK_ORDER_PREV_PROCESS_NOT_COMPLETED)
      */
     @Transactional
     public WorkOrderResponse changeStatus(Long id, WorkOrderStatus newStatus) {
         WorkOrder workOrder = getWorkOrder(id);
+        if (newStatus == WorkOrderStatus.IN_PROGRESS
+                && workOrder.getSequence() != null
+                && workOrder.getSequence() > 1) {
+            workOrderRepository.findByWorkOrderNoAndSequence(workOrder.getWorkOrderNo(), workOrder.getSequence() - 1)
+                    .ifPresent(prev -> {
+                        if (prev.getStatus() != WorkOrderStatus.COMPLETED) {
+                            throw new BusinessException(ErrorCode.WORK_ORDER_PREV_PROCESS_NOT_COMPLETED);
+                        }
+                    });
+        }
         workOrder.changeStatus(newStatus);
         log.info("작업지시 상태 변경 완료: id={}, status={}", id, newStatus);
         return workOrderMapper.toResponse(workOrder);

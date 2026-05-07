@@ -39,6 +39,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -356,6 +357,65 @@ class WorkOrderServiceTest {
                     .isInstanceOf(BusinessException.class)
                     .hasFieldOrPropertyWithValue("errorCode", ErrorCode.WORK_ORDER_INVALID_STATUS_TRANSITION);
         }
+
+        @Test
+        @DisplayName("2번째 이상 공정에서 이전 공정이 완료되지 않으면 진행으로 변경할 수 없다")
+        void changeStatus_secondProcess_prevNotCompleted_throwsException() {
+            // given
+            WorkOrder secondWorkOrder = createWorkOrderWithSequence(2L, "WO-20260505-0001", 2);
+            WorkOrder firstWorkOrder = createWorkOrderWithSequence(1L, "WO-20260505-0001", 1);
+            // 이전 공정은 IN_PROGRESS 상태 (미완료)
+            firstWorkOrder.changeStatus(WorkOrderStatus.IN_PROGRESS);
+
+            given(workOrderRepository.findById(2L)).willReturn(Optional.of(secondWorkOrder));
+            given(workOrderRepository.findByWorkOrderNoAndSequence("WO-20260505-0001", 1))
+                    .willReturn(Optional.of(firstWorkOrder));
+
+            // when & then
+            assertThatThrownBy(() -> workOrderService.changeStatus(2L, WorkOrderStatus.IN_PROGRESS))
+                    .isInstanceOf(BusinessException.class)
+                    .hasFieldOrPropertyWithValue("errorCode", ErrorCode.WORK_ORDER_PREV_PROCESS_NOT_COMPLETED);
+        }
+
+        @Test
+        @DisplayName("2번째 이상 공정에서 이전 공정이 완료되면 진행으로 변경할 수 있다")
+        void changeStatus_secondProcess_prevCompleted_success() {
+            // given
+            WorkOrder secondWorkOrder = createWorkOrderWithSequence(2L, "WO-20260505-0001", 2);
+            WorkOrder firstWorkOrder = createWorkOrderWithSequence(1L, "WO-20260505-0001", 1);
+            // 이전 공정 완료 처리
+            firstWorkOrder.changeStatus(WorkOrderStatus.IN_PROGRESS);
+            firstWorkOrder.changeStatus(WorkOrderStatus.COMPLETED);
+
+            given(workOrderRepository.findById(2L)).willReturn(Optional.of(secondWorkOrder));
+            given(workOrderRepository.findByWorkOrderNoAndSequence("WO-20260505-0001", 1))
+                    .willReturn(Optional.of(firstWorkOrder));
+            given(workOrderMapper.toResponse(secondWorkOrder)).willReturn(createResponse(2L, process, equipment));
+
+            // when
+            WorkOrderResponse result = workOrderService.changeStatus(2L, WorkOrderStatus.IN_PROGRESS);
+
+            // then
+            assertThat(result).isNotNull();
+            assertThat(secondWorkOrder.getStatus()).isEqualTo(WorkOrderStatus.IN_PROGRESS);
+        }
+
+        @Test
+        @DisplayName("첫 번째 공정(sequence=1)은 이전 공정 검사 없이 진행으로 변경할 수 있다")
+        void changeStatus_firstSequence_noCheck_success() {
+            // given
+            WorkOrder firstWorkOrder = createWorkOrderWithSequence(1L, "WO-20260505-0001", 1);
+            given(workOrderRepository.findById(1L)).willReturn(Optional.of(firstWorkOrder));
+            given(workOrderMapper.toResponse(firstWorkOrder)).willReturn(createResponse(1L, process, equipment));
+
+            // when
+            WorkOrderResponse result = workOrderService.changeStatus(1L, WorkOrderStatus.IN_PROGRESS);
+
+            // then
+            assertThat(result).isNotNull();
+            assertThat(firstWorkOrder.getStatus()).isEqualTo(WorkOrderStatus.IN_PROGRESS);
+            verify(workOrderRepository, never()).findByWorkOrderNoAndSequence(any(), any());
+        }
     }
 
     @Nested
@@ -531,6 +591,21 @@ class WorkOrderServiceTest {
                 .process(process)
                 .equipment(equipment)
                 .workerName("Kim")
+                .dueDate(LocalDate.of(2026, 5, 5))
+                .build();
+        ReflectionTestUtils.setField(created, "id", id);
+        return created;
+    }
+
+    private WorkOrder createWorkOrderWithSequence(Long id, String workOrderNo, Integer sequence) {
+        WorkOrder created = WorkOrder.builder()
+                .workOrderNo(workOrderNo)
+                .item(item)
+                .plannedQty(100)
+                .priority(Priority.MEDIUM)
+                .process(process)
+                .equipment(equipment)
+                .sequence(sequence)
                 .dueDate(LocalDate.of(2026, 5, 5))
                 .build();
         ReflectionTestUtils.setField(created, "id", id);

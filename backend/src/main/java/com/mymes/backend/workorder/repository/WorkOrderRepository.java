@@ -20,6 +20,8 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
 
     boolean existsByWorkOrderNo(String workOrderNo);
 
+    Optional<WorkOrder> findByWorkOrderNoAndSequence(String workOrderNo, Integer sequence);
+
     // 소프트 삭제된 행도 포함해 채번 중복을 방지하기 위해 native query 사용
     @Query(value = "SELECT work_order_no FROM work_orders WHERE work_order_no LIKE CONCAT(:prefix, '%') ORDER BY work_order_no DESC LIMIT 1", nativeQuery = true)
     Optional<String> findLatestWorkOrderNoByPrefix(@Param("prefix") String prefix);
