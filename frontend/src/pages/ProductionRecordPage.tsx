@@ -36,6 +36,15 @@ const workOrderColumns: GridColDef<WorkOrderResponse>[] = [
     ),
   },
   {
+    field: 'processName',
+    headerName: '공정명',
+    width: 140,
+    sortable: false,
+    renderCell: (params) => (
+      <span className="text-[var(--text-base)]">{params.row.processName ?? '-'}</span>
+    ),
+  },
+  {
     field: 'itemCode',
     headerName: '품목코드',
     width: 130,

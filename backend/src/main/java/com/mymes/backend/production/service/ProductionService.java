@@ -3,7 +3,6 @@ package com.mymes.backend.production.service;
 import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
 import com.mymes.backend.process.entity.MfgProcess;
-import com.mymes.backend.process.service.MfgProcessService;
 import com.mymes.backend.production.dto.ProductionCreateRequest;
 import com.mymes.backend.production.dto.ProductionResponse;
 import com.mymes.backend.production.dto.ProductionUpdateRequest;
@@ -28,7 +27,6 @@ public class ProductionService {
 
     private final ProductionRepository productionRepository;
     private final WorkOrderService workOrderService;
-    private final MfgProcessService processService;
     private final ProductionMapper productionMapper;
 
     public List<ProductionResponse> findByWorkOrder(Long workOrderId) {
@@ -48,7 +46,7 @@ public class ProductionService {
             throw new BusinessException(ErrorCode.PRODUCTION_WORK_ORDER_NOT_IN_PROGRESS);
         }
 
-        MfgProcess process = processService.getProcess(request.getProcessId());
+        MfgProcess process = workOrder.getProcess();
 
         int defectQty = request.getDefectQty() != null ? request.getDefectQty() : 0;
         if (request.getCompletedQty() + defectQty > request.getInputQty()) {
@@ -73,14 +71,13 @@ public class ProductionService {
     @Transactional
     public ProductionResponse update(Long id, ProductionUpdateRequest request) {
         ProductionRecord record = getRecord(id);
-        MfgProcess process = processService.getProcess(request.getProcessId());
 
         int defectQty = request.getDefectQty() != null ? request.getDefectQty() : 0;
         if (request.getCompletedQty() + defectQty > request.getInputQty()) {
             throw new BusinessException(ErrorCode.PRODUCTION_QTY_EXCEEDED);
         }
 
-        record.update(process, request.getStartedAt(), request.getEndedAt(),
+        record.update(record.getProcess(), request.getStartedAt(), request.getEndedAt(),
                 request.getInputQty(), request.getCompletedQty(), defectQty);
         log.info("생산실적 수정 완료: id={}", id);
         return productionMapper.toResponse(record);

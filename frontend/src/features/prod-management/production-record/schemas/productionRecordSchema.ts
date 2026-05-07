@@ -1,11 +1,6 @@
 import { z } from 'zod'
 
 export const productionRecordFormSchema = z.object({
-  processId: z.coerce
-    .number({ error: '공정을 선택해주세요.' })
-    .int()
-    .positive('공정을 선택해주세요.'),
-
   startedAt: z.string().optional(),
 
   endedAt: z.string().optional(),

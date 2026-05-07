@@ -8,9 +8,6 @@ import java.time.LocalDateTime;
 
 @Getter
 public class ProductionUpdateRequest {
-    @NotNull(message = "공정은 필수입니다.")
-    private Long processId;
-
     private LocalDateTime startedAt;
     private LocalDateTime endedAt;
 

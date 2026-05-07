@@ -2,12 +2,10 @@ import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Modal from '@/common/components/Modal'
-import AppNumberField from '@/common/components/AppNumberField'
-import AppSelect, { AppMenuItem } from '@/common/components/AppSelect'
 import AppDateTimePicker from '@/common/components/AppDateTimePicker'
+import AppNumberField from '@/common/components/AppNumberField'
 import { cancelButtonClass, submitButtonClass } from '@/common/styles/button'
 import { formClass, formLabelClass } from '@/common/styles/form'
-import { useProcessList } from '@/features/prod-basic/process/hooks/useProcessQuery'
 import {
   productionRecordFormSchema,
   type ProductionRecordFormInput,
@@ -28,7 +26,6 @@ const formErrorClass = 'mt-1 text-xs text-[var(--danger)]'
 const getDefaultValues = (
   editTarget: ProductionRecordResponse | null,
 ): ProductionRecordFormInput => ({
-  processId: editTarget?.processId ?? ('' as unknown as number),
   startedAt: editTarget?.startedAt ?? '',
   endedAt: editTarget?.endedAt ?? '',
   inputQty: editTarget?.inputQty ?? ('' as unknown as number),
@@ -43,8 +40,6 @@ const ProductionRecordFormModal = ({
   onSubmit,
   isLoading,
 }: ProductionRecordFormModalProps) => {
-  const { data: processes = [] } = useProcessList()
-
   const {
     register,
     handleSubmit,
@@ -68,29 +63,6 @@ const ProductionRecordFormModal = ({
       onClose={onClose}
     >
       <form onSubmit={handleSubmit(onSubmit)} className={formClass}>
-        <div>
-          <label className={formLabelClass}>
-            공정 <span className="text-[var(--danger)]">*</span>
-          </label>
-          <Controller
-            name="processId"
-            control={control}
-            render={({ field }) => (
-              <AppSelect {...field} value={field.value === '' ? '' : String(field.value)}>
-                <AppMenuItem value="">공정을 선택하세요</AppMenuItem>
-                {processes.map((p) => (
-                  <AppMenuItem key={p.id} value={String(p.id)}>
-                    [{p.processCode}] {p.processName}
-                  </AppMenuItem>
-                ))}
-              </AppSelect>
-            )}
-          />
-          {errors.processId && (
-            <p className={formErrorClass}>{errors.processId.message}</p>
-          )}
-        </div>
-
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className={formLabelClass}>시작일시</label>
