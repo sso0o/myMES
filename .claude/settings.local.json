@@ -29,7 +29,9 @@
       "Bash(./gradlew cleanTest test --tests \"com.mymes.backend.production.ProductionServiceTest\")",
       "Bash(inspection)",
       "Bash(planning)",
-      "Bash(prod\")"
+      "Bash(prod\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\IDEAWorkspace\\\\SYCHOI\\\\myMES\\\\frontend\" -Recurse -Force)",
+      "Bash(Select-Object FullName)"
     ]
   }
 }
