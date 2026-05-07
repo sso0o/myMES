@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="360" viewBox="0 0 1400 360" role="img" aria-labelledby="title desc">
+  <title id="title">myMES 주요 도메인 관계도</title>
+  <desc id="desc">품목, 공정, 설비, BOM, 생산계획, 작업지시, 생산실적, 품질검사, 불량기록의 주요 관계</desc>
+  <defs>
+    <marker id="arrow" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto">
+      <path d="M1 1 L9 5.5 L1 10 Z" fill="#111111"/>
+    </marker>
+    <marker id="arrow-mid" markerWidth="11" markerHeight="11" refX="9" refY="5.5" orient="auto">
+      <path d="M1 1 L9 5.5 L1 10 Z" fill="#666666"/>
+    </marker>
+    <style>
+      .bg { fill: #ffffff; }
+      .band { fill: #f5f5f5; stroke: #d0d0d0; stroke-width: 1.5; }
+      .label { fill: #777777; font: 700 12px "JetBrains Mono", "SFMono-Regular", Consolas, monospace; letter-spacing: 1px; }
+      .box { fill: #ffffff; stroke: #111111; stroke-width: 2; }
+      .box-soft { fill: #ffffff; stroke: #d0d0d0; stroke-width: 2; }
+      .box-dark { fill: #111111; stroke: #111111; stroke-width: 2; }
+      .title { fill: #111111; font: 700 18px "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; }
+      .title-white { fill: #ffffff; font: 700 18px "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; }
+      .meta { fill: #555555; font: 500 12px "JetBrains Mono", "SFMono-Regular", Consolas, monospace; }
+      .meta-white { fill: #dddddd; font: 500 12px "JetBrains Mono", "SFMono-Regular", Consolas, monospace; }
+      .small { fill: #666666; font: 400 12px "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; }
+      .line { fill: none; stroke: #111111; stroke-width: 2.2; marker-end: url(#arrow); }
+      .line-mid { fill: none; stroke: #666666; stroke-width: 1.8; marker-end: url(#arrow-mid); }
+      .line-dashed { fill: none; stroke: #666666; stroke-width: 1.8; stroke-dasharray: 7 7; marker-end: url(#arrow-mid); }
+      .tag { fill: #eeeeee; stroke: #d0d0d0; stroke-width: 1; }
+      .tag-text { fill: #333333; font: 600 11px "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1400" height="360"/>
+  <rect class="band" x="28" y="24" width="390" height="312"/>
+  <rect class="band" x="442" y="24" width="424" height="312"/>
+  <rect class="band" x="890" y="24" width="482" height="312"/>
+  <text class="label" x="48" y="48">MASTER DATA</text>
+  <text class="label" x="462" y="48">ROUTING · BOM</text>
+  <text class="label" x="910" y="48">PRODUCTION · QUALITY</text>
+
+  <rect class="box-soft" x="58" y="72" width="140" height="62"/>
+  <text class="title" x="128" y="101" text-anchor="middle">CommonCode</text>
+  <text class="meta" x="128" y="121" text-anchor="middle">type/category</text>
+
+  <rect class="box-dark" x="248" y="72" width="140" height="62"/>
+  <text class="title-white" x="318" y="101" text-anchor="middle">Item</text>
+  <text class="meta-white" x="318" y="121" text-anchor="middle">ITEM-000001</text>
+
+  <rect class="box" x="58" y="174" width="140" height="62"/>
+  <text class="title" x="128" y="203" text-anchor="middle">MfgProcess</text>
+  <text class="meta" x="128" y="223" text-anchor="middle">PROC-000001</text>
+
+  <rect class="box" x="248" y="174" width="140" height="62"/>
+  <text class="title" x="318" y="203" text-anchor="middle">Equipment</text>
+  <text class="meta" x="318" y="223" text-anchor="middle">equipment</text>
+
+  <rect class="box-soft" x="58" y="270" width="140" height="42"/>
+  <text class="title" x="128" y="297" text-anchor="middle">Worker</text>
+
+  <rect class="box" x="472" y="72" width="150" height="62"/>
+  <text class="title" x="547" y="101" text-anchor="middle">ItemProcess</text>
+  <text class="meta" x="547" y="121" text-anchor="middle">routing</text>
+
+  <rect class="box" x="688" y="72" width="150" height="62"/>
+  <text class="title" x="763" y="101" text-anchor="middle">ProcessEquipment</text>
+  <text class="meta" x="763" y="121" text-anchor="middle">process x equip</text>
+
+  <rect class="box" x="472" y="196" width="150" height="62"/>
+  <text class="title" x="547" y="225" text-anchor="middle">BomVersion</text>
+  <text class="meta" x="547" y="245" text-anchor="middle">ACTIVE/INACTIVE</text>
+
+  <rect class="box" x="688" y="196" width="150" height="62"/>
+  <text class="title" x="763" y="225" text-anchor="middle">Bom</text>
+  <text class="meta" x="763" y="245" text-anchor="middle">parent/material</text>
+
+  <rect class="box" x="920" y="72" width="150" height="62"/>
+  <text class="title" x="995" y="101" text-anchor="middle">ProductionPlan</text>
+  <text class="meta" x="995" y="121" text-anchor="middle">DRAFT → RELEASED</text>
+
+  <rect class="box-dark" x="1118" y="72" width="150" height="62"/>
+  <text class="title-white" x="1193" y="101" text-anchor="middle">WorkOrder</text>
+  <text class="meta-white" x="1193" y="121" text-anchor="middle">WO-yyyyMMdd</text>
+
+  <rect class="box" x="920" y="208" width="150" height="62"/>
+  <text class="title" x="995" y="237" text-anchor="middle">ProductionRecord</text>
+  <text class="meta" x="995" y="257" text-anchor="middle">good/defect qty</text>
+
+  <rect class="box" x="1118" y="208" width="150" height="62"/>
+  <text class="title" x="1193" y="237" text-anchor="middle">QualityInspection</text>
+  <text class="meta" x="1193" y="257" text-anchor="middle">PASS/FAIL/HOLD</text>
+
+  <rect class="box-soft" x="1118" y="292" width="150" height="42"/>
+  <text class="title" x="1193" y="319" text-anchor="middle">DefectRecord</text>
+
+  <path class="line-mid" d="M198 103 H238"/>
+  <path class="line-mid" d="M128 134 V164"/>
+  <path class="line-mid" d="M198 205 H238"/>
+
+  <path class="line" d="M388 103 H462"/>
+  <path class="line" d="M198 205 C310 205 352 103 462 103"/>
+  <path class="line" d="M198 205 H678"/>
+  <path class="line" d="M388 205 H678"/>
+
+  <path class="line" d="M388 118 C438 152 458 188 472 218"/>
+  <path class="line" d="M622 227 H678"/>
+  <path class="line" d="M763 196 C730 152 478 160 332 134"/>
+
+  <path class="line" d="M388 103 C590 46 765 52 910 94"/>
+  <path class="line" d="M622 227 C835 230 944 158 1118 118"/>
+  <path class="line" d="M622 103 C815 104 928 104 1118 104"/>
+  <path class="line" d="M838 103 C950 104 1010 104 1118 104"/>
+
+  <path class="line" d="M1070 103 H1108"/>
+  <path class="line" d="M1118 118 C1056 146 1015 170 995 198"/>
+  <path class="line" d="M1193 134 V198"/>
+  <path class="line" d="M1193 270 V282"/>
+  <path class="line" d="M995 270 C1038 306 1070 313 1108 313"/>
+
+  <path class="line-dashed" d="M198 291 C445 334 820 332 1110 128"/>
+
+  <rect class="tag" x="404" y="88" width="50" height="22" rx="11"/>
+  <text class="tag-text" x="429" y="103" text-anchor="middle">1:N</text>
+  <rect class="tag" x="628" y="88" width="54" height="22" rx="11"/>
+  <text class="tag-text" x="655" y="103" text-anchor="middle">N:M</text>
+  <rect class="tag" x="1038" y="88" width="54" height="22" rx="11"/>
+  <text class="tag-text" x="1065" y="103" text-anchor="middle">1:N</text>
+  <rect class="tag" x="225" y="294" width="130" height="22" rx="11"/>
+  <text class="tag-text" x="290" y="309" text-anchor="middle">workerName snapshot</text>
+</svg>

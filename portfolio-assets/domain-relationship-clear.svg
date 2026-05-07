@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="430" viewBox="0 0 1400 430" role="img" aria-labelledby="title desc">
+  <title id="title">myMES 주요 도메인 관계도</title>
+  <desc id="desc">마스터, 라우팅과 BOM, 생산 운영, 품질 영역으로 나눈 주요 도메인 관계</desc>
+  <defs>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+      <path d="M2 2 L12 7 L2 12 Z" fill="#111111"/>
+    </marker>
+    <marker id="arrow-soft" markerWidth="14" markerHeight="14" refX="12" refY="7" orient="auto">
+      <path d="M2 2 L12 7 L2 12 Z" fill="#666666"/>
+    </marker>
+    <style>
+      .page { fill: #ffffff; }
+      .zone { fill: #f6f6f6; stroke: #d0d0d0; stroke-width: 1.5; }
+      .zone-title { fill: #777777; font: 700 13px "JetBrains Mono", "SFMono-Regular", Consolas, monospace; letter-spacing: 1.1px; }
+      .box { fill: #ffffff; stroke: #111111; stroke-width: 2.4; }
+      .box-dark { fill: #111111; stroke: #111111; stroke-width: 2.4; }
+      .box-soft { fill: #ffffff; stroke: #bdbdbd; stroke-width: 2; }
+      .name { fill: #111111; font: 700 18px "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; }
+      .name-white { fill: #ffffff; font: 700 18px "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; }
+      .meta { fill: #555555; font: 500 12px "JetBrains Mono", "SFMono-Regular", Consolas, monospace; }
+      .meta-white { fill: #dddddd; font: 500 12px "JetBrains Mono", "SFMono-Regular", Consolas, monospace; }
+      .line { fill: none; stroke: #111111; stroke-width: 3; marker-end: url(#arrow); }
+      .line-soft { fill: none; stroke: #666666; stroke-width: 2.4; marker-end: url(#arrow-soft); }
+      .line-dashed { fill: none; stroke: #666666; stroke-width: 2.2; stroke-dasharray: 8 8; marker-end: url(#arrow-soft); }
+      .note { fill: #ffffff; stroke: #d0d0d0; stroke-width: 1; }
+      .note-text { fill: #333333; font: 700 12px "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <rect class="page" width="1400" height="430"/>
+
+  <rect class="zone" x="28" y="28" width="305" height="374"/>
+  <rect class="zone" x="365" y="28" width="315" height="374"/>
+  <rect class="zone" x="712" y="28" width="330" height="374"/>
+  <rect class="zone" x="1074" y="28" width="298" height="374"/>
+  <text class="zone-title" x="50" y="54">MASTER</text>
+  <text class="zone-title" x="387" y="54">ROUTING · BOM</text>
+  <text class="zone-title" x="734" y="54">PRODUCTION</text>
+  <text class="zone-title" x="1096" y="54">QUALITY</text>
+
+  <rect class="box-soft" x="58" y="82" width="120" height="54"/>
+  <text class="name" x="118" y="112" text-anchor="middle">CommonCode</text>
+  <text class="meta" x="118" y="130" text-anchor="middle">type</text>
+
+  <rect class="box-dark" x="198" y="82" width="105" height="54"/>
+  <text class="name-white" x="250.5" y="112" text-anchor="middle">Item</text>
+  <text class="meta-white" x="250.5" y="130" text-anchor="middle">품목</text>
+
+  <rect class="box" x="58" y="186" width="120" height="54"/>
+  <text class="name" x="118" y="216" text-anchor="middle">Process</text>
+  <text class="meta" x="118" y="234" text-anchor="middle">공정</text>
+
+  <rect class="box" x="198" y="186" width="105" height="54"/>
+  <text class="name" x="250.5" y="216" text-anchor="middle">Equipment</text>
+  <text class="meta" x="250.5" y="234" text-anchor="middle">설비</text>
+
+  <rect class="box-soft" x="58" y="304" width="120" height="48"/>
+  <text class="name" x="118" y="334" text-anchor="middle">Worker</text>
+
+  <rect class="box" x="395" y="82" width="130" height="58"/>
+  <text class="name" x="460" y="113" text-anchor="middle">ItemProcess</text>
+  <text class="meta" x="460" y="132" text-anchor="middle">품목별 공정</text>
+
+  <rect class="box" x="395" y="186" width="130" height="58"/>
+  <text class="name" x="460" y="217" text-anchor="middle">ProcessEquipment</text>
+  <text class="meta" x="460" y="236" text-anchor="middle">공정-설비</text>
+
+  <rect class="box" x="545" y="304" width="110" height="58"/>
+  <text class="name" x="600" y="335" text-anchor="middle">Bom</text>
+  <text class="meta" x="600" y="354" text-anchor="middle">자재 라인</text>
+
+  <rect class="box" x="395" y="304" width="130" height="58"/>
+  <text class="name" x="460" y="335" text-anchor="middle">BomVersion</text>
+  <text class="meta" x="460" y="354" text-anchor="middle">버전 헤더</text>
+
+  <rect class="box" x="742" y="82" width="130" height="58"/>
+  <text class="name" x="807" y="113" text-anchor="middle">ProductionPlan</text>
+  <text class="meta" x="807" y="132" text-anchor="middle">생산계획</text>
+
+  <rect class="box-dark" x="882" y="186" width="130" height="58"/>
+  <text class="name-white" x="947" y="217" text-anchor="middle">WorkOrder</text>
+  <text class="meta-white" x="947" y="236" text-anchor="middle">작업지시</text>
+
+  <rect class="box" x="742" y="304" width="130" height="58"/>
+  <text class="name" x="807" y="335" text-anchor="middle">ProductionRecord</text>
+  <text class="meta" x="807" y="354" text-anchor="middle">생산실적</text>
+
+  <rect class="box" x="1104" y="126" width="140" height="58"/>
+  <text class="name" x="1174" y="157" text-anchor="middle">QualityInspection</text>
+  <text class="meta" x="1174" y="176" text-anchor="middle">품질검사</text>
+
+  <rect class="box-soft" x="1104" y="284" width="140" height="58"/>
+  <text class="name" x="1174" y="315" text-anchor="middle">DefectRecord</text>
+  <text class="meta" x="1174" y="334" text-anchor="middle">불량기록</text>
+
+  <path class="line-soft" d="M178 109 H188"/>
+  <path class="line-soft" d="M118 136 V176"/>
+  <path class="line-soft" d="M178 213 H188"/>
+
+  <path class="line" d="M303 109 H383"/>
+  <path class="line" d="M178 213 H383"/>
+  <path class="line" d="M303 213 H383"/>
+  <path class="line" d="M178 213 C260 268 330 320 383 333"/>
+  <path class="line" d="M303 109 C345 178 378 260 395 304"/>
+  <path class="line" d="M525 333 H533"/>
+
+  <path class="line" d="M303 109 C500 56 630 66 730 101"/>
+  <path class="line" d="M872 111 C910 127 935 151 947 174"/>
+  <path class="line" d="M525 111 C650 115 756 150 872 199"/>
+  <path class="line" d="M525 215 H870"/>
+  <path class="line" d="M655 333 C760 322 835 278 882 232"/>
+  <path class="line" d="M947 244 C919 285 881 313 872 323"/>
+
+  <path class="line" d="M1012 215 C1054 200 1082 179 1092 162"/>
+  <path class="line" d="M1012 215 C1058 232 1090 262 1104 296"/>
+  <path class="line" d="M872 333 H1092"/>
+  <path class="line" d="M1174 184 V272"/>
+
+  <path class="line-dashed" d="M178 328 C430 386 720 322 872 232"/>
+
+  <rect class="note" x="328" y="94" width="52" height="22" rx="11"/>
+  <text class="note-text" x="354" y="110" text-anchor="middle">1:N</text>
+  <rect class="note" x="330" y="199" width="52" height="22" rx="11"/>
+  <text class="note-text" x="356" y="215" text-anchor="middle">N:M</text>
+  <rect class="note" x="888" y="126" width="76" height="22" rx="11"/>
+  <text class="note-text" x="926" y="142" text-anchor="middle">발행 생성</text>
+  <rect class="note" x="194" y="332" width="140" height="22" rx="11"/>
+  <text class="note-text" x="264" y="348" text-anchor="middle">workerName snapshot</text>
+</svg>
