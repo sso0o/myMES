@@ -34,7 +34,9 @@
       "Bash(Select-Object FullName)",
       "Bash(Get-ChildItem -Path \"C:\\\\IDEAWorkspace\\\\SYCHOI\\\\myMES\\\\backend\\\\src\\\\main\\\\java\\\\com\\\\mymes\\\\backend\\\\\" -Directory | Select-Object Name)",
       "Bash(Get-ChildItem -Path \"C:\\\\IDEAWorkspace\\\\SYCHOI\\\\myMES\\\\frontend\\\\src\\\\features\\\\prod-management\\\\production-record\" -File -Recurse)",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(xargs grep -l \"ItemProcessDataGrid\\\\|ItemProcessTable\")",
+      "Bash(xargs grep -l \"ItemProcessDataGrid\\\\|ItemProcessTable\\\\|item-process\")"
     ]
   }
 }
