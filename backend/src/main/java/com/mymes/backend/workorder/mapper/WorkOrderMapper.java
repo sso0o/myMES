@@ -17,7 +17,8 @@ public interface WorkOrderMapper {
     @Mapping(source = "equipment.id",         target = "equipmentId")
     @Mapping(source = "equipment.equipmentCode", target = "equipmentCode")
     @Mapping(source = "equipment.equipmentName", target = "equipmentName")
-    @Mapping(source = "bomVersion.id",        target = "bomVersionId")
-    @Mapping(source = "bomVersion.versionNo", target = "bomVersionNo")
+    @Mapping(source = "bomVersion.id",           target = "bomVersionId")
+    @Mapping(source = "bomVersion.versionNo",    target = "bomVersionNo")
+    @Mapping(source = "productionPlan.planNo",   target = "planNo")
     WorkOrderResponse toResponse(WorkOrder workOrder);
 }

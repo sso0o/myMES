@@ -6,6 +6,7 @@ import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
 import com.mymes.backend.equipment.entity.Equipment;
 import com.mymes.backend.item.entity.Item;
+import com.mymes.backend.planning.entity.ProductionPlan;
 import com.mymes.backend.process.entity.MfgProcess;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -27,8 +28,15 @@ public class WorkOrder extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "work_order_no", nullable = false, unique = true, length = 30)
+    @Column(name = "work_order_no", nullable = false, length = 30)
     private String workOrderNo;
+
+    @Column(name = "sequence")
+    private Integer sequence;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "production_plan_id")
+    private ProductionPlan productionPlan;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
@@ -66,7 +74,8 @@ public class WorkOrder extends BaseEntity {
     @Builder
     public WorkOrder(String workOrderNo, Item item, Integer plannedQty,
                      Priority priority, MfgProcess process, Equipment equipment,
-                     String workerName, LocalDate dueDate, BomVersion bomVersion) {
+                     String workerName, LocalDate dueDate, BomVersion bomVersion,
+                     Integer sequence, ProductionPlan productionPlan) {
         this.workOrderNo = workOrderNo;
         this.item = item;
         this.plannedQty = plannedQty;
@@ -77,6 +86,8 @@ public class WorkOrder extends BaseEntity {
         this.workerName = workerName;
         this.dueDate = dueDate;
         this.bomVersion = bomVersion;
+        this.sequence = sequence;
+        this.productionPlan = productionPlan;
     }
 
     public void update(Item item, Integer plannedQty, Priority priority,

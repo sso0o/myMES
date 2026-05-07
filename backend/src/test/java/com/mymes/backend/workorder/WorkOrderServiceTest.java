@@ -9,6 +9,7 @@ import com.mymes.backend.item.entity.Item;
 import com.mymes.backend.item.service.ItemService;
 import com.mymes.backend.itemprocess.entity.ItemProcess;
 import com.mymes.backend.itemprocess.service.ItemProcessService;
+import com.mymes.backend.planning.entity.ProductionPlan;
 import com.mymes.backend.process.entity.MfgProcess;
 import com.mymes.backend.process.service.MfgProcessService;
 import com.mymes.backend.processEquipment.service.ProcessEquipmentService;
@@ -38,8 +39,10 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -389,49 +392,50 @@ class WorkOrderServiceTest {
 
     @Nested
     @DisplayName("생산계획 발행 작업지시 생성")
-    class CreateForPlan {
+    class CreateAllForPlan {
 
-        @Test
-        @DisplayName("품목의 첫 번째 공정을 작업지시에 자동 연결한다")
-        void createForPlan_assignsFirstProcess() {
-            // given
-            ItemProcess itemProcess = ItemProcess.builder()
-                    .item(item)
-                    .process(process)
-                    .sequence(1)
-                    .build();
-            given(bomVersionService.findActiveVersion(1L)).willReturn(Optional.empty());
-            given(itemProcessService.findFirstByItemId(1L)).willReturn(Optional.of(itemProcess));
-            given(workOrderRepository.findLatestWorkOrderNoByPrefix(anyString())).willReturn(Optional.empty());
-            given(workOrderRepository.saveAndFlush(any(WorkOrder.class)))
-                    .willAnswer(invocation -> invocation.getArgument(0));
+        private ProductionPlan plan;
 
-            // when
-            WorkOrder result = workOrderService.createForPlan(item, 100, LocalDate.of(2026, 5, 5));
-
-            // then
-            assertThat(result.getProcess()).isEqualTo(process);
-            assertThat(result.getEquipment()).isNull();
-            verify(itemProcessService, times(1)).findFirstByItemId(1L);
-            verify(workOrderRepository, times(1)).saveAndFlush(any(WorkOrder.class));
+        @BeforeEach
+        void setUp() {
+            plan = mock(ProductionPlan.class);
+            given(plan.getItem()).willReturn(item);
         }
 
         @Test
-        @DisplayName("품목 공정이 없으면 공정 없이 작업지시를 생성한다")
-        void createForPlan_withoutItemProcess_success() {
+        @DisplayName("공정 수만큼 동일한 작업지시번호로 작업지시를 생성한다")
+        void createAllForPlan_createsOneWorkOrderPerProcess() {
             // given
+            given(plan.getPlannedQty()).willReturn(100);
+            given(plan.getPlannedDate()).willReturn(LocalDate.of(2026, 5, 5));
+            ItemProcess ip1 = ItemProcess.builder().item(item).process(process).sequence(1).build();
+            ItemProcess ip2 = ItemProcess.builder().item(item).process(process).sequence(2).build();
+            given(itemProcessService.findAllEntitiesByItemId(1L)).willReturn(List.of(ip1, ip2));
             given(bomVersionService.findActiveVersion(1L)).willReturn(Optional.empty());
-            given(itemProcessService.findFirstByItemId(1L)).willReturn(Optional.empty());
             given(workOrderRepository.findLatestWorkOrderNoByPrefix(anyString())).willReturn(Optional.empty());
-            given(workOrderRepository.saveAndFlush(any(WorkOrder.class)))
-                    .willAnswer(invocation -> invocation.getArgument(0));
+            given(workOrderRepository.saveAll(anyList())).willAnswer(invocation -> invocation.getArgument(0));
 
             // when
-            WorkOrder result = workOrderService.createForPlan(item, 100, LocalDate.of(2026, 5, 5));
+            List<WorkOrder> result = workOrderService.createAllForPlan(plan);
 
             // then
-            assertThat(result.getProcess()).isNull();
-            verify(itemProcessService, times(1)).findFirstByItemId(1L);
+            assertThat(result).hasSize(2);
+            String sharedNo = result.get(0).getWorkOrderNo();
+            assertThat(result).extracting(WorkOrder::getWorkOrderNo).containsOnly(sharedNo);
+            verify(workOrderRepository, times(1)).saveAll(anyList());
+        }
+
+        @Test
+        @DisplayName("품목 공정이 없으면 예외가 발생한다")
+        void createAllForPlan_withoutItemProcess_throwsException() {
+            // given
+            given(itemProcessService.findAllEntitiesByItemId(1L)).willReturn(List.of());
+
+            // when & then
+            assertThatThrownBy(() -> workOrderService.createAllForPlan(plan))
+                    .isInstanceOf(BusinessException.class)
+                    .hasFieldOrPropertyWithValue("errorCode", ErrorCode.PLAN_NO_PROCESS_FOR_ITEM);
+            verify(workOrderRepository, never()).saveAll(anyList());
         }
     }
 

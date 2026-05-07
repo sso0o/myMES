@@ -82,6 +82,7 @@ public enum ErrorCode {
     PLAN_NOT_DELETABLE(409, "초안 상태의 생산계획만 삭제할 수 있습니다."),
     PLAN_NO_GENERATION_FAILED(500, "생산계획 번호 생성에 실패했습니다."),
     PLAN_ALREADY_RELEASED(409, "이미 작업지시가 발행된 생산계획입니다."),
+    PLAN_NO_PROCESS_FOR_ITEM(400, "해당 품목에 등록된 공정이 없어 작업지시를 발행할 수 없습니다."),
 
     // Equipment
     EQUIPMENT_NOT_FOUND(404, "설비를 찾을 수 없습니다."),
