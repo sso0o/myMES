@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Plus } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, ClipboardList, Plus, ThumbsUp } from 'lucide-react'
+import { KpiCard } from '@/common/components/KpiCard'
 import InlineAlert from '@/common/components/InlineAlert'
 import PageHeader from '@/common/components/PageHeader'
 import { useFeedback } from '@/common/hooks/useFeedback'
@@ -159,31 +160,36 @@ const QualityInspectionPage = () => {
         }
       />
 
-      <div className="grid gap-3 md:grid-cols-4">
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-4 py-3">
-          <p className="text-xs text-[var(--text-muted)]">검사 건수</p>
-          <p className="mt-1 text-xl font-semibold text-[var(--text-strong)]">
-            {summary.total.toLocaleString()}
-          </p>
-        </div>
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-4 py-3">
-          <p className="text-xs text-[var(--text-muted)]">완료</p>
-          <p className="mt-1 text-xl font-semibold text-[var(--text-strong)]">
-            {summary.completed.toLocaleString()}
-          </p>
-        </div>
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-4 py-3">
-          <p className="text-xs text-[var(--text-muted)]">합격률</p>
-          <p className="mt-1 text-xl font-semibold text-[var(--text-strong)]">
-            {summary.passRate}%
-          </p>
-        </div>
-        <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--surface)] px-4 py-3">
-          <p className="text-xs text-[var(--text-muted)]">불량수량</p>
-          <p className="mt-1 text-xl font-semibold text-[var(--text-strong)]">
-            {summary.defectQty.toLocaleString()}
-          </p>
-        </div>
+      <div className="grid gap-4 md:grid-cols-4">
+        <KpiCard
+          title="검사 건수"
+          value={summary.total.toLocaleString()}
+          unit="건"
+          icon={<ClipboardList size={20} />}
+          color="blue"
+        />
+        <KpiCard
+          title="완료"
+          value={summary.completed.toLocaleString()}
+          unit="건"
+          icon={<CheckCircle2 size={20} />}
+          color="green"
+          description={`미완료 ${summary.total - summary.completed}건`}
+        />
+        <KpiCard
+            title="불량수량"
+            value={summary.defectQty.toLocaleString()}
+            unit="EA"
+            icon={<AlertTriangle size={20} />}
+            color="red"
+        />
+        <KpiCard
+          title="합격률"
+          value={summary.passRate}
+          unit="%"
+          icon={<ThumbsUp size={20} />}
+          color="green"
+        />
       </div>
 
       <div className="flex flex-wrap gap-2">
