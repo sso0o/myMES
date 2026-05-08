@@ -54,12 +54,15 @@ export function useDashboardRealtime() {
   useEffect(() => {
     const channel = supabase
       .channel('dashboard-realtime')
+      // 작업지시 테이블 변경 감지
       .on('postgres_changes', { event: '*', schema: 'public', table: 'work_orders' }, () => {
         queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       })
+      // 생산실적 테이블 변경 감지
       .on('postgres_changes', { event: '*', schema: 'public', table: 'production_records' }, () => {
         queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       })
+      // 불량기록 테이블 변경 감지
       .on('postgres_changes', { event: '*', schema: 'public', table: 'defect_records' }, () => {
         queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       })
