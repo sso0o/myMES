@@ -4,6 +4,7 @@ import EmptyState from '@/common/components/EmptyState'
 import PageHeader from '@/common/components/PageHeader'
 import { primaryActionButtonClass } from '@/common/styles/button'
 import { useFeedback } from '@/common/hooks/useFeedback'
+import { getApiErrorMessage } from '@/common/utils/apiError'
 import { useItemList } from '@/features/master/item/hooks/useItemQuery'
 import type { ItemResponse } from '@/features/master/item/types'
 import { useProcessList } from '@/features/prod-basic/process/hooks/useProcessQuery'
@@ -91,9 +92,10 @@ const ItemProcessManagementPage = () => {
         showToast({ title: '공정을 추가했습니다.', variant: 'success' })
         setAddingRow(false)
         return { ...newRow, isNew: false }
-      } catch {
-        showToast({ title: '추가 중 오류가 발생했습니다.', variant: 'error' })
-        throw new Error('추가 중 오류가 발생했습니다.')
+      } catch (error) {
+        const message = getApiErrorMessage(error, '추가 중 오류가 발생했습니다.')
+        showToast({ title: message, variant: 'error' })
+        throw new Error(message)
       }
     }
 
@@ -105,9 +107,10 @@ const ItemProcessManagementPage = () => {
       })
       showToast({ title: '공정을 수정했습니다.', variant: 'success' })
       return { ...newRow }
-    } catch {
-      showToast({ title: '수정 중 오류가 발생했습니다.', variant: 'error' })
-      throw new Error('수정 중 오류가 발생했습니다.')
+    } catch (error) {
+      const message = getApiErrorMessage(error, '수정 중 오류가 발생했습니다.')
+      showToast({ title: message, variant: 'error' })
+      throw new Error(message)
     }
   }
 
@@ -123,7 +126,8 @@ const ItemProcessManagementPage = () => {
       { id: ip.id, itemId: selectedItem.id },
       {
         onSuccess: () => showToast({ title: '공정을 삭제했습니다.', variant: 'success' }),
-        onError: () => showToast({ title: '삭제 중 오류가 발생했습니다.', variant: 'error' }),
+        onError: (error) =>
+          showToast({ title: getApiErrorMessage(error, '삭제 중 오류가 발생했습니다.'), variant: 'error' }),
       },
     )
   }
@@ -148,8 +152,8 @@ const ItemProcessManagementPage = () => {
             setBulkCopyOpen(false)
             resolve()
           },
-          onError: () => {
-            showToast({ title: '공정 적용 중 오류가 발생했습니다.', variant: 'error' })
+          onError: (error) => {
+            showToast({ title: getApiErrorMessage(error, '공정 적용 중 오류가 발생했습니다.'), variant: 'error' })
             reject()
           },
         },
