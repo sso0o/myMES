@@ -19,12 +19,12 @@ public class ProductionController {
 
     private final ProductionService productionService;
 
-    @GetMapping("/api/work-orders/{workOrderId}/production-records")
+    @GetMapping("/api/prod-management/work-orders/{workOrderId}/production-records")
     public ResponseEntity<ApiResponse<List<ProductionResponse>>> getByWorkOrder(@PathVariable Long workOrderId) {
         return ResponseEntity.ok(ApiResponse.ok(productionService.findByWorkOrder(workOrderId)));
     }
 
-    @PostMapping("/api/work-orders/{workOrderId}/production-records")
+    @PostMapping("/api/prod-management/work-orders/{workOrderId}/production-records")
     public ResponseEntity<ApiResponse<ProductionResponse>> create(
             @PathVariable Long workOrderId,
             @Valid @RequestBody ProductionCreateRequest request) {
@@ -32,12 +32,12 @@ public class ProductionController {
                 .body(ApiResponse.ok(productionService.create(workOrderId, request)));
     }
 
-    @GetMapping("/api/production-records/{id}")
+    @GetMapping("/api/prod-management/production-records/{id}")
     public ResponseEntity<ApiResponse<ProductionResponse>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(productionService.findById(id)));
     }
 
-    @PutMapping("/api/production-records/{id}")
+    @PutMapping("/api/prod-management/production-records/{id}")
     public ResponseEntity<ApiResponse<ProductionResponse>> update(
             @PathVariable Long id,
             @Valid @RequestBody ProductionUpdateRequest request) {
