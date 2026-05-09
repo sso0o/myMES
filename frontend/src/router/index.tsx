@@ -17,6 +17,7 @@ import ProductionRecordPage from '@/pages/ProductionRecordPage'
 import WorkerManagementPage from '@/pages/WorkerManagementPage'
 import QualityInspectionPage from '@/pages/QualityInspectionPage'
 import DefectManagementPage from '@/pages/DefectManagementPage'
+import InspectionItemManagementPage from '@/pages/InspectionItemManagementPage'
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage />, errorElement: <RouteErrorScreen /> },
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
           { path: '/quality', element: <Navigate to="/quality/inspections" replace /> },
           { path: '/quality/inspections', element: <QualityInspectionPage /> },
           { path: '/quality/defects', element: <DefectManagementPage /> },
+          { path: '/quality/standards/inspection-items', element: <InspectionItemManagementPage /> },
           { path: '/master/items', element: <ItemManagementPage /> },
           { path: '/master/common-codes', element: <CommonCodeManagementPage /> },
           { path: '/prod-basic/processes', element: <ProcessManagementPage /> },
