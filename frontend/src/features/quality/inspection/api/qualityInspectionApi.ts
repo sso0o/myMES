@@ -7,20 +7,22 @@ import type {
   QualityInspectionUpdateRequest,
 } from '../types'
 
+const QUALITY_INSPECTION_API_PATH = '/quality/quality-inspections'
+
 export const qualityInspectionApi = {
   getList: (status?: QualityInspectionStatus) =>
-    api.get<ApiResponse<QualityInspectionResponse[]>>('/quality-inspections', {
+    api.get<ApiResponse<QualityInspectionResponse[]>>(QUALITY_INSPECTION_API_PATH, {
       params: status ? { status } : undefined,
     }),
 
   getById: (id: number) =>
-    api.get<ApiResponse<QualityInspectionResponse>>(`/quality-inspections/${id}`),
+    api.get<ApiResponse<QualityInspectionResponse>>(`${QUALITY_INSPECTION_API_PATH}/${id}`),
 
   create: (data: QualityInspectionCreateRequest) =>
-    api.post<ApiResponse<QualityInspectionResponse>>('/quality-inspections', data),
+    api.post<ApiResponse<QualityInspectionResponse>>(QUALITY_INSPECTION_API_PATH, data),
 
   update: (id: number, data: QualityInspectionUpdateRequest) =>
-    api.put<ApiResponse<QualityInspectionResponse>>(`/quality-inspections/${id}`, data),
+    api.put<ApiResponse<QualityInspectionResponse>>(`${QUALITY_INSPECTION_API_PATH}/${id}`, data),
 
-  delete: (id: number) => api.delete(`/quality-inspections/${id}`),
+  delete: (id: number) => api.delete(`${QUALITY_INSPECTION_API_PATH}/${id}`),
 }

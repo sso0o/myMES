@@ -6,17 +6,19 @@ import type {
   InspectionItemUpdateRequest,
 } from '../types'
 
+const INSPECTION_ITEM_API_PATH = '/quality/inspection-items'
+
 export const inspectionItemApi = {
-  getList: () => api.get<ApiResponse<InspectionItemResponse[]>>('/inspection-items'),
+  getList: () => api.get<ApiResponse<InspectionItemResponse[]>>(INSPECTION_ITEM_API_PATH),
 
   getById: (id: number) =>
-    api.get<ApiResponse<InspectionItemResponse>>(`/inspection-items/${id}`),
+    api.get<ApiResponse<InspectionItemResponse>>(`${INSPECTION_ITEM_API_PATH}/${id}`),
 
   create: (data: InspectionItemCreateRequest) =>
-    api.post<ApiResponse<InspectionItemResponse>>('/inspection-items', data),
+    api.post<ApiResponse<InspectionItemResponse>>(INSPECTION_ITEM_API_PATH, data),
 
   update: (id: number, data: InspectionItemUpdateRequest) =>
-    api.put<ApiResponse<InspectionItemResponse>>(`/inspection-items/${id}`, data),
+    api.put<ApiResponse<InspectionItemResponse>>(`${INSPECTION_ITEM_API_PATH}/${id}`, data),
 
-  delete: (id: number) => api.delete(`/inspection-items/${id}`),
+  delete: (id: number) => api.delete(`${INSPECTION_ITEM_API_PATH}/${id}`),
 }

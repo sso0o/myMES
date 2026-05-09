@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/production-plans")
+@RequestMapping("/api/prod-management/production-plans")
 @RequiredArgsConstructor
 public class ProductionPlanController {
 
