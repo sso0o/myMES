@@ -1,6 +1,8 @@
 package com.mymes.backend.itemprocess;
 
+import com.mymes.backend.item.dto.ItemResponse;
 import com.mymes.backend.item.entity.Item;
+import com.mymes.backend.item.mapper.ItemMapper;
 import com.mymes.backend.item.service.ItemService;
 import com.mymes.backend.itemprocess.entity.ItemProcess;
 import com.mymes.backend.itemprocess.mapper.ItemProcessMapper;
@@ -44,6 +46,9 @@ class ItemProcessServiceTest {
     @Mock
     private ItemProcessMapper itemProcessMapper;
 
+    @Mock
+    private ItemMapper itemMapper;
+
     private Item item;
     private MfgProcess process;
     private ItemProcess itemProcess;
@@ -69,6 +74,33 @@ class ItemProcessServiceTest {
                 .sequence(1)
                 .build();
         ReflectionTestUtils.setField(itemProcess, "id", 100L);
+    }
+
+    @Nested
+    @DisplayName("공정 등록 품목 조회")
+    class FindItemsWithProcesses {
+
+        @Test
+        @DisplayName("공정이 하나 이상 등록된 품목만 응답으로 변환해 반환한다")
+        void findItemsWithProcesses_success() {
+            // given
+            ItemResponse itemResponse = ItemResponse.builder()
+                    .id(1L)
+                    .itemCode("ITEM-000001")
+                    .itemName("테스트 품목")
+                    .unit("EA")
+                    .build();
+            given(itemProcessRepository.findDistinctItemsWithProcesses()).willReturn(List.of(item));
+            given(itemMapper.toResponse(item)).willReturn(itemResponse);
+
+            // when
+            List<ItemResponse> result = itemProcessService.findItemsWithProcesses();
+
+            // then
+            assertThat(result).containsExactly(itemResponse);
+            verify(itemProcessRepository, times(1)).findDistinctItemsWithProcesses();
+            verify(itemMapper, times(1)).toResponse(item);
+        }
     }
 
     @Nested

@@ -3,6 +3,7 @@ package com.mymes.backend.itemprocess;
 import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
 import com.mymes.backend.item.entity.Item;
+import com.mymes.backend.item.mapper.ItemMapper;
 import com.mymes.backend.item.service.ItemService;
 import com.mymes.backend.itemprocess.dto.CopyMode;
 import com.mymes.backend.itemprocess.dto.ItemProcessBulkCopyRequest;
@@ -50,6 +51,9 @@ class ItemProcessServiceCopyTest {
 
     @Mock
     private ItemProcessMapper itemProcessMapper;
+
+    @Mock
+    private ItemMapper itemMapper;
 
     private Item sourceItem;
     private Item targetItem1;

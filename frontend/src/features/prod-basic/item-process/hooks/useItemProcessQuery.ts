@@ -7,6 +7,13 @@ import type {
 } from '../types'
 
 const QUERY_KEY = 'itemProcesses'
+const ITEMS_WITH_PROCESSES_QUERY_KEY = 'itemsWithProcesses'
+
+export const useItemsWithProcesses = () =>
+  useQuery({
+    queryKey: [ITEMS_WITH_PROCESSES_QUERY_KEY],
+    queryFn: () => itemProcessApi.getItemsWithProcesses().then((res) => res.data.data ?? []),
+  })
 
 export const useItemProcessList = (itemId: number | null) =>
   useQuery({
@@ -23,6 +30,7 @@ export const useCreateItemProcess = () => {
       itemProcessApi.create(data).then((res) => res.data.data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY, variables.itemId] })
+      queryClient.invalidateQueries({ queryKey: [ITEMS_WITH_PROCESSES_QUERY_KEY] })
     },
   })
 }
@@ -34,6 +42,7 @@ export const useUpdateItemProcess = () => {
       itemProcessApi.update(id, data).then((res) => res.data.data),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY, variables.itemId] })
+      queryClient.invalidateQueries({ queryKey: [ITEMS_WITH_PROCESSES_QUERY_KEY] })
     },
   })
 }
@@ -44,6 +53,7 @@ export const useDeleteItemProcess = () => {
     mutationFn: ({ id }: { id: number; itemId: number }) => itemProcessApi.delete(id),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY, variables.itemId] })
+      queryClient.invalidateQueries({ queryKey: [ITEMS_WITH_PROCESSES_QUERY_KEY] })
     },
   })
 }
@@ -59,6 +69,7 @@ export const useBulkCopyItemProcess = () => {
       variables.targetItemIds.forEach((id) =>
         queryClient.invalidateQueries({ queryKey: [QUERY_KEY, id] }),
       )
+      queryClient.invalidateQueries({ queryKey: [ITEMS_WITH_PROCESSES_QUERY_KEY] })
     },
   })
 }

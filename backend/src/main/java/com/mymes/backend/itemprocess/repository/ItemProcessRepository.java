@@ -1,6 +1,7 @@
 package com.mymes.backend.itemprocess.repository;
 
 import com.mymes.backend.itemprocess.entity.ItemProcess;
+import com.mymes.backend.item.entity.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +12,9 @@ import java.util.Optional;
 
 public interface ItemProcessRepository extends JpaRepository<ItemProcess, Long> {
     List<ItemProcess> findByItemIdOrderBySequenceAsc(Long itemId);
+
+    @Query("SELECT DISTINCT ip.item FROM ItemProcess ip ORDER BY ip.item.itemCode ASC")
+    List<Item> findDistinctItemsWithProcesses();
 
     // soft-deleted 행 포함하여 중복 검사 (deleted_at IS NULL 필터 우회)
     @Query(value = "SELECT EXISTS(SELECT 1 FROM item_processes WHERE item_id = :itemId AND process_id = :processId)", nativeQuery = true)

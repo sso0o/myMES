@@ -2,7 +2,9 @@ package com.mymes.backend.itemprocess.service;
 
 import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
+import com.mymes.backend.item.dto.ItemResponse;
 import com.mymes.backend.item.entity.Item;
+import com.mymes.backend.item.mapper.ItemMapper;
 import com.mymes.backend.item.service.ItemService;
 import com.mymes.backend.itemprocess.dto.CopyMode;
 import com.mymes.backend.itemprocess.dto.ItemProcessBulkCopyRequest;
@@ -33,10 +35,28 @@ public class ItemProcessService {
     private final ItemService itemService;
     private final MfgProcessService processService;
     private final ItemProcessMapper itemProcessMapper;
+    private final ItemMapper itemMapper;
 
+    /**
+     * 특정 품목의 공정 매핑 목록을 순서 기준으로 조회합니다.
+     *
+     * @param itemId 품목 ID
+     * @return 품목-공정 매핑 응답 목록
+     */
     public List<ItemProcessResponse> findByItemId(Long itemId) {
         return itemProcessRepository.findByItemIdOrderBySequenceAsc(itemId).stream()
                 .map(itemProcessMapper::toResponse)
+                .toList();
+    }
+
+    /**
+     * 공정이 하나 이상 등록된 품목 목록을 조회합니다.
+     *
+     * @return 공정 매핑이 존재하는 품목 응답 목록
+     */
+    public List<ItemResponse> findItemsWithProcesses() {
+        return itemProcessRepository.findDistinctItemsWithProcesses().stream()
+                .map(itemMapper::toResponse)
                 .toList();
     }
 
@@ -72,10 +92,22 @@ public class ItemProcessService {
         return itemProcessRepository.existsByItemIdAndProcessId(itemId, processId);
     }
 
+    /**
+     * 품목-공정 매핑을 ID로 조회합니다.
+     *
+     * @param id 품목-공정 매핑 ID
+     * @return 품목-공정 매핑 응답
+     */
     public ItemProcessResponse findById(Long id) {
         return itemProcessMapper.toResponse(getItemProcess(id));
     }
 
+    /**
+     * 품목-공정 매핑을 생성합니다.
+     *
+     * @param request 생성 요청
+     * @return 생성된 품목-공정 매핑 응답
+     */
     @Transactional
     public ItemProcessResponse create(ItemProcessCreateRequest request) {
         Item item = itemService.getItem(request.getItemId());
@@ -99,6 +131,13 @@ public class ItemProcessService {
         return itemProcessMapper.toResponse(saved);
     }
 
+    /**
+     * 품목-공정 매핑을 수정합니다.
+     *
+     * @param id 품목-공정 매핑 ID
+     * @param request 수정 요청
+     * @return 수정된 품목-공정 매핑 응답
+     */
     @Transactional
     public ItemProcessResponse update(Long id, ItemProcessUpdateRequest request) {
         ItemProcess itemProcess = getItemProcess(id);
@@ -116,6 +155,11 @@ public class ItemProcessService {
         return itemProcessMapper.toResponse(itemProcess);
     }
 
+    /**
+     * 품목-공정 매핑을 삭제합니다.
+     *
+     * @param id 품목-공정 매핑 ID
+     */
     @Transactional
     public void delete(Long id) {
         ItemProcess itemProcess = getItemProcess(id);
@@ -123,6 +167,12 @@ public class ItemProcessService {
         log.info("품목-공정 삭제 완료: id={}", id);
     }
 
+    /**
+     * 품목-공정 매핑 엔티티를 ID로 조회합니다.
+     *
+     * @param id 품목-공정 매핑 ID
+     * @return 품목-공정 매핑 엔티티
+     */
     public ItemProcess getItemProcess(Long id) {
         return itemProcessRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ITEM_PROCESS_NOT_FOUND, String.valueOf(id)));
