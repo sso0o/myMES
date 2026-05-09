@@ -6,20 +6,22 @@ import type {
   ProcessEquipmentUpdateRequest,
 } from '../types'
 
+const PROCESS_EQUIPMENT_API_PATH = '/prod-basic/process-equipment'
+
 export const processEquipmentApi = {
   getByProcessId: (processId: number) =>
-    api.get<ApiResponse<ProcessEquipmentResponse[]>>('/prod-basic/process-equipment', {
+    api.get<ApiResponse<ProcessEquipmentResponse[]>>(PROCESS_EQUIPMENT_API_PATH, {
       params: { processId },
     }),
   getByEquipmentId: (equipmentId: number) =>
-    api.get<ApiResponse<ProcessEquipmentResponse[]>>('/prod-basic/process-equipment', {
+    api.get<ApiResponse<ProcessEquipmentResponse[]>>(PROCESS_EQUIPMENT_API_PATH, {
       params: { equipmentId },
     }),
   getById: (id: number) =>
-    api.get<ApiResponse<ProcessEquipmentResponse>>(`/prod-basic/process-equipment/${id}`),
+    api.get<ApiResponse<ProcessEquipmentResponse>>(`${PROCESS_EQUIPMENT_API_PATH}/${id}`),
   create: (data: ProcessEquipmentCreateRequest) =>
-    api.post<ApiResponse<ProcessEquipmentResponse>>('/prod-basic/process-equipment', data),
+    api.post<ApiResponse<ProcessEquipmentResponse>>(PROCESS_EQUIPMENT_API_PATH, data),
   update: (id: number, data: ProcessEquipmentUpdateRequest) =>
-    api.patch<ApiResponse<ProcessEquipmentResponse>>(`/prod-basic/process-equipment/${id}`, data),
-  delete: (id: number) => api.delete(`/prod-basic/process-equipment/${id}`),
+    api.patch<ApiResponse<ProcessEquipmentResponse>>(`${PROCESS_EQUIPMENT_API_PATH}/${id}`, data),
+  delete: (id: number) => api.delete(`${PROCESS_EQUIPMENT_API_PATH}/${id}`),
 }
