@@ -7,9 +7,11 @@ import PageHeader from '@/common/components/PageHeader'
 import { pagePrimaryActionButtonClass } from '@/common/styles/button'
 import { useFeedback } from '@/common/hooks/useFeedback'
 import { getApiErrorMessage } from '@/common/utils/apiError'
-import { useItemList } from '@/features/master/item/hooks/useItemQuery'
 import type { ItemResponse } from '@/features/master/item/types'
-import { useItemProcessList } from '@/features/prod-basic/item-process/hooks/useItemProcessQuery'
+import {
+  useItemProcessList,
+  useItemsWithProcesses,
+} from '@/features/prod-basic/item-process/hooks/useItemProcessQuery'
 import type { ItemProcessResponse } from '@/features/prod-basic/item-process/types'
 import InspectionStandardDataGrid from '@/features/quality/inspection-standard/components/InspectionStandardDataGrid'
 import InspectionStandardFormModal from '@/features/quality/inspection-standard/components/InspectionStandardFormModal'
@@ -34,8 +36,7 @@ const InspectionStandardManagementPage = () => {
   const [size, setSize] = useState(10)
 
   const { showToast, showAlert } = useFeedback()
-  const { data: itemResponse, isLoading: itemsLoading } = useItemList(0, 200)
-  const items = itemResponse?.data ?? []
+  const { data: items = [], isLoading: itemsLoading } = useItemsWithProcesses()
 
   const selectedItem = useMemo(
     () => items.find((item) => item.id === selectedItemId) ?? null,
@@ -222,7 +223,13 @@ const InspectionStandardManagementPage = () => {
       )}
 
       {!selectedItem ? (
-        <EmptyState message="품목을 선택하면 적용 공정을 확인할 수 있습니다." />
+        <EmptyState
+          message={
+            items.length === 0
+              ? '공정이 등록된 품목이 없습니다. 생산 기초 > 품목별 공정 관리에서 먼저 공정을 등록하세요.'
+              : '품목을 선택하면 적용 공정을 확인할 수 있습니다.'
+          }
+        />
       ) : !selectedProcess ? (
         <EmptyState message="공정을 선택하면 등록된 검사항목 기준을 확인할 수 있습니다." />
       ) : (

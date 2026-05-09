@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/inspection-standards")
+@RequestMapping("/api/quality/inspection-standards")
 @RequiredArgsConstructor
 public class InspectionStandardController {
 

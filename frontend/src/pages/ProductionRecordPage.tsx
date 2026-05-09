@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { GridColDef } from '@mui/x-data-grid'
 import { Plus } from 'lucide-react'
+import EmptyState from '@/common/components/EmptyState'
 import AppDataGrid from '@/common/components/AppDataGrid'
 import InlineAlert from '@/common/components/InlineAlert'
 import PageHeader from '@/common/components/PageHeader'
@@ -248,9 +249,10 @@ const ProductionRecordPage = () => {
       )}
 
       {!selectedWorkOrder && workOrders.length > 0 && (
-        <div className="flex items-center justify-center rounded-xl border border-dashed border-[var(--border)] py-12 text-sm text-[var(--text-muted)]">
-          위 목록에서 작업지시를 선택하면 생산실적을 조회하고 등록할 수 있습니다.
-        </div>
+          <EmptyState message="위 목록에서 작업지시를 선택하면 생산실적을 조회하고 등록할 수 있습니다." />
+//         <div className="flex items-center justify-center rounded-xl border border-dashed border-[var(--border)] py-12 text-sm text-[var(--text-muted)]">
+//           위 목록에서 작업지시를 선택하면 생산실적을 조회하고 등록할 수 있습니다.
+//         </div>
       )}
 
       <ProductionRecordFormModal
