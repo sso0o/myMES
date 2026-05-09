@@ -1,6 +1,7 @@
 package com.mymes.backend.itemprocess.controller;
 
 import com.mymes.backend.common.response.ApiResponse;
+import com.mymes.backend.item.dto.ItemResponse;
 import com.mymes.backend.itemprocess.dto.ItemProcessBulkCopyRequest;
 import com.mymes.backend.itemprocess.dto.ItemProcessBulkCopyResponse;
 import com.mymes.backend.itemprocess.dto.ItemProcessCreateRequest;
@@ -21,6 +22,11 @@ import java.util.List;
 public class ItemProcessController {
 
     private final ItemProcessService itemProcessService;
+
+    @GetMapping("/items/with-processes")
+    public ResponseEntity<ApiResponse<List<ItemResponse>>> getItemsWithProcesses() {
+        return ResponseEntity.ok(ApiResponse.ok(itemProcessService.findItemsWithProcesses()));
+    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ItemProcessResponse>>> getByItemId(@RequestParam Long itemId) {
