@@ -74,7 +74,8 @@ const CommonCodeManagementPage = () => {
             setGroupModalOpen(false)
             setEditGroup(null)
           },
-          onError: () => showToast({ title: '수정 중 오류가 발생했습니다.', variant: 'error' }),
+          onError: (error) =>
+            showToast({ title: getApiErrorMessage(error, '수정 중 오류가 발생했습니다.'), variant: 'error' }),
         },
       )
       return
@@ -85,7 +86,8 @@ const CommonCodeManagementPage = () => {
         showToast({ title: '코드 그룹이 등록되었습니다.', variant: 'success' })
         setGroupModalOpen(false)
       },
-      onError: () => showToast({ title: '등록 중 오류가 발생했습니다.', variant: 'error' }),
+      onError: (error) =>
+        showToast({ title: getApiErrorMessage(error, '등록 중 오류가 발생했습니다.'), variant: 'error' }),
     })
   }
 
@@ -102,7 +104,8 @@ const CommonCodeManagementPage = () => {
         showToast({ title: '코드 그룹이 삭제되었습니다.', variant: 'success' })
         if (selectedGroupId === group.groupId) setSelectedGroupId(null)
       },
-      onError: () => showToast({ title: '삭제 중 오류가 발생했습니다.', variant: 'error' }),
+      onError: (error) =>
+        showToast({ title: getApiErrorMessage(error, '삭제 중 오류가 발생했습니다.'), variant: 'error' }),
     })
   }
 
@@ -175,7 +178,8 @@ const CommonCodeManagementPage = () => {
       { groupId: selectedGroupId, codeId: code.id },
       {
         onSuccess: () => showToast({ title: '코드가 삭제되었습니다.', variant: 'success' }),
-        onError: () => showToast({ title: '삭제 중 오류가 발생했습니다.', variant: 'error' }),
+        onError: (error) =>
+          showToast({ title: getApiErrorMessage(error, '삭제 중 오류가 발생했습니다.'), variant: 'error' }),
       },
     )
   }

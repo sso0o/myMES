@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react'
 import InlineAlert from '@/common/components/InlineAlert'
 import PageHeader from '@/common/components/PageHeader'
 import { useFeedback } from '@/common/hooks/useFeedback'
+import { getApiErrorMessage } from '@/common/utils/apiError'
 import { pagePrimaryActionButtonClass } from '@/common/styles/button'
 import ItemDataGrid from '@/features/master/item/components/ItemDataGrid'
 import ItemFormModal from '@/features/master/item/components/ItemFormModal'
@@ -61,8 +62,8 @@ const ItemManagementPage = () => {
             showToast({ title: '품목을 수정했습니다.', variant: 'success' })
             handleClose()
           },
-          onError: () => {
-            showToast({ title: '수정 중 오류가 발생했습니다.', variant: 'error' })
+          onError: (error) => {
+            showToast({ title: getApiErrorMessage(error, '수정 중 오류가 발생했습니다.'), variant: 'error' })
           },
         },
       )
@@ -74,8 +75,8 @@ const ItemManagementPage = () => {
         showToast({ title: '품목을 등록했습니다.', variant: 'success' })
         handleClose()
       },
-      onError: () => {
-        showToast({ title: '등록 중 오류가 발생했습니다.', variant: 'error' })
+      onError: (error) => {
+        showToast({ title: getApiErrorMessage(error, '등록 중 오류가 발생했습니다.'), variant: 'error' })
       },
     })
   }
@@ -92,8 +93,8 @@ const ItemManagementPage = () => {
       onSuccess: () => {
         showToast({ title: '품목을 삭제했습니다.', variant: 'success' })
       },
-      onError: () => {
-        showToast({ title: '삭제 중 오류가 발생했습니다.', variant: 'error' })
+      onError: (error) => {
+        showToast({ title: getApiErrorMessage(error, '삭제 중 오류가 발생했습니다.'), variant: 'error' })
       },
     })
   }

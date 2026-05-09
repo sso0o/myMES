@@ -5,6 +5,7 @@ import AppDataGrid from '@/common/components/AppDataGrid'
 import InlineAlert from '@/common/components/InlineAlert'
 import PageHeader from '@/common/components/PageHeader'
 import { useFeedback } from '@/common/hooks/useFeedback'
+import { getApiErrorMessage } from '@/common/utils/apiError'
 import { pagePrimaryActionButtonClass } from '@/common/styles/button'
 import ProductionRecordDataGrid from '@/features/prod-management/production-record/components/ProductionRecordDataGrid'
 import ProductionRecordFormModal from '@/features/prod-management/production-record/components/ProductionRecordFormModal'
@@ -158,7 +159,8 @@ const ProductionRecordPage = () => {
             showToast({ title: '생산실적을 수정했습니다.', variant: 'success' })
             handleClose()
           },
-          onError: () => showToast({ title: '수정 중 오류가 발생했습니다.', variant: 'error' }),
+          onError: (error) =>
+            showToast({ title: getApiErrorMessage(error, '수정 중 오류가 발생했습니다.'), variant: 'error' }),
         },
       )
       return
@@ -173,7 +175,8 @@ const ProductionRecordPage = () => {
           showToast({ title: '생산실적을 등록했습니다.', variant: 'success' })
           handleClose()
         },
-        onError: () => showToast({ title: '등록 중 오류가 발생했습니다.', variant: 'error' }),
+        onError: (error) =>
+          showToast({ title: getApiErrorMessage(error, '등록 중 오류가 발생했습니다.'), variant: 'error' }),
       },
     )
   }

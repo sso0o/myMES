@@ -11,7 +11,6 @@ import com.mymes.backend.production.entity.ProductionRecord;
 import com.mymes.backend.production.mapper.ProductionMapper;
 import com.mymes.backend.production.repository.ProductionRepository;
 import com.mymes.backend.production.service.ProductionService;
-import com.mymes.backend.process.service.MfgProcessService;
 import com.mymes.backend.workorder.entity.Priority;
 import com.mymes.backend.workorder.entity.WorkOrder;
 import com.mymes.backend.workorder.entity.WorkOrderStatus;
@@ -50,9 +49,6 @@ class ProductionServiceTest {
 
     @Mock
     private WorkOrderService workOrderService;
-
-    @Mock
-    private MfgProcessService processService;
 
     @Mock
     private ProductionMapper productionMapper;
@@ -152,7 +148,6 @@ class ProductionServiceTest {
             // given
             ProductionCreateRequest request = createRequest(10L, 50, 45, null);
             given(workOrderService.getWorkOrder(2L)).willReturn(inProgressWorkOrder);
-            given(processService.getProcess(10L)).willReturn(process);
             given(productionRepository.save(any(ProductionRecord.class))).willReturn(record);
             given(productionMapper.toResponse(record)).willReturn(response);
 
@@ -173,7 +168,6 @@ class ProductionServiceTest {
             ProductionRecord zeroDefectRecord = createRecord(101L, inProgressWorkOrder, process, 50, 50, 0);
 
             given(workOrderService.getWorkOrder(2L)).willReturn(inProgressWorkOrder);
-            given(processService.getProcess(10L)).willReturn(process);
             given(productionRepository.save(any(ProductionRecord.class))).willReturn(zeroDefectRecord);
             given(productionMapper.toResponse(zeroDefectRecord)).willReturn(zeroDefectResponse);
 
@@ -204,7 +198,6 @@ class ProductionServiceTest {
             // given
             ProductionCreateRequest request = createRequest(10L, 50, 48, 5);
             given(workOrderService.getWorkOrder(2L)).willReturn(inProgressWorkOrder);
-            given(processService.getProcess(10L)).willReturn(process);
 
             // when & then
             assertThatThrownBy(() -> productionService.create(2L, request))
@@ -219,7 +212,6 @@ class ProductionServiceTest {
             // given
             ProductionCreateRequest request = createRequest(10L, 50, 45, 5);
             given(workOrderService.getWorkOrder(2L)).willReturn(inProgressWorkOrder);
-            given(processService.getProcess(10L)).willReturn(process);
             given(productionRepository.save(any(ProductionRecord.class))).willReturn(record);
             given(productionMapper.toResponse(record)).willReturn(response);
 
@@ -244,7 +236,6 @@ class ProductionServiceTest {
             ProductionResponse updatedResponse = createResponse(100L, 2L, 10L, 60, 55, 4);
 
             given(productionRepository.findById(100L)).willReturn(Optional.of(record));
-            given(processService.getProcess(10L)).willReturn(process);
             given(productionMapper.toResponse(record)).willReturn(updatedResponse);
 
             // when
@@ -262,7 +253,6 @@ class ProductionServiceTest {
             // given
             ProductionUpdateRequest request = updateRequest(10L, 50, 48, 5);
             given(productionRepository.findById(100L)).willReturn(Optional.of(record));
-            given(processService.getProcess(10L)).willReturn(process);
 
             // when & then
             assertThatThrownBy(() -> productionService.update(100L, request))
@@ -311,6 +301,7 @@ class ProductionServiceTest {
                 .item(item)
                 .plannedQty(100)
                 .priority(Priority.MEDIUM)
+                .productionDate(LocalDate.of(2026, 5, 5))
                 .dueDate(LocalDate.of(2026, 5, 5))
                 .build();
         ReflectionTestUtils.setField(wo, "id", id);
@@ -354,7 +345,6 @@ class ProductionServiceTest {
     private ProductionCreateRequest createRequest(Long processId, int inputQty,
                                                   int completedQty, Integer defectQty) {
         ProductionCreateRequest request = new ProductionCreateRequest();
-        ReflectionTestUtils.setField(request, "processId", processId);
         ReflectionTestUtils.setField(request, "startedAt", LocalDateTime.of(2026, 5, 5, 8, 0));
         ReflectionTestUtils.setField(request, "endedAt", LocalDateTime.of(2026, 5, 5, 17, 0));
         ReflectionTestUtils.setField(request, "inputQty", inputQty);
@@ -366,7 +356,6 @@ class ProductionServiceTest {
     private ProductionUpdateRequest updateRequest(Long processId, int inputQty,
                                                   int completedQty, Integer defectQty) {
         ProductionUpdateRequest request = new ProductionUpdateRequest();
-        ReflectionTestUtils.setField(request, "processId", processId);
         ReflectionTestUtils.setField(request, "startedAt", LocalDateTime.of(2026, 5, 5, 8, 0));
         ReflectionTestUtils.setField(request, "endedAt", LocalDateTime.of(2026, 5, 5, 17, 0));
         ReflectionTestUtils.setField(request, "inputQty", inputQty);

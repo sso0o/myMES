@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Copy, History, Plus, Save } from 'lucide-react'
 import { primaryActionButtonClass } from '@/common/styles/button'
 import { useFeedback } from '@/common/hooks/useFeedback'
+import { getApiErrorMessage } from '@/common/utils/apiError'
 import { useItemList } from '@/features/master/item/hooks/useItemQuery'
 import type { ItemResponse } from '@/features/master/item/types'
 import BomBulkCopyModal from '@/features/prod-basic/bom/components/BomBulkCopyModal'
@@ -205,7 +206,8 @@ const BomManagementPage = () => {
       },
       {
         onSuccess: () => showToast({ title: 'BOM을 저장했습니다.', variant: 'success' }),
-        onError: () => showToast({ title: '저장 중 오류가 발생했습니다.', variant: 'error' }),
+        onError: (error) =>
+          showToast({ title: getApiErrorMessage(error, '저장 중 오류가 발생했습니다.'), variant: 'error' }),
       },
     )
   }
@@ -226,7 +228,8 @@ const BomManagementPage = () => {
           showToast({ title: `v${versionNo} 버전으로 복원했습니다.`, variant: 'success' })
           setShowVersionHistory(false)
         },
-        onError: () => showToast({ title: '복원 중 오류가 발생했습니다.', variant: 'error' }),
+        onError: (error) =>
+          showToast({ title: getApiErrorMessage(error, '복원 중 오류가 발생했습니다.'), variant: 'error' }),
       },
     )
   }
@@ -252,8 +255,8 @@ const BomManagementPage = () => {
             setBulkCopyOpen(false)
             resolve()
           },
-          onError: () => {
-            showToast({ title: 'BOM 적용 중 오류가 발생했습니다.', variant: 'error' })
+          onError: (error) => {
+            showToast({ title: getApiErrorMessage(error, 'BOM 적용 중 오류가 발생했습니다.'), variant: 'error' })
             reject()
           },
         },

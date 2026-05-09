@@ -4,6 +4,7 @@ import EmptyState from '@/common/components/EmptyState'
 import PageHeader from '@/common/components/PageHeader'
 import { primaryActionButtonClass } from '@/common/styles/button'
 import { useFeedback } from '@/common/hooks/useFeedback'
+import { getApiErrorMessage } from '@/common/utils/apiError'
 import { useProcessList } from '@/features/prod-basic/process/hooks/useProcessQuery'
 import type { ProcessResponse } from '@/features/prod-basic/process/types'
 import { useEquipmentList } from '@/features/prod-basic/equipment/hooks/useEquipmentQuery'
@@ -73,7 +74,8 @@ const ProcessEquipmentManagementPage = () => {
           setAddingRow(false)
           setNewRow({ equipmentId: '', isPrimary: false })
         },
-        onError: () => showToast({ title: '배정 중 오류가 발생했습니다.', variant: 'error' }),
+        onError: (error) =>
+          showToast({ title: getApiErrorMessage(error, '배정 중 오류가 발생했습니다.'), variant: 'error' }),
       },
     )
   }
@@ -98,7 +100,8 @@ const ProcessEquipmentManagementPage = () => {
           showToast({ title: '주설비 설정을 변경했습니다.', variant: 'success' })
           setEditingId(null)
         },
-        onError: () => showToast({ title: '수정 중 오류가 발생했습니다.', variant: 'error' }),
+        onError: (error) =>
+          showToast({ title: getApiErrorMessage(error, '수정 중 오류가 발생했습니다.'), variant: 'error' }),
       },
     )
   }
@@ -115,7 +118,8 @@ const ProcessEquipmentManagementPage = () => {
       { id: pe.id, processId: selectedProcess.id },
       {
         onSuccess: () => showToast({ title: '설비 배정을 삭제했습니다.', variant: 'success' }),
-        onError: () => showToast({ title: '삭제 중 오류가 발생했습니다.', variant: 'error' }),
+        onError: (error) =>
+          showToast({ title: getApiErrorMessage(error, '삭제 중 오류가 발생했습니다.'), variant: 'error' }),
       },
     )
   }
