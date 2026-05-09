@@ -69,6 +69,10 @@ public enum ErrorCode {
     QUALITY_INSPECTION_WORK_ORDER_PROCESS_MISMATCH(400, "선택한 작업지시가 해당 공정에 속하지 않습니다."),
     QUALITY_INSPECTION_NO_GENERATION_FAILED(500, "품질검사 번호 생성에 실패했습니다."),
 
+    // Inspection Item
+    INSPECTION_ITEM_NOT_FOUND(404, "검사항목 마스터를 찾을 수 없습니다."),
+    INSPECTION_ITEM_CODE_DUPLICATED(409, "이미 존재하는 검사항목코드입니다."),
+
     // Common Code
     CODE_GROUP_NOT_FOUND(404, "코드 그룹을 찾을 수 없습니다."),
     CODE_GROUP_ID_DUPLICATED(409, "이미 존재하는 코드 그룹 ID입니다."),
