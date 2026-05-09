@@ -98,10 +98,10 @@ class WorkOrderServiceTest {
     class FindAll {
 
         @Test
-        @DisplayName("납기일 기준으로 전체 작업지시를 조회한다")
+        @DisplayName("생산일과 납기일 기준으로 전체 작업지시를 조회한다")
         void findAll_success() {
             // given
-            given(workOrderRepository.findAllByOrderByDueDateAsc()).willReturn(List.of(workOrder));
+            given(workOrderRepository.findAllByOrderByProductionDateAscDueDateAsc()).willReturn(List.of(workOrder));
             given(workOrderMapper.toResponse(workOrder)).willReturn(workOrderResponse);
 
             // when
@@ -110,7 +110,7 @@ class WorkOrderServiceTest {
             // then
             assertThat(result).hasSize(1);
             assertThat(result.get(0).getEquipmentId()).isEqualTo(20L);
-            verify(workOrderRepository, times(1)).findAllByOrderByDueDateAsc();
+            verify(workOrderRepository, times(1)).findAllByOrderByProductionDateAscDueDateAsc();
             verify(workOrderMapper, times(1)).toResponse(workOrder);
         }
     }
@@ -123,7 +123,7 @@ class WorkOrderServiceTest {
         @DisplayName("상태별 작업지시를 조회한다")
         void findByStatus_success() {
             // given
-            given(workOrderRepository.findByStatusOrderByDueDateAsc(WorkOrderStatus.WAITING))
+            given(workOrderRepository.findByStatusOrderByProductionDateAscDueDateAsc(WorkOrderStatus.WAITING))
                     .willReturn(List.of(workOrder));
             given(workOrderMapper.toResponse(workOrder)).willReturn(workOrderResponse);
 
@@ -132,7 +132,8 @@ class WorkOrderServiceTest {
 
             // then
             assertThat(result).hasSize(1);
-            verify(workOrderRepository, times(1)).findByStatusOrderByDueDateAsc(WorkOrderStatus.WAITING);
+            verify(workOrderRepository, times(1))
+                    .findByStatusOrderByProductionDateAscDueDateAsc(WorkOrderStatus.WAITING);
         }
     }
 
@@ -591,6 +592,7 @@ class WorkOrderServiceTest {
                 .process(process)
                 .equipment(equipment)
                 .workerName("Kim")
+                .productionDate(LocalDate.of(2026, 5, 5))
                 .dueDate(LocalDate.of(2026, 5, 5))
                 .build();
         ReflectionTestUtils.setField(created, "id", id);
@@ -606,6 +608,7 @@ class WorkOrderServiceTest {
                 .process(process)
                 .equipment(equipment)
                 .sequence(sequence)
+                .productionDate(LocalDate.of(2026, 5, 5))
                 .dueDate(LocalDate.of(2026, 5, 5))
                 .build();
         ReflectionTestUtils.setField(created, "id", id);

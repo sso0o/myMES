@@ -20,6 +20,8 @@ public class ProductionPlanUpdateRequest {
     @NotNull(message = "생산예정일은 필수입니다.")
     private LocalDate plannedDate;
 
+    private LocalDate dueDate;
+
     @Size(max = 500)
     private String memo;
 }

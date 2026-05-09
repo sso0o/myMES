@@ -27,6 +27,7 @@ const getDefaultValues = (editTarget: ProductionPlanResponse | null): PlanningFo
   itemId: editTarget?.itemId ?? ('' as unknown as number),
   plannedQty: editTarget?.plannedQty ?? ('' as unknown as number),
   plannedDate: editTarget?.plannedDate ?? '',
+  dueDate: editTarget?.dueDate ?? '',
   memo: editTarget?.memo ?? '',
 })
 
@@ -124,6 +125,18 @@ const PlanningFormModal = ({
           {errors.plannedDate && (
             <p className={formErrorClass}>{errors.plannedDate.message}</p>
           )}
+        </div>
+
+        <div>
+          <label className={formLabelClass}>납기일</label>
+          <Controller
+            name="dueDate"
+            control={control}
+            render={({ field }) => (
+              <AppDatePicker value={field.value ?? ''} onChange={field.onChange} />
+            )}
+          />
+          {errors.dueDate && <p className={formErrorClass}>{errors.dueDate.message}</p>}
         </div>
 
         <div>

@@ -26,6 +26,7 @@ public class WorkOrderResponse {
     private String equipmentCode;
     private String equipmentName;
     private String workerName;
+    private LocalDate productionDate;
     private LocalDate dueDate;
     private Long bomVersionId;
     private Integer bomVersionNo;

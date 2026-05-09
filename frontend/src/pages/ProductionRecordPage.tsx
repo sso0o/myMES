@@ -5,6 +5,7 @@ import AppDataGrid from '@/common/components/AppDataGrid'
 import InlineAlert from '@/common/components/InlineAlert'
 import PageHeader from '@/common/components/PageHeader'
 import { useFeedback } from '@/common/hooks/useFeedback'
+import { getApiErrorMessage } from '@/common/utils/apiError'
 import { pagePrimaryActionButtonClass } from '@/common/styles/button'
 import ProductionRecordDataGrid from '@/features/prod-management/production-record/components/ProductionRecordDataGrid'
 import ProductionRecordFormModal from '@/features/prod-management/production-record/components/ProductionRecordFormModal'
@@ -24,6 +25,8 @@ const formatDate = (value: string) =>
     month: '2-digit',
     day: '2-digit',
   })
+
+const formatNullableDate = (value: string | null) => (value ? formatDate(value) : '-')
 
 const workOrderColumns: GridColDef<WorkOrderResponse>[] = [
   {
@@ -86,6 +89,17 @@ const workOrderColumns: GridColDef<WorkOrderResponse>[] = [
     ),
   },
   {
+    field: 'productionDate',
+    headerName: '생산일',
+    width: 120,
+    sortable: false,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => (
+      <span className="text-[var(--text-base)]">{formatDate(params.row.productionDate)}</span>
+    ),
+  },
+  {
     field: 'dueDate',
     headerName: '납기일',
     width: 120,
@@ -93,7 +107,7 @@ const workOrderColumns: GridColDef<WorkOrderResponse>[] = [
     headerAlign: 'center',
     align: 'center',
     renderCell: (params) => (
-      <span className="text-[var(--text-base)]">{formatDate(params.row.dueDate)}</span>
+      <span className="text-[var(--text-base)]">{formatNullableDate(params.row.dueDate)}</span>
     ),
   },
 ]
@@ -145,7 +159,8 @@ const ProductionRecordPage = () => {
             showToast({ title: '생산실적을 수정했습니다.', variant: 'success' })
             handleClose()
           },
-          onError: () => showToast({ title: '수정 중 오류가 발생했습니다.', variant: 'error' }),
+          onError: (error) =>
+            showToast({ title: getApiErrorMessage(error, '수정 중 오류가 발생했습니다.'), variant: 'error' }),
         },
       )
       return
@@ -160,7 +175,8 @@ const ProductionRecordPage = () => {
           showToast({ title: '생산실적을 등록했습니다.', variant: 'success' })
           handleClose()
         },
-        onError: () => showToast({ title: '등록 중 오류가 발생했습니다.', variant: 'error' }),
+        onError: (error) =>
+          showToast({ title: getApiErrorMessage(error, '등록 중 오류가 발생했습니다.'), variant: 'error' }),
       },
     )
   }

@@ -64,7 +64,7 @@ const WorkOrderAssignmentRow = ({
         <div className="font-medium text-[var(--text-strong)]">{workOrder.workOrderNo}</div>
         <div className="text-xs text-[var(--text-muted)]">{workOrder.itemName}</div>
       </td>
-      <td className="px-4 py-3 text-sm text-[var(--text-base)]">{workOrder.dueDate}</td>
+      <td className="px-4 py-3 text-sm text-[var(--text-base)]">{workOrder.dueDate ?? '-'}</td>
       <td className="px-4 py-3">
         <AppSelect
           value={processId === null ? '' : String(processId)}

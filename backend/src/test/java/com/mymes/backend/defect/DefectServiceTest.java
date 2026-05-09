@@ -221,6 +221,7 @@ class DefectServiceTest {
                 .plannedQty(100)
                 .priority(Priority.MEDIUM)
                 .process(process)
+                .productionDate(LocalDate.of(2026, 5, 5))
                 .dueDate(LocalDate.of(2026, 5, 10))
                 .build();
         ReflectionTestUtils.setField(created, "id", id);

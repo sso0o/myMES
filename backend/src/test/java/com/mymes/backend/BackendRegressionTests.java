@@ -230,6 +230,7 @@ class BackendRegressionTests {
                 .plannedQty(100)
                 .priority(Priority.MEDIUM)
                 .workerName("Kim")
+                .productionDate(LocalDate.of(2026, 4, 21))
                 .dueDate(LocalDate.of(2026, 4, 21))
                 .build());
         WorkOrder workOrderB = workOrderRepository.save(WorkOrder.builder()
@@ -238,6 +239,7 @@ class BackendRegressionTests {
                 .plannedQty(100)
                 .priority(Priority.MEDIUM)
                 .workerName("Lee")
+                .productionDate(LocalDate.of(2026, 4, 22))
                 .dueDate(LocalDate.of(2026, 4, 22))
                 .build());
         ProductionRecord productionRecord = productionRepository.save(ProductionRecord.builder()
@@ -275,6 +277,7 @@ class BackendRegressionTests {
                 .plannedQty(50)
                 .priority(Priority.HIGH)
                 .workerName("Kim")
+                .productionDate(LocalDate.now())
                 .dueDate(LocalDate.now().plusDays(1))
                 .build());
 
@@ -283,6 +286,7 @@ class BackendRegressionTests {
         ReflectionTestUtils.setField(request, "plannedQty", 70);
         ReflectionTestUtils.setField(request, "priority", Priority.MEDIUM);
         ReflectionTestUtils.setField(request, "workerName", "Lee");
+        ReflectionTestUtils.setField(request, "productionDate", LocalDate.now());
         ReflectionTestUtils.setField(request, "dueDate", LocalDate.now().plusDays(2));
 
         String createdWorkOrderNo = workOrderService.create(request).getWorkOrderNo();

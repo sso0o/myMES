@@ -23,7 +23,7 @@ const PERIOD_OPTIONS: { label: string; value: DashboardPeriod }[] = [
 export default function DashboardPage() {
   const [period, setPeriod] = useState<DashboardPeriod>('TODAY');
 
-  useDashboardRealtime();
+  useDashboardRealtime(); // DB 변경 감지 리스너 등록
 
   const { data: summary } = useDashboardSummary(period);
   const { data: workOrderStatus = [] } = useWorkOrderStatus(period);

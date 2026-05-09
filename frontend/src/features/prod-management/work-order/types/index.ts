@@ -29,7 +29,8 @@ export interface WorkOrderResponse {
   equipmentCode: string | null
   equipmentName: string | null
   workerName: string | null
-  dueDate: string
+  productionDate: string
+  dueDate: string | null
   bomVersionId: number | null
   bomVersionNo: number | null
   createdAt: string
@@ -43,5 +44,6 @@ export interface WorkOrderUpdateRequest {
   processId?: number
   equipmentId?: number
   workerName?: string
-  dueDate: string
+  productionDate: string
+  dueDate?: string | null
 }
