@@ -928,6 +928,152 @@
       left: 0;
       top: 5px;
     }
+
+    /* ═══════════════════════════════
+       PAGE 8 — 성과 요약 & 엔지니어링 테이크어웨이
+    ═══════════════════════════════ */
+    .outcome-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border: 1.5px solid var(--black);
+      margin-bottom: 20px;
+    }
+
+    .outcome-card {
+      padding: 12px 10px;
+      border-right: 1px solid var(--border);
+      min-width: 0;
+    }
+
+    .outcome-card:last-child { border-right: none; }
+
+    .outcome-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18pt;
+      font-weight: 700;
+      color: var(--black);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .outcome-label {
+      font-size: 8pt;
+      font-weight: 700;
+      color: var(--black);
+      line-height: 1.35;
+      margin-bottom: 5px;
+    }
+
+    .outcome-desc {
+      font-size: 7.5pt;
+      color: var(--mid);
+      line-height: 1.45;
+    }
+
+    .takeaway-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .takeaway-card {
+      border: 1.5px solid var(--border);
+      padding: 13px 14px;
+      min-height: 38mm;
+    }
+
+    .takeaway-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 9.5pt;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 9px;
+    }
+
+    .takeaway-mark {
+      width: 20px;
+      height: 20px;
+      background: var(--black);
+      color: var(--white);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .takeaway-text {
+      font-size: 8.6pt;
+      color: var(--dark);
+      line-height: 1.65;
+    }
+
+    .next-panel {
+      display: grid;
+      grid-template-columns: 34mm 1fr;
+      gap: 14px;
+      padding: 14px 16px;
+      background: var(--bg-light);
+      margin-bottom: 22px;
+    }
+
+    .next-panel-title {
+      font-size: 9pt;
+      font-weight: 700;
+      color: var(--black);
+      line-height: 1.45;
+    }
+
+    .next-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px 16px;
+    }
+
+    .next-list li {
+      font-size: 8.5pt;
+      color: var(--dark);
+      line-height: 1.45;
+      padding-left: 11px;
+      position: relative;
+    }
+
+    .next-list li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 5px;
+      height: 5px;
+      background: var(--black);
+    }
+
+    .closing-statement {
+      border-top: 3px solid var(--black);
+      padding-top: 14px;
+      font-size: 13pt;
+      font-weight: 700;
+      color: var(--black);
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+
+    .thanks-message {
+      position: absolute;
+      left: 10mm;
+      right: 10mm;
+      bottom: 20mm;
+      text-align: center;
+      font-size: 12pt;
+      font-weight: 700;
+      color: var(--black);
+      letter-spacing: 0.08em;
+    }
   </style>
 </head>
 <body>
@@ -1043,8 +1189,8 @@
   </div>
 
   <div class="page-footer">
-    <span>myMES · Portfolio</span>
-    <span>01 / 09</span>
+    <span>최소연 myMES · Portfolio</span>
+    <span>01 / 08</span>
   </div>
 </div>
 
@@ -1189,8 +1335,8 @@
   </table>
 
   <div class="page-footer">
-    <span>myMES · Portfolio</span>
-    <span>02 / 09</span>
+    <span>최소연 myMES · Portfolio</span>
+    <span>02 / 08</span>
   </div>
 </div>
 
@@ -1333,8 +1479,8 @@
   </div>
 
   <div class="page-footer">
-    <span>myMES · Portfolio</span>
-    <span>03 / 09</span>
+    <span>최소연 myMES · Portfolio</span>
+    <span>03 / 08</span>
   </div>
 </div>
 
@@ -1463,8 +1609,8 @@
   </div>
 
   <div class="page-footer">
-    <span>myMES · Portfolio</span>
-    <span>04 / 09</span>
+    <span>최소연 myMES · Portfolio</span>
+    <span>04 / 08</span>
   </div>
 </div>
 
@@ -1569,8 +1715,8 @@
   </div>
 
   <div class="page-footer">
-    <span>myMES · Portfolio</span>
-    <span>05 / 09</span>
+    <span>최소연 myMES · Portfolio</span>
+    <span>05 / 08</span>
   </div>
 </div>
 
@@ -1755,8 +1901,8 @@
   </div>
 
   <div class="page-footer">
-    <span>myMES · Portfolio</span>
-    <span>06 / 09</span>
+    <span>최소연 myMES · Portfolio</span>
+    <span>06 / 08</span>
   </div>
 </div>
 
@@ -1766,7 +1912,7 @@
 ══════════════════════════════════════════════ -->
 <div class="page">
   <div class="page-header">
-    <span class="page-header-title">Troubleshooting STAR (continued)</span>
+    <span class="page-header-title">Troubleshooting HIGHLIGHTS (continued)</span>
     <span class="page-num">07</span>
   </div>
 
@@ -1870,113 +2016,100 @@
   </div>
 
   <div class="page-footer">
-    <span>myMES · Portfolio</span>
-    <span>07 / 09</span>
+    <span>최소연 myMES · Portfolio</span>
+    <span>07 / 08</span>
   </div>
 </div>
 
 
 <!-- ══════════════════════════════════════════════
-     PAGE 8 · 설계 원칙 & 회고
+     PAGE 8 · 성과 요약 & 엔지니어링 테이크어웨이
 ══════════════════════════════════════════════ -->
 <div class="page">
   <div class="page-header">
-    <span class="page-header-title">Design Principles &amp; Retrospective</span>
+    <span class="page-header-title">Project Outcome &amp; Engineering Takeaways</span>
     <span class="page-num">08</span>
   </div>
 
-  <div class="section-title">회고</div>
-  <div class="retro-cols">
-    <div class="retro-box good">
-      <p class="retro-box-title">잘 된 점</p>
-      <p class="retro-item">도메인 기반 패키지 구조 덕분에 마스터·생산운영·품질 도메인을 확장해도 영향 범위를 작게 유지할 수 있었습니다.</p>
-      <p class="retro-item">Supabase Auth와 Spring Security를 JWT 기준으로 연결해 프론트·백엔드 인증 흐름을 하나의 토큰 체계로 정리했습니다.</p>
-      <p class="retro-item">생산계획 일괄 확정/발행, 작업지시 자동 생성, 공정별 진행 검증처럼 MES의 상태 전이를 트랜잭션 단위로 다뤘습니다.</p>
-      <p class="retro-item">자동채번·Soft Delete·회귀 테스트를 함께 정리하면서 운영 데이터의 중복, 삭제, 이력 보존 위험을 낮췄습니다.</p>
-      <p class="retro-item">TanStack Query / Zustand 역할 분리로 상태 관리 코드가 눈에 띄게 단순해졌습니다.</p>
+  <div class="section-title">Project Outcome</div>
+  <div class="outcome-grid">
+    <div class="outcome-card">
+      <p class="outcome-num">15+</p>
+      <p class="outcome-label">핵심 도메인 구현</p>
+      <p class="outcome-desc">마스터, 생산 기초, 생산 운영, 품질, 대시보드까지 도메인별 CRUD와 상태 흐름 구성</p>
     </div>
-    <div class="retro-box improve">
-      <p class="retro-box-title">아쉬운 점 / 개선 방향</p>
-      <p class="retro-item">현재는 CRUD·상태 전이 중심이므로, 실제 현장 적용을 위해 권한 세분화와 승인/감사 로그 흐름을 더 보강해야 합니다.</p>
-      <p class="retro-item">대시보드는 KPI와 차트 중심으로 구현되어 있어, 병목 원인 분석이나 기간 비교 같은 분석 기능 확장이 필요합니다.</p>
-      <p class="retro-item">테스트는 주요 서비스와 회귀 케이스에 집중되어 있어, 프론트 폼·TanStack Query 훅·권한별 API 시나리오까지 넓힐 여지가 있습니다.</p>
-      <p class="retro-item">운영 배포 단계에서는 <span class="code-inline">ddl-auto: validate</span> 전환, 명시적 마이그레이션, Supabase Realtime replication 정책을 분리 관리해야 합니다.</p>
+    <div class="outcome-card">
+      <p class="outcome-num">E2E</p>
+      <p class="outcome-label">MES 운영 흐름 연결</p>
+      <p class="outcome-desc">생산계획 확정, 작업지시 발행, 생산실적 등록, 품질·불량 관리로 이어지는 흐름 구현</p>
+    </div>
+    <div class="outcome-card">
+      <p class="outcome-num">JWT</p>
+      <p class="outcome-label">인증 구조 통합</p>
+      <p class="outcome-desc">Supabase Auth access token을 Spring Security 필터에서 검증하는 stateless 인증 구조 적용</p>
+    </div>
+    <div class="outcome-card">
+      <p class="outcome-num">TEST</p>
+      <p class="outcome-label">회귀 테스트 고정</p>
+      <p class="outcome-desc">자동채번, soft delete, 중복 검증, 작업지시·불량 정합성 이슈를 테스트로 보호</p>
     </div>
   </div>
 
-  <div class="page-footer">
-    <span>myMES · Portfolio</span>
-    <span>08 / 09</span>
+  <div class="section-title">Engineering Takeaways</div>
+  <div class="takeaway-grid">
+    <div class="takeaway-card">
+      <p class="takeaway-title"><span class="takeaway-mark">B</span>Backend Architecture</p>
+      <p class="takeaway-text">
+        Controller → Service → Repository 흐름<br/>
+        <span class="code-inline">ApiResponse&lt;T&gt;</span> 응답 래핑,
+        <span class="code-inline">BusinessException</span> 기반 예외 처리, 트랜잭션 경계를 일관되게 적용<br/>
+        운영 데이터 변경은 전체 성공 또는 전체 롤백을 우선 기준으로 함
+      </p>
+    </div>
+    <div class="takeaway-card">
+      <p class="takeaway-title"><span class="takeaway-mark">F</span>Frontend Architecture</p>
+      <p class="takeaway-text">
+        서버 상태는 TanStack Query / 인증·UI 상태는 Zustand로 분리<br/>
+        API 함수와 Query Hook을 2계층으로 고정하고, 폼 검증은 zod schema로 화면 컴포넌트의 책임을 줄임
+      </p>
+    </div>
+    <div class="takeaway-card">
+      <p class="takeaway-title"><span class="takeaway-mark">D</span>Domain Modeling</p>
+      <p class="takeaway-text">
+        생산계획, 작업지시, 생산실적, 품질검사를 단순 CRUD가 아닌 상태 전이와 운영 이력 중심으로 모델링<br/>
+        계획 확정·발행, 공정별 진행 순서, 수량 검증, 품질 판정처럼 데이터 변경 시점에 도메인 규칙이 함께 검증되도록 설계함
+      </p>
+    </div>
+    <div class="takeaway-card">
+      <p class="takeaway-title"><span class="takeaway-mark">R</span>Operational Reliability</p>
+      <p class="takeaway-text">
+        자동채번, Soft Delete, bulk API, DB 기반 번호 생성, 회귀 테스트를 통해 운영 중 흔히 발생하는 중복·삭제·부분 커밋·참조 오류를 줄이는 방향으로 설계함
+      </p>
+    </div>
   </div>
-</div>
 
-
-<!-- ══════════════════════════════════════════════
-     PAGE 9 · 개발 타임라인
-══════════════════════════════════════════════ -->
-<div class="page">
-  <div class="page-header">
-    <span class="page-header-title">Development Timeline</span>
-    <span class="page-num">09</span>
+  <div class="section-title">Next Iteration</div>
+  <div class="next-panel">
+    <p class="next-panel-title">운영 환경에 더 가까워지기 위한 확장 방향</p>
+    <ul class="next-list">
+      <li>역할별 권한과 메뉴 접근 제어 세분화</li>
+      <li>감사 로그와 승인 workflow 도입</li>
+      <li>Flyway/Liquibase 기반 명시적 DB migration</li>
+      <li>프론트 E2E 및 폼 시나리오 테스트 확대</li>
+      <li>현장 태블릿 사용성을 고려한 화면 최적화</li>
+      <li>대시보드 병목 분석과 기간 비교 지표 확장</li>
+    </ul>
   </div>
 
-  <div class="section-title">개발 진행 흐름</div>
-  <p class="ts-intro">
-    초기에는 인증·공통 인프라와 마스터 도메인 안정화에 집중했고,
-    이후 운영 도메인(생산계획·작업지시·생산실적·품질·작업자)을 차례로 확장했으며,
-    최근에는 대시보드 가시화와 BOM 버전 관리, 설비-작업지시 배정 가시화로 마무리되었습니다.
+  <p class="closing-statement">
+    단순 CRUD 구현보다 제조 도메인의 상태 전이, 이력 보존, 운영 정합성을 중심으로 설계하였습니다.
   </p>
 
-  <div class="timeline">
-
-    <div class="timeline-row">
-      <p class="timeline-title">인증 기반 · 공통 인프라 안정화</p>
-      <ul class="timeline-list">
-        <li>Supabase JWT를 Spring Security에 직접 통합 — <span class="code-inline">SupabaseJwtFilter</span> 구현</li>
-        <li>Soft Delete 필터 위치 정리 — <span class="code-inline">@SQLRestriction</span>을 각 엔티티로 이동<span class="timeline-tag">P1</span></li>
-        <li>Item / Process 수정 시 중복 코드 검증 누락 보완 (409 흐름 복원)<span class="timeline-tag">P2</span></li>
-        <li>Defect 생성 시 작업지시-생산실적 정합성 검증 추가<span class="timeline-tag">P2</span></li>
-        <li>Gradle build 테스트 환경 분리 — H2 + <span class="code-inline">@ActiveProfiles("test")</span><span class="timeline-tag">P2</span></li>
-      </ul>
-    </div>
-
-    <div class="timeline-row">
-      <p class="timeline-title">코드 운영 정책 · 인증 의사결정</p>
-      <ul class="timeline-list">
-        <li>품목 / 공정 코드 사용자 입력 폐기 → 시스템 자동채번 정책 전환<span class="timeline-tag">P1</span></li>
-        <li>작업지시 번호 메모리 카운터 → DB 기반 채번 + 유니크 충돌 시 최대 3회 재시도<span class="timeline-tag">P1</span></li>
-        <li>JWT 직접 운영 vs Supabase Auth — 의사결정 정리, Supabase Auth 채택 유지<span class="timeline-tag">기타</span></li>
-      </ul>
-    </div>
-
-    <div class="timeline-row">
-      <p class="timeline-title">운영 도메인 확장 · BOM 버전 관리</p>
-      <ul class="timeline-list">
-        <li>생산계획 화면 신규 구현 (DataGrid + DatePicker) 및 일괄 확정·일괄 발행 bulk API 추가</li>
-        <li>품질관리 1차 MVP — <span class="code-inline">qualityInspection</span> 도메인 신설, 사이드바 그룹 분리</li>
-        <li>작업자 관리 도메인을 로그인 계정과 분리 — <span class="code-inline">worker</span> 독립 도메인 + 자동채번(W0001~)</li>
-        <li>생산실적 도메인 단위 테스트 12건 추가 (수량 검증·상태 전이·경계값)</li>
-        <li>대시보드 도메인 설계 — KPI 4종 + Bar/Line/Pie 차트 + 이슈 목록 + Realtime 무효화</li>
-        <li>BOM 버전 도입 시 마이그레이션 오류 — nullable 추가 → 데이터 채움 → NOT NULL 단계화<span class="timeline-tag">P2</span></li>
-      </ul>
-    </div>
-
-    <div class="timeline-row">
-      <p class="timeline-title">가시화 · 검증 강화 · UX 정리</p>
-      <ul class="timeline-list">
-        <li>설비-작업지시 배정 가시화 기능 — 공정-설비 매핑 화면 보강</li>
-        <li>작업지시 발행 시 공정별 다중 행 자동 생성 + 공정 미등록 예외 처리</li>
-        <li>작업지시 진행 시 이전 공정 완료 여부 검증 추가</li>
-        <li>품질검사 연결 시점 설계 — 어느 단계에서 검사를 트리거할지 정리</li>
-        <li>생산실적 등록 폼의 공정 셀렉트박스 중복 항목 제거</li>
-      </ul>
-    </div>
-
-  </div>
+  <p class="thanks-message">감사합니다</p>
 
   <div class="page-footer">
-    <span>myMES · Portfolio</span>
-    <span>09 / 09</span>
+    <span>최소연 myMES · Portfolio</span>
+    <span>08 / 08</span>
   </div>
 </div>
 
