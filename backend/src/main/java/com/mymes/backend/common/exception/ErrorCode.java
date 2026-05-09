@@ -75,6 +75,14 @@ public enum ErrorCode {
     INSPECTION_ITEM_CATEGORY_PREFIX_REQUIRED(400, "검사항목분류의 채번코드가 필요합니다."),
     INSPECTION_ITEM_CODE_GENERATION_FAILED(500, "검사항목코드 생성에 실패했습니다."),
 
+    // Inspection Standard
+    INSPECTION_STANDARD_NOT_FOUND(404, "검사 기준을 찾을 수 없습니다."),
+    INSPECTION_STANDARD_DUPLICATED(409, "해당 품목/공정에 이미 등록된 검사항목입니다."),
+    INSPECTION_STANDARD_ITEM_PROCESS_NOT_AVAILABLE(400, "선택한 공정은 해당 품목에 등록된 공정이 아닙니다."),
+    INSPECTION_STANDARD_LIMIT_INVALID(400, "하한값은 상한값보다 클 수 없습니다."),
+    INSPECTION_STANDARD_NUMERIC_LIMIT_ONLY(400, "수치형 검사항목에서만 하한값과 상한값을 입력할 수 있습니다."),
+    INSPECTION_STANDARD_SAMPLE_REQUIRED(400, "샘플링 검사방식은 샘플수가 필요합니다."),
+
     // Common Code
     CODE_GROUP_NOT_FOUND(404, "코드 그룹을 찾을 수 없습니다."),
     CODE_GROUP_ID_DUPLICATED(409, "이미 존재하는 코드 그룹 ID입니다."),
