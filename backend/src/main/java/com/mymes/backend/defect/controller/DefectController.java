@@ -24,7 +24,7 @@ public class DefectController {
      *
      * @return 불량 기록 응답 목록
      */
-    @GetMapping("/api/defect-records")
+    @GetMapping("/api/quality/defect-records")
     public ResponseEntity<ApiResponse<List<DefectResponse>>> getAll() {
         return ResponseEntity.ok(ApiResponse.ok(defectService.findAll()));
     }
@@ -35,7 +35,7 @@ public class DefectController {
      * @param workOrderId 작업지시 ID
      * @return 불량 기록 응답 목록
      */
-    @GetMapping("/api/work-orders/{workOrderId}/defect-records")
+    @GetMapping("/api/quality/work-orders/{workOrderId}/defect-records")
     public ResponseEntity<ApiResponse<List<DefectResponse>>> getByWorkOrder(@PathVariable Long workOrderId) {
         return ResponseEntity.ok(ApiResponse.ok(defectService.findByWorkOrder(workOrderId)));
     }
@@ -47,7 +47,7 @@ public class DefectController {
      * @param request 불량 생성 요청 DTO
      * @return 생성된 불량 기록 응답 DTO
      */
-    @PostMapping("/api/work-orders/{workOrderId}/defect-records")
+    @PostMapping("/api/quality/work-orders/{workOrderId}/defect-records")
     public ResponseEntity<ApiResponse<DefectResponse>> create(
             @PathVariable Long workOrderId,
             @Valid @RequestBody DefectCreateRequest request) {
@@ -61,7 +61,7 @@ public class DefectController {
      * @param inspectionId 품질검사 ID
      * @return 불량 기록 응답 목록
      */
-    @GetMapping("/api/quality-inspections/{inspectionId}/defect-records")
+    @GetMapping("/api/quality/quality-inspections/{inspectionId}/defect-records")
     public ResponseEntity<ApiResponse<List<DefectResponse>>> getByQualityInspection(
             @PathVariable Long inspectionId) {
         return ResponseEntity.ok(ApiResponse.ok(defectService.findByQualityInspection(inspectionId)));
@@ -74,7 +74,7 @@ public class DefectController {
      * @param request 불량 생성 요청 DTO
      * @return 생성된 불량 기록 응답 DTO
      */
-    @PostMapping("/api/quality-inspections/{inspectionId}/defect-records")
+    @PostMapping("/api/quality/quality-inspections/{inspectionId}/defect-records")
     public ResponseEntity<ApiResponse<DefectResponse>> createByQualityInspection(
             @PathVariable Long inspectionId,
             @Valid @RequestBody DefectCreateRequest request) {
@@ -88,7 +88,7 @@ public class DefectController {
      * @param id 불량 기록 ID
      * @return 불량 기록 응답 DTO
      */
-    @GetMapping("/api/defect-records/{id}")
+    @GetMapping("/api/quality/defect-records/{id}")
     public ResponseEntity<ApiResponse<DefectResponse>> getById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.ok(defectService.findById(id)));
     }
@@ -100,7 +100,7 @@ public class DefectController {
      * @param request 조치 수정 요청 DTO
      * @return 수정된 불량 기록 응답 DTO
      */
-    @PatchMapping("/api/defect-records/{id}/action")
+    @PatchMapping("/api/quality/defect-records/{id}/action")
     public ResponseEntity<ApiResponse<DefectResponse>> updateAction(
             @PathVariable Long id,
             @Valid @RequestBody DefectActionUpdateRequest request) {

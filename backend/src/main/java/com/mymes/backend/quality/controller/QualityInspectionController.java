@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/quality-inspections")
+@RequestMapping("/api/quality/quality-inspections")
 @RequiredArgsConstructor
 public class QualityInspectionController {
 
