@@ -11,10 +11,6 @@ import lombok.Getter;
 @Getter
 public class InspectionItemCreateRequest {
 
-    @NotBlank(message = "검사항목코드는 필수입니다.")
-    @Size(max = 50)
-    private String inspectionItemCode;
-
     @NotBlank(message = "검사항목명은 필수입니다.")
     @Size(max = 100)
     private String inspectionItemName;

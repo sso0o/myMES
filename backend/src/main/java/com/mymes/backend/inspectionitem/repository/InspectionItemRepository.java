@@ -4,12 +4,11 @@ import com.mymes.backend.inspectionitem.entity.InspectionItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface InspectionItemRepository extends JpaRepository<InspectionItem, Long> {
 
     List<InspectionItem> findAllByOrderBySortOrderAscInspectionItemCodeAsc();
 
-    boolean existsByInspectionItemCode(String inspectionItemCode);
-
-    boolean existsByInspectionItemCodeAndIdNot(String inspectionItemCode, Long id);
+    Optional<InspectionItem> findTopByInspectionItemCodeStartingWithOrderByInspectionItemCodeDesc(String prefix);
 }

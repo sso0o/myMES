@@ -14,6 +14,7 @@ import com.mymes.backend.inspectionitem.mapper.InspectionItemMapper;
 import com.mymes.backend.inspectionitem.repository.InspectionItemRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import java.util.List;
 public class InspectionItemService {
 
     private static final String INSPECTION_ITEM_CATEGORY_GROUP_ID = "QC_INSPECTION_ITEM";
+    private static final int MAX_INSPECTION_ITEM_CODE_RETRIES = 3;
 
     private final InspectionItemRepository inspectionItemRepository;
     private final InspectionItemMapper inspectionItemMapper;
@@ -59,26 +61,40 @@ public class InspectionItemService {
      *
      * @param request 검사항목 마스터 생성 요청 DTO
      * @return 생성된 검사항목 마스터 응답 DTO
-     * @throws BusinessException 검사항목코드가 중복되거나 분류 코드가 존재하지 않을 경우
+     * @throws BusinessException 분류 코드가 존재하지 않거나 채번코드가 없을 경우
      */
     @Transactional
     public InspectionItemResponse create(InspectionItemCreateRequest request) {
-        validateInspectionItemCodeUnique(request.getInspectionItemCode());
         CommonCode category = resolveCategory(request.getCategoryCode());
-        InspectionItem inspectionItem = InspectionItem.builder()
-                .inspectionItemCode(request.getInspectionItemCode())
-                .inspectionItemName(request.getInspectionItemName())
-                .category(category)
-                .measurementType(request.getMeasurementType())
-                .unit(request.getUnit())
-                .decimalScale(request.getDecimalScale())
-                .description(request.getDescription())
-                .sortOrder(request.getSortOrder())
-                .isActive(request.isActive())
-                .build();
-        InspectionItem saved = inspectionItemRepository.save(inspectionItem);
-        log.info("검사항목 마스터 생성 완료: id={}, code={}", saved.getId(), saved.getInspectionItemCode());
-        return inspectionItemMapper.toResponse(saved);
+
+        for (int attempt = 1; attempt <= MAX_INSPECTION_ITEM_CODE_RETRIES; attempt++) {
+            String inspectionItemCode = generateInspectionItemCode(category);
+            InspectionItem inspectionItem = InspectionItem.builder()
+                    .inspectionItemCode(inspectionItemCode)
+                    .inspectionItemName(request.getInspectionItemName())
+                    .category(category)
+                    .measurementType(request.getMeasurementType())
+                    .unit(request.getUnit())
+                    .decimalScale(request.getDecimalScale())
+                    .description(request.getDescription())
+                    .sortOrder(request.getSortOrder())
+                    .isActive(request.isActive())
+                    .build();
+
+            try {
+                InspectionItem saved = inspectionItemRepository.saveAndFlush(inspectionItem);
+                log.info("검사항목 마스터 생성 완료: id={}, code={}", saved.getId(), saved.getInspectionItemCode());
+                return inspectionItemMapper.toResponse(saved);
+            } catch (DataIntegrityViolationException e) {
+                log.warn("검사항목 코드 충돌로 재시도합니다. attempt={}, inspectionItemCode={}",
+                        attempt, inspectionItemCode);
+                if (attempt == MAX_INSPECTION_ITEM_CODE_RETRIES) {
+                    throw new BusinessException(ErrorCode.INSPECTION_ITEM_CODE_GENERATION_FAILED);
+                }
+            }
+        }
+
+        throw new BusinessException(ErrorCode.INSPECTION_ITEM_CODE_GENERATION_FAILED);
     }
 
     /**
@@ -132,12 +148,6 @@ public class InspectionItemService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.INSPECTION_ITEM_NOT_FOUND, String.valueOf(id)));
     }
 
-    private void validateInspectionItemCodeUnique(String inspectionItemCode) {
-        if (inspectionItemRepository.existsByInspectionItemCode(inspectionItemCode)) {
-            throw new BusinessException(ErrorCode.INSPECTION_ITEM_CODE_DUPLICATED, inspectionItemCode);
-        }
-    }
-
     private CommonCode resolveCategory(String categoryCode) {
         CodeGroup categoryGroup = codeGroupRepository.findByGroupId(INSPECTION_ITEM_CATEGORY_GROUP_ID)
                 .orElseThrow(() -> new BusinessException(
@@ -146,5 +156,33 @@ public class InspectionItemService {
                 ));
         return commonCodeRepository.findByCodeGroupAndCode(categoryGroup, categoryCode)
                 .orElseThrow(() -> new BusinessException(ErrorCode.COMMON_CODE_NOT_FOUND, categoryCode));
+    }
+
+    private String generateInspectionItemCode(CommonCode category) {
+        String numberingPrefix = category.getNumberingPrefix();
+        if (numberingPrefix == null || numberingPrefix.isBlank()) {
+            throw new BusinessException(ErrorCode.INSPECTION_ITEM_CATEGORY_PREFIX_REQUIRED);
+        }
+
+        String prefix = numberingPrefix.trim().toUpperCase() + "-";
+        int nextSequence = inspectionItemRepository
+                .findTopByInspectionItemCodeStartingWithOrderByInspectionItemCodeDesc(prefix)
+                .map(item -> extractSequence(item.getInspectionItemCode()) + 1)
+                .orElse(1);
+        return prefix + String.format("%03d", nextSequence);
+    }
+
+    private int extractSequence(String inspectionItemCode) {
+        int separatorIndex = inspectionItemCode.lastIndexOf('-');
+        if (separatorIndex < 0 || separatorIndex == inspectionItemCode.length() - 1) {
+            log.warn("검사항목 코드 시퀀스 추출 실패, 1부터 시작합니다. inspectionItemCode={}", inspectionItemCode);
+            return 0;
+        }
+        try {
+            return Integer.parseInt(inspectionItemCode.substring(separatorIndex + 1));
+        } catch (NumberFormatException e) {
+            log.warn("검사항목 코드 시퀀스 추출 실패, 1부터 시작합니다. inspectionItemCode={}", inspectionItemCode);
+            return 0;
+        }
     }
 }
