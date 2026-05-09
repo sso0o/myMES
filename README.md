@@ -182,6 +182,7 @@ cp frontend/.env.example frontend/.env  # Supabase 정보 입력
 cd backend
 ./gradlew bootRun         # 서버 시작 (localhost:8080)
 ./gradlew build           # 빌드
+./gradlew build -x test   # 테스트 제외 빌드
 ./gradlew test            # 전체 테스트
 ```
 
