@@ -101,6 +101,19 @@ const PlanningDataGrid = ({
       ),
     },
     {
+      field: 'dueDate',
+      headerName: '납기일',
+      width: 130,
+      sortable: false,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => (
+        <span className="text-[var(--text-base)]">
+          {params.row.dueDate ? formatDate(params.row.dueDate) : '-'}
+        </span>
+      ),
+    },
+    {
       field: 'status',
       headerName: '상태',
       width: 130,

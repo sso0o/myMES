@@ -14,6 +14,7 @@ export interface ProductionPlanResponse {
   itemName: string
   plannedQty: number
   plannedDate: string
+  dueDate: string | null
   status: PlanStatus
   workOrderId: number | null
   workOrderNo: string | null
@@ -28,6 +29,7 @@ export interface ProductionPlanCreateRequest {
   itemId: number
   plannedQty: number
   plannedDate: string
+  dueDate?: string
   memo?: string
 }
 
@@ -35,6 +37,7 @@ export interface ProductionPlanUpdateRequest {
   itemId: number
   plannedQty: number
   plannedDate: string
+  dueDate?: string
   memo?: string
 }
 
