@@ -27,6 +27,8 @@ public class WorkOrderCreateRequest {
     @Size(max = 50)
     private String workerName;
 
-    @NotNull(message = "납기일은 필수입니다.")
+    @NotNull(message = "생산일은 필수입니다.")
+    private LocalDate productionDate;
+
     private LocalDate dueDate;
 }

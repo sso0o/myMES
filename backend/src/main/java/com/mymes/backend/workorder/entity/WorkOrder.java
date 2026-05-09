@@ -64,7 +64,10 @@ public class WorkOrder extends BaseEntity {
     @Column(name = "worker_name", length = 50)
     private String workerName;
 
-    @Column(name = "due_date", nullable = false)
+    @Column(name = "production_date", nullable = false)
+    private LocalDate productionDate;
+
+    @Column(name = "due_date")
     private LocalDate dueDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -74,7 +77,7 @@ public class WorkOrder extends BaseEntity {
     @Builder
     public WorkOrder(String workOrderNo, Item item, Integer plannedQty,
                      Priority priority, MfgProcess process, Equipment equipment,
-                     String workerName, LocalDate dueDate, BomVersion bomVersion,
+                     String workerName, LocalDate productionDate, LocalDate dueDate, BomVersion bomVersion,
                      Integer sequence, ProductionPlan productionPlan) {
         this.workOrderNo = workOrderNo;
         this.item = item;
@@ -84,6 +87,7 @@ public class WorkOrder extends BaseEntity {
         this.process = process;
         this.equipment = equipment;
         this.workerName = workerName;
+        this.productionDate = productionDate;
         this.dueDate = dueDate;
         this.bomVersion = bomVersion;
         this.sequence = sequence;
@@ -91,13 +95,15 @@ public class WorkOrder extends BaseEntity {
     }
 
     public void update(Item item, Integer plannedQty, Priority priority,
-                       MfgProcess process, Equipment equipment, String workerName, LocalDate dueDate) {
+                       MfgProcess process, Equipment equipment, String workerName, LocalDate productionDate,
+                       LocalDate dueDate) {
         this.item = item;
         this.plannedQty = plannedQty;
         this.priority = priority;
         this.process = process;
         this.equipment = equipment;
         this.workerName = workerName;
+        this.productionDate = productionDate;
         this.dueDate = dueDate;
     }
 
