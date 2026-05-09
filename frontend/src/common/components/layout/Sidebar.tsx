@@ -3,6 +3,7 @@ import {
   CalendarDays,
   ClipboardList,
   ClipboardCheck,
+  ClipboardPenLine,
   LayoutDashboard,
   ListTree,
   Package,
@@ -49,6 +50,7 @@ const menuGroups = [
     items: [
       { label: '품질검사', path: '/quality/inspections', icon: ClipboardCheck },
       { label: '불량관리', path: '/quality/defects', icon: ShieldAlert },
+      { label: '검사항목 마스터', path: '/quality/standards/inspection-items', icon: ClipboardPenLine },
     ],
   },
   {
