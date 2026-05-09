@@ -3,7 +3,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import type { DatePickerProps } from '@mui/x-date-pickers/DatePicker'
 import type { SxProps, Theme } from '@mui/material/styles'
-import dayjs, { type Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
 import { toSxArray } from '@/common/styles/appInput'
 
@@ -48,7 +48,7 @@ const appDatePickerTextFieldSx: SxProps<Theme> = {
   },
 }
 
-interface AppDatePickerProps extends Omit<DatePickerProps<Dayjs>, 'value' | 'onChange'> {
+interface AppDatePickerProps extends Omit<DatePickerProps, 'value' | 'onChange'> {
   value?: string | null
   onChange?: (value: string) => void
   sx?: SxProps<Theme>

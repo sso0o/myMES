@@ -24,15 +24,17 @@ import type {
   WorkOrderUpdateRequest,
 } from '../types'
 
+const WORK_ORDER_API_PATH = '/work-orders'
+
 export const workOrderApi = {
   getList: (page: number, size: number) =>
-    api.get<ApiResponse<WorkOrderResponse[]>>('/work-orders', { params: { page, size } }),
-  getById: (id: number) => api.get<ApiResponse<WorkOrderResponse>>(`/work-orders/${id}`),
+    api.get<ApiResponse<WorkOrderResponse[]>>(WORK_ORDER_API_PATH, { params: { page, size } }),
+  getById: (id: number) => api.get<ApiResponse<WorkOrderResponse>>(`${WORK_ORDER_API_PATH}/${id}`),
   create: (data: WorkOrderCreateRequest) =>
-    api.post<ApiResponse<WorkOrderResponse>>('/work-orders', data),
+    api.post<ApiResponse<WorkOrderResponse>>(WORK_ORDER_API_PATH, data),
   update: (id: number, data: WorkOrderUpdateRequest) =>
-    api.put<ApiResponse<WorkOrderResponse>>(`/work-orders/${id}`, data),
-  delete: (id: number) => api.delete(`/work-orders/${id}`),
+    api.put<ApiResponse<WorkOrderResponse>>(`${WORK_ORDER_API_PATH}/${id}`, data),
+  delete: (id: number) => api.delete(`${WORK_ORDER_API_PATH}/${id}`),
 }
 ```
 
@@ -72,6 +74,7 @@ export const useCreateWorkOrder = () => {
 **규칙**
 - 컴포넌트에서 axios 직접 호출 금지 — 반드시 React Query 훅을 통해 호출합니다.
 - API 파일은 `@/lib/axios`의 `api` named export를 사용합니다.
+- API base path는 `{DOMAIN}_API_PATH` 상수로 선언하고, 같은 경로 문자열을 API 함수마다 반복하지 않습니다.
 - 쿼리 키는 도메인별 상수로 관리합니다.
 - Mutation 성공 시 관련 쿼리를 `invalidateQueries`로 갱신합니다.
 

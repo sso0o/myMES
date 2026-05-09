@@ -3,7 +3,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import type { DateTimePickerProps } from '@mui/x-date-pickers/DateTimePicker'
 import type { SxProps, Theme } from '@mui/material/styles'
-import dayjs, { type Dayjs } from 'dayjs'
+import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
 import { toSxArray } from '@/common/styles/appInput'
 
@@ -48,7 +48,7 @@ const appDateTimePickerTextFieldSx: SxProps<Theme> = {
   },
 }
 
-interface AppDateTimePickerProps extends Omit<DateTimePickerProps<Dayjs>, 'value' | 'onChange'> {
+interface AppDateTimePickerProps extends Omit<DateTimePickerProps, 'value' | 'onChange'> {
   /** ISO 8601 문자열 또는 YYYY-MM-DD HH:mm 형식 */
   value?: string | null
   /** ISO 8601 문자열로 반환 */
