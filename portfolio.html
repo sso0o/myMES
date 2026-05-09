@@ -1566,7 +1566,7 @@
     <div class="challenge-row">
       <span class="challenge-tag solution">해결</span>
       <p class="challenge-content">
-        <span class="code-inline">BomVersion</span> 헤더 엔티티를 분리(A안 채택)하고 상태를 <span class="code-inline">ACTIVE</span>/<span class="code-inline">INACTIVE</span> 두 가지로 단순화했습니다.
+        <span class="code-inline">BomVersion</span> 헤더 엔티티를 분리하고 상태를 <span class="code-inline">ACTIVE</span>/<span class="code-inline">INACTIVE</span> 두 가지로 단순화했습니다.
         재활성화는 비선형 이력을 만들기 때문에 금지하고, 대신 <strong>버전 복원(restore)</strong> 기능으로 대체하여 이력이 항상 앞으로만 진행되도록 했습니다.
         저장은 Copy-on-Write — 기존 ACTIVE 라인 Soft Delete → 새 BomVersion 생성 → 새 라인 일괄 생성 → 기존 BomVersion INACTIVE 전이.
         <span class="code-inline">WorkOrder</span>는 생성 시점의 ACTIVE 버전을 FK로 고정해 참조 무결성을 보장합니다.
