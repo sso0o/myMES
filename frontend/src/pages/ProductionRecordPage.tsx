@@ -25,6 +25,8 @@ const formatDate = (value: string) =>
     day: '2-digit',
   })
 
+const formatNullableDate = (value: string | null) => (value ? formatDate(value) : '-')
+
 const workOrderColumns: GridColDef<WorkOrderResponse>[] = [
   {
     field: 'workOrderNo',
@@ -86,6 +88,17 @@ const workOrderColumns: GridColDef<WorkOrderResponse>[] = [
     ),
   },
   {
+    field: 'productionDate',
+    headerName: '생산일',
+    width: 120,
+    sortable: false,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: (params) => (
+      <span className="text-[var(--text-base)]">{formatDate(params.row.productionDate)}</span>
+    ),
+  },
+  {
     field: 'dueDate',
     headerName: '납기일',
     width: 120,
@@ -93,7 +106,7 @@ const workOrderColumns: GridColDef<WorkOrderResponse>[] = [
     headerAlign: 'center',
     align: 'center',
     renderCell: (params) => (
-      <span className="text-[var(--text-base)]">{formatDate(params.row.dueDate)}</span>
+      <span className="text-[var(--text-base)]">{formatNullableDate(params.row.dueDate)}</span>
     ),
   },
 ]

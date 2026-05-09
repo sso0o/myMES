@@ -73,6 +73,9 @@ const ProductionRecordFormModal = ({
                 <AppDateTimePicker value={field.value} onChange={field.onChange} />
               )}
             />
+            {errors.startedAt && (
+              <p className={formErrorClass}>{errors.startedAt.message}</p>
+            )}
           </div>
           <div>
             <label className={formLabelClass}>종료일시</label>
@@ -83,6 +86,9 @@ const ProductionRecordFormModal = ({
                 <AppDateTimePicker value={field.value} onChange={field.onChange} />
               )}
             />
+            {errors.endedAt && (
+              <p className={formErrorClass}>{errors.endedAt.message}</p>
+            )}
           </div>
         </div>
 
