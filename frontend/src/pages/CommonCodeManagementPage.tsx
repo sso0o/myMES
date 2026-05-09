@@ -6,6 +6,7 @@ import EmptyState from '@/common/components/EmptyState'
 import PageHeader from '@/common/components/PageHeader'
 import { primaryActionButtonClass } from '@/common/styles/button'
 import { useFeedback } from '@/common/hooks/useFeedback'
+import { getApiErrorMessage } from '@/common/utils/apiError'
 import CodeGroupFormModal from '@/features/master/commonCode/components/CodeGroupFormModal'
 import CodeGroupDataGrid from '@/features/master/commonCode/components/CodeGroupDataGrid'
 import CommonCodeDataGrid, {
@@ -153,7 +154,10 @@ const CommonCodeManagementPage = () => {
   }
 
   const handleProcessRowUpdateError = (error: unknown) => {
-    const message = error instanceof Error ? error.message : '저장 중 오류가 발생했습니다.'
+    const message =
+      error instanceof Error && !('response' in error)
+        ? error.message
+        : getApiErrorMessage(error, '저장 중 오류가 발생했습니다.')
     showToast({ title: message, variant: 'error' })
   }
 
