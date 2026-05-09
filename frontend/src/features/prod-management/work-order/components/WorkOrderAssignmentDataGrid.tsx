@@ -70,6 +70,8 @@ const formatEquipment = (workOrder: WorkOrderResponse) => {
   return `${workOrder.equipmentCode ?? '-'} - ${workOrder.equipmentName ?? '-'}`
 }
 
+const formatNullableDate = (value: string | null) => value ?? '-'
+
 const ProcessSelectCell = ({
   processes,
   disabled,
@@ -186,6 +188,17 @@ const WorkOrderAssignmentDataGrid = ({
       ),
     },
     {
+      field: 'productionDate',
+      headerName: '생산일',
+      width: 130,
+      sortable: false,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: (params) => (
+        <span className="text-[var(--text-base)]">{params.row.productionDate}</span>
+      ),
+    },
+    {
       field: 'dueDate',
       headerName: '납기일',
       width: 130,
@@ -193,7 +206,7 @@ const WorkOrderAssignmentDataGrid = ({
       headerAlign: 'center',
       align: 'center',
       renderCell: (params) => (
-        <span className="text-[var(--text-base)]">{params.row.dueDate}</span>
+        <span className="text-[var(--text-base)]">{formatNullableDate(params.row.dueDate)}</span>
       ),
     },
     {
