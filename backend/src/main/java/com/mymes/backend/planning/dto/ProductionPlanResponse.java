@@ -20,6 +20,7 @@ public class ProductionPlanResponse {
 
     private Integer plannedQty;
     private LocalDate plannedDate;
+    private LocalDate dueDate;
 
     private PlanStatus status;
 

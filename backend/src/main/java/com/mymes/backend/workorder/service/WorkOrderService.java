@@ -51,24 +51,24 @@ public class WorkOrderService {
     private final ItemProcessService itemProcessService;
 
     /**
-     * 전체 작업지시 목록을 납기일 오름차순으로 조회합니다.
+     * 전체 작업지시 목록을 생산일, 납기일 오름차순으로 조회합니다.
      *
      * @return 작업지시 응답 목록
      */
     public List<WorkOrderResponse> findAll() {
-        return workOrderRepository.findAllByOrderByDueDateAsc().stream()
+        return workOrderRepository.findAllByOrderByProductionDateAscDueDateAsc().stream()
                 .map(workOrderMapper::toResponse)
                 .toList();
     }
 
     /**
-     * 상태별 작업지시 목록을 납기일 오름차순으로 조회합니다.
+     * 상태별 작업지시 목록을 생산일, 납기일 오름차순으로 조회합니다.
      *
      * @param status 작업지시 상태
      * @return 작업지시 응답 목록
      */
     public List<WorkOrderResponse> findByStatus(WorkOrderStatus status) {
-        return workOrderRepository.findByStatusOrderByDueDateAsc(status).stream()
+        return workOrderRepository.findByStatusOrderByProductionDateAscDueDateAsc(status).stream()
                 .map(workOrderMapper::toResponse)
                 .toList();
     }
@@ -109,6 +109,7 @@ public class WorkOrderService {
                     .process(process)
                     .equipment(equipment)
                     .workerName(request.getWorkerName())
+                    .productionDate(request.getProductionDate())
                     .dueDate(request.getDueDate())
                     .bomVersion(bomVersion)
                     .build();
@@ -149,7 +150,7 @@ public class WorkOrderService {
         validateItemProcess(item, process);
         Equipment equipment = resolveEquipment(process, request.getEquipmentId());
         workOrder.update(item, request.getPlannedQty(), request.getPriority(),
-                process, equipment, request.getWorkerName(), request.getDueDate());
+                process, equipment, request.getWorkerName(), request.getProductionDate(), request.getDueDate());
         log.info("작업지시 수정 완료: id={}", id);
         return workOrderMapper.toResponse(workOrder);
     }
@@ -223,7 +224,8 @@ public class WorkOrderService {
                         .priority(Priority.MEDIUM)
                         .process(ip.getProcess())
                         .sequence(ip.getSequence())
-                        .dueDate(plan.getPlannedDate())
+                        .productionDate(plan.getPlannedDate())
+                        .dueDate(plan.getDueDate())
                         .bomVersion(bomVersion)
                         .productionPlan(plan)
                         .build())

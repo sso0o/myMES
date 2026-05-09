@@ -41,7 +41,7 @@ const buildDateRange = (workOrders: WorkOrderResponse[]) => {
     return Array.from({ length: 7 }, (_, index) => addDays(today, index))
   }
 
-  const dates = workOrders.map((workOrder) => toDate(workOrder.dueDate))
+  const dates = workOrders.map((workOrder) => toDate(workOrder.productionDate))
   const minDate = new Date(Math.min(...dates.map((date) => date.getTime())))
   const maxDate = new Date(Math.max(...dates.map((date) => date.getTime())))
   const start = addDays(minDate, -2)
@@ -101,7 +101,7 @@ const EquipmentTimeline = ({ equipments, workOrders, onStartWorkOrder }: Equipme
               </th>
               {dates.map((date) => {
                 const dateKey = toDateKey(date)
-                const dayOrders = row.workOrders.filter((workOrder) => workOrder.dueDate === dateKey)
+                const dayOrders = row.workOrders.filter((workOrder) => workOrder.productionDate === dateKey)
                 return (
                   <td
                     key={`${row.id}-${dateKey}`}

@@ -60,6 +60,7 @@ const WorkOrderAssignmentSection = () => {
           processId: draft.processId ?? undefined,
           equipmentId: draft.equipmentId ?? undefined,
           workerName: workOrder.workerName ?? undefined,
+          productionDate: workOrder.productionDate,
           dueDate: workOrder.dueDate,
         },
       },

@@ -41,6 +41,9 @@ public class ProductionPlan extends BaseEntity {
     @Column(name = "planned_date", nullable = false)
     private LocalDate plannedDate;
 
+    @Column(name = "due_date")
+    private LocalDate dueDate;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private PlanStatus status;
@@ -57,23 +60,25 @@ public class ProductionPlan extends BaseEntity {
 
     @Builder
     public ProductionPlan(String planNo, Item item, Integer plannedQty,
-                          LocalDate plannedDate, User createdBy, String memo) {
+                          LocalDate plannedDate, LocalDate dueDate, User createdBy, String memo) {
         this.planNo = planNo;
         this.item = item;
         this.plannedQty = plannedQty;
         this.plannedDate = plannedDate;
+        this.dueDate = dueDate;
         this.status = PlanStatus.DRAFT;
         this.createdBy = createdBy;
         this.memo = memo;
     }
 
-    public void update(Item item, Integer plannedQty, LocalDate plannedDate, String memo) {
+    public void update(Item item, Integer plannedQty, LocalDate plannedDate, LocalDate dueDate, String memo) {
         if (this.status != PlanStatus.DRAFT) {
             throw new BusinessException(ErrorCode.PLAN_NOT_MODIFIABLE);
         }
         this.item = item;
         this.plannedQty = plannedQty;
         this.plannedDate = plannedDate;
+        this.dueDate = dueDate;
         this.memo = memo;
     }
 
