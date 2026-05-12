@@ -2,6 +2,7 @@ package com.mymes.backend.production.service;
 
 import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
+import com.mymes.backend.inspectionstandard.entity.InspectionStandard;
 import com.mymes.backend.inspectionstandard.service.InspectionStandardService;
 import com.mymes.backend.process.entity.MfgProcess;
 import com.mymes.backend.production.dto.ProductionCreateRequest;
@@ -96,44 +97,52 @@ public class ProductionService {
         ProductionRecord saved = productionRepository.save(record);
         log.info("생산실적 등록 완료: id={}, workOrderId={}", saved.getId(), workOrderId);
 
-        Long autoCreatedInspectionId = createInspectionIfRequired(workOrder, request.getCompletedQty());
+        int count = createInspectionIfRequired(workOrder, saved, request.getCompletedQty());
         ProductionResponse response = productionMapper.toResponse(saved);
-        if (autoCreatedInspectionId != null) {
-            response = response.toBuilder().autoCreatedInspectionId(autoCreatedInspectionId).build();
+        if (count > 0) {
+            response = response.toBuilder().autoCreatedInspectionCount(count).build();
         }
         return response;
     }
 
     /**
-     * 공정에 활성화된 검사 기준이 있으면 공정검사를 자동 생성합니다.
+     * 공정에 활성화된 검사 기준마다 공정검사를 자동 생성하고 생산실적과 연결합니다.
+     * 검사 기준이 N건이면 QualityInspection N건을 생성합니다.
      *
-     * @param workOrder    작업지시 (품목·공정 정보 포함)
-     * @param completedQty 생산실적의 완료수량 (검사수량으로 사용)
-     * @return 생성된 품질검사 ID, 검사 기준이 없으면 null
+     * @param workOrder      작업지시 (품목·공정 정보 포함)
+     * @param productionRecord 방금 저장된 생산실적 엔티티
+     * @param completedQty   생산실적의 완료수량 (검사수량으로 사용)
+     * @return 생성된 품질검사 건수 (검사 기준 없으면 0)
      */
-    private Long createInspectionIfRequired(WorkOrder workOrder, int completedQty) {
+    private int createInspectionIfRequired(WorkOrder workOrder, ProductionRecord productionRecord, int completedQty) {
         Long itemId = workOrder.getItem().getId();
         Long processId = workOrder.getProcess().getId();
 
-        if (!inspectionStandardService.existsByItemAndProcess(itemId, processId)) {
-            return null;
+        List<InspectionStandard> standards =
+                inspectionStandardService.findActiveByItemAndProcess(itemId, processId);
+        if (standards.isEmpty()) {
+            return 0;
         }
 
-        QualityInspectionCreateRequest inspReq = QualityInspectionCreateRequest.builder()
-                .itemId(itemId)
-                .processId(processId)
-                .workOrderId(workOrder.getId())
-                .inspectionType(QualityInspectionType.IN_PROCESS)
-                .inspectionDate(LocalDate.now())
-                .inspectionQty(completedQty)
-                .passQty(0)
-                .defectQty(0)
-                .build();
+        for (InspectionStandard standard : standards) {
+            QualityInspectionCreateRequest inspReq = QualityInspectionCreateRequest.builder()
+                    .itemId(itemId)
+                    .processId(processId)
+                    .workOrderId(workOrder.getId())
+                    .inspectionStandardId(standard.getId())
+                    .inspectionType(QualityInspectionType.IN_PROCESS)
+                    .inspectionDate(LocalDate.now())
+                    .inspectionQty(completedQty)
+                    .passQty(0)
+                    .defectQty(0)
+                    .build();
+            Long inspectionId = qualityInspectionService.create(inspReq).getId();
+            qualityInspectionService.linkProductionRecord(inspectionId, productionRecord);
+        }
 
-        QualityInspectionResponse inspection = qualityInspectionService.create(inspReq);
-        log.info("공정검사 자동 생성: inspectionId={}, workOrderId={}, itemId={}, processId={}",
-                inspection.getId(), workOrder.getId(), itemId, processId);
-        return inspection.getId();
+        log.info("공정검사 자동 생성: {}건, workOrderId={}, itemId={}, processId={}",
+                standards.size(), workOrder.getId(), itemId, processId);
+        return standards.size();
     }
 
     /**

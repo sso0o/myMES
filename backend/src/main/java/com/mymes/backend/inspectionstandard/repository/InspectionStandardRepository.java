@@ -14,4 +14,6 @@ public interface InspectionStandardRepository extends JpaRepository<InspectionSt
     boolean existsByItem_IdAndProcess_IdAndInspectionItem_Id(Long itemId, Long processId, Long inspectionItemId);
 
     boolean existsByItem_IdAndProcess_IdAndIsActiveTrue(Long itemId, Long processId);
+
+    List<InspectionStandard> findByItem_IdAndProcess_IdAndIsActiveTrueOrderBySortOrderAsc(Long itemId, Long processId);
 }

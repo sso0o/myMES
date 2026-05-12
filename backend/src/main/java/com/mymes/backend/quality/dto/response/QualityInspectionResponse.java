@@ -31,6 +31,11 @@ public class QualityInspectionResponse {
     private String processName;
     private Long workOrderId;
     private String workOrderNo;
+    private Long inspectionStandardId;
+    private Long inspectionItemId;
+    private String inspectionItemCode;
+    private String inspectionItemName;
+    private Long productionRecordId;
     private Integer inspectionQty;
     private Integer passQty;
     private Integer defectQty;

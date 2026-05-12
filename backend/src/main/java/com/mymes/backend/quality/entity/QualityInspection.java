@@ -1,8 +1,10 @@
 package com.mymes.backend.quality.entity;
 
 import com.mymes.backend.common.entity.BaseEntity;
+import com.mymes.backend.inspectionstandard.entity.InspectionStandard;
 import com.mymes.backend.item.entity.Item;
 import com.mymes.backend.process.entity.MfgProcess;
+import com.mymes.backend.production.entity.ProductionRecord;
 import com.mymes.backend.workorder.entity.WorkOrder;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -64,6 +66,14 @@ public class QualityInspection extends BaseEntity {
     @JoinColumn(name = "work_order_id")
     private WorkOrder workOrder;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inspection_standard_id")
+    private InspectionStandard inspectionStandard;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "production_record_id")
+    private ProductionRecord productionRecord;
+
     @Column(name = "inspection_qty", nullable = false)
     private Integer inspectionQty;
 
@@ -83,7 +93,9 @@ public class QualityInspection extends BaseEntity {
     public QualityInspection(String inspectionNo, LocalDate inspectionDate,
                              QualityInspectionType inspectionType, QualityInspectionStatus status,
                              QualityInspectionResult result, Item item, MfgProcess process,
-                             WorkOrder workOrder, Integer inspectionQty, Integer passQty,
+                             WorkOrder workOrder, InspectionStandard inspectionStandard,
+                             ProductionRecord productionRecord,
+                             Integer inspectionQty, Integer passQty,
                              Integer defectQty, String inspectorName, String remarks) {
         this.inspectionNo = inspectionNo;
         this.inspectionDate = inspectionDate;
@@ -93,6 +105,8 @@ public class QualityInspection extends BaseEntity {
         this.item = item;
         this.process = process;
         this.workOrder = workOrder;
+        this.inspectionStandard = inspectionStandard;
+        this.productionRecord = productionRecord;
         this.inspectionQty = inspectionQty;
         this.passQty = passQty;
         this.defectQty = defectQty;
@@ -133,5 +147,14 @@ public class QualityInspection extends BaseEntity {
         this.defectQty = defectQty;
         this.inspectorName = inspectorName;
         this.remarks = remarks;
+    }
+
+    /**
+     * 자동 생성된 품질검사와 생산실적을 연결합니다.
+     *
+     * @param productionRecord 연결할 생산실적 엔티티
+     */
+    public void linkProductionRecord(ProductionRecord productionRecord) {
+        this.productionRecord = productionRecord;
     }
 }

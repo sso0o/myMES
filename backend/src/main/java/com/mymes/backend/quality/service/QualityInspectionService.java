@@ -2,10 +2,13 @@ package com.mymes.backend.quality.service;
 
 import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
+import com.mymes.backend.inspectionstandard.entity.InspectionStandard;
+import com.mymes.backend.inspectionstandard.service.InspectionStandardService;
 import com.mymes.backend.item.entity.Item;
 import com.mymes.backend.item.service.ItemService;
 import com.mymes.backend.process.entity.MfgProcess;
 import com.mymes.backend.process.service.MfgProcessService;
+import com.mymes.backend.production.entity.ProductionRecord;
 import com.mymes.backend.quality.dto.request.QualityInspectionCreateRequest;
 import com.mymes.backend.quality.dto.request.QualityInspectionUpdateRequest;
 import com.mymes.backend.quality.dto.response.QualityInspectionResponse;
@@ -39,6 +42,7 @@ public class QualityInspectionService {
     private final ItemService itemService;
     private final MfgProcessService processService;
     private final WorkOrderService workOrderService;
+    private final InspectionStandardService inspectionStandardService;
 
     /**
      * 전체 품질검사 목록을 검사일자 내림차순으로 조회합니다.
@@ -86,6 +90,9 @@ public class QualityInspectionService {
     public QualityInspectionResponse create(QualityInspectionCreateRequest request) {
         validateQuantities(request.getInspectionQty(), request.getPassQty(), request.getDefectQty());
         InspectionTargets targets = resolveTargets(request.getItemId(), request.getProcessId(), request.getWorkOrderId());
+        InspectionStandard inspectionStandard = request.getInspectionStandardId() != null
+                ? inspectionStandardService.getInspectionStandard(request.getInspectionStandardId())
+                : null;
 
         for (int attempt = 1; attempt <= MAX_INSPECTION_NO_RETRIES; attempt++) {
             String inspectionNo = generateInspectionNo();
@@ -98,6 +105,7 @@ public class QualityInspectionService {
                     .item(targets.item())
                     .process(targets.process())
                     .workOrder(targets.workOrder())
+                    .inspectionStandard(inspectionStandard)
                     .inspectionQty(request.getInspectionQty())
                     .passQty(request.getPassQty())
                     .defectQty(request.getDefectQty())
@@ -154,6 +162,18 @@ public class QualityInspectionService {
         QualityInspection inspection = getQualityInspection(id);
         inspection.delete();
         log.info("품질검사 삭제 완료: id={}, no={}", id, inspection.getInspectionNo());
+    }
+
+    /**
+     * 품질검사에 생산실적을 연결합니다. 생산실적 등록 시 자동 생성된 검사에만 사용됩니다.
+     *
+     * @param inspectionId    품질검사 ID
+     * @param productionRecord 연결할 생산실적 엔티티
+     */
+    @Transactional
+    public void linkProductionRecord(Long inspectionId, ProductionRecord productionRecord) {
+        QualityInspection inspection = getQualityInspection(inspectionId);
+        inspection.linkProductionRecord(productionRecord);
     }
 
     /**

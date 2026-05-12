@@ -19,5 +19,5 @@ public class ProductionResponse {
     private Integer completedQty;
     private Integer defectQty;
     private LocalDateTime createdAt;
-    private Long autoCreatedInspectionId;
+    private Integer autoCreatedInspectionCount;
 }
