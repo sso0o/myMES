@@ -49,10 +49,10 @@ const menuGroups = [
   {
     group: '품질관리',
     items: [
-      { label: '검사항목 마스터', path: '/quality/standards/inspection-items', icon: ClipboardPenLine },
-      { label: '품목별 공정검사항목', path: '/quality/standards/inspection-standards', icon: ListChecks },
       { label: '품질검사', path: '/quality/inspections', icon: ClipboardCheck },
       { label: '불량관리', path: '/quality/defects', icon: ShieldAlert },
+      { label: '검사항목 마스터', path: '/quality/standards/inspection-items', icon: ClipboardPenLine },
+      { label: '품목별 공정검사항목', path: '/quality/standards/inspection-standards', icon: ListChecks },
     ],
   },
   {
