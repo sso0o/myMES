@@ -10,6 +10,7 @@ export interface ProductionRecordResponse {
   completedQty: number
   defectQty: number
   createdAt: string
+  autoCreatedInspectionId?: number | null
 }
 
 export interface ProductionRecordCreateRequest {
