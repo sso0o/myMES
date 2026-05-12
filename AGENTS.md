@@ -102,33 +102,40 @@ types/        # 전역 공통 타입 (ApiResponse<T> 등)
 ```
 
 **실제 사용 중인 라우트** (`router/index.tsx`):
+
+모든 인증 필요 라우트는 `PrivateRoute` → `MainLayout` 래퍼 아래에 위치. 미매칭 경로(`*`)는 `/login`으로 리다이렉트.
+
 ```
-/dashboard                      → DashboardPage
-/planning                       → PlanningManagementPage
-/work-orders                    → WorkOrderTimelinePage
-/production                     → ProductionRecordPage
-/quality/inspections            → QualityInspectionPage
-/quality/defects                → DefectManagementPage
-/master/items                   → ItemManagementPage
-/master/common-codes            → CommonCodeManagementPage
-/prod-basic/processes           → ProcessManagementPage
-/prod-basic/equipment           → EquipmentManagementPage
-/prod-basic/item-processes      → ItemProcessManagementPage
-/prod-basic/boms                → BomManagementPage
-/prod-basic/process-equipment   → ProcessEquipmentManagementPage
-/operation/workers              → WorkerManagementPage
+/dashboard                                   → DashboardPage
+/planning                                    → PlanningManagementPage
+/work-orders                                 → WorkOrderTimelinePage
+/production                                  → ProductionRecordPage
+/quality                                     → /quality/inspections 리다이렉트
+/quality/inspections                         → QualityInspectionPage
+/quality/defects                             → DefectManagementPage
+/quality/standards/inspection-items          → InspectionItemManagementPage
+/quality/standards/inspection-standards      → InspectionStandardManagementPage
+/master/items                                → ItemManagementPage
+/master/common-codes                         → CommonCodeManagementPage
+/prod-basic/processes                        → ProcessManagementPage
+/prod-basic/equipment                        → EquipmentManagementPage
+/prod-basic/item-processes                   → ItemProcessManagementPage
+/prod-basic/boms                             → BomManagementPage
+/prod-basic/process-equipment               → ProcessEquipmentManagementPage
+/operation/workers                           → WorkerManagementPage
 ```
 
-- `lib/axios.ts` — baseURL `/api`, 401 응답 시 자동 로그아웃 및 `/login` 리다이렉트
+- `lib/axios.ts` — baseURL `/api`, 401 응답 시 자동 로그아웃 및 `/login` 리다이렉트; named export `api` 사용
 - `store/authStore.ts` — Zustand 스토어; `initialize()` 앱 시작 시 호출 필요
 - `hooks/useSupabaseRealtime.ts` — PostgreSQL 테이블 변경사항 실시간 구독 훅
+- `common/utils/apiError.ts` — `getApiErrorMessage(error, fallback)`: Mutation 에러 토스트에서 백엔드 `ApiResponse.message` 우선 추출
 
 **핵심 규칙 요약** (상세는 [frontend/docs/](frontend/docs/)):
 - 서버 데이터는 React Query로 관리; Zustand는 인증·UI 클라이언트 상태만 담당
 - API 호출은 `features/{domain}/api/{domain}Api.ts` (순수 axios 함수) → `features/{domain}/hooks/use{Domain}Query.ts` (React Query 훅) 2-레이어 구조; 컴포넌트에서 axios 직접 호출 금지
 - 폼 유효성 검증은 `react-hook-form` + `zod` + `@hookform/resolvers` 조합; 스키마는 `features/{domain}/schemas/`에 위치; 단일 필드 구독은 `watch()` 대신 `useWatch()` 사용
 - TypeScript `any` 사용 금지 (`unknown` + 타입 가드 사용); enum 대신 `as const` 패턴 사용; zod schema는 `z.input<>`(폼 입력)과 `z.output<>`(변환 후) 타입을 분리해서 사용
-- 스타일링은 Tailwind CSS만 사용; 인라인 `style` 속성 금지; 복잡한 className은 `cn()` (clsx + tailwind-merge) 사용
+- 스타일링은 MUI 컴포넌트를 1순위로 사용; MUI로 어려운 경우에만 Tailwind CSS 보조 사용; 인라인 `style` 속성 금지; 복잡한 className은 `cn()` (clsx + tailwind-merge) 사용
 
 ### Vite Proxy
 `vite.config.ts`에서 `/api` → `http://localhost:8080` 프록시 설정되어 있어 개발 환경에서 CORS 없이 백엔드 호출 가능.
@@ -146,5 +153,3 @@ types/        # 전역 공통 타입 (ApiResponse<T> 등)
 | `backend/.env` | `SUPABASE_DB_URL/USER/PASSWORD` | PostgreSQL JDBC 연결 |
 | `frontend/.env` | `VITE_SUPABASE_URL` | Supabase 프로젝트 URL |
 | `frontend/.env` | `VITE_SUPABASE_ANON_KEY` | anon public key |
-
-
