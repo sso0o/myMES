@@ -16,5 +16,10 @@ public interface QualityInspectionMapper {
     @Mapping(source = "process.processName", target = "processName")
     @Mapping(source = "workOrder.id", target = "workOrderId")
     @Mapping(source = "workOrder.workOrderNo", target = "workOrderNo")
+    @Mapping(source = "inspectionStandard.id", target = "inspectionStandardId")
+    @Mapping(source = "inspectionStandard.inspectionItem.id", target = "inspectionItemId")
+    @Mapping(source = "inspectionStandard.inspectionItem.inspectionItemCode", target = "inspectionItemCode")
+    @Mapping(source = "inspectionStandard.inspectionItem.inspectionItemName", target = "inspectionItemName")
+    @Mapping(source = "productionRecord.id", target = "productionRecordId")
     QualityInspectionResponse toResponse(QualityInspection inspection);
 }

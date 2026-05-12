@@ -128,6 +128,24 @@ const QualityInspectionDataGrid = ({
       ),
     },
     {
+      field: 'inspectionItemName',
+      headerName: '검사항목',
+      width: 160,
+      sortable: false,
+      renderCell: (params) => (
+        <div className="flex min-w-0 flex-col justify-center">
+          <span className="truncate text-[var(--text-base)]">
+            {params.row.inspectionItemName ?? '-'}
+          </span>
+          {params.row.inspectionItemCode && (
+            <span className="truncate font-mono text-xs text-[var(--text-muted)]">
+              {params.row.inspectionItemCode}
+            </span>
+          )}
+        </div>
+      ),
+    },
+    {
       field: 'processName',
       headerName: '공정',
       width: 150,

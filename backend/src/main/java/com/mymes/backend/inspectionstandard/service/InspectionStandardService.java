@@ -63,6 +63,29 @@ public class InspectionStandardService {
     }
 
     /**
+     * 품목과 공정에 대해 활성화된 검사 기준이 존재하는지 확인합니다.
+     *
+     * @param itemId    품목 ID
+     * @param processId 공정 ID
+     * @return 활성화된 검사 기준 존재 여부
+     */
+    public boolean existsByItemAndProcess(Long itemId, Long processId) {
+        return inspectionStandardRepository.existsByItem_IdAndProcess_IdAndIsActiveTrue(itemId, processId);
+    }
+
+    /**
+     * 품목과 공정에 대해 활성화된 검사 기준 목록을 정렬순서 오름차순으로 조회합니다.
+     *
+     * @param itemId    품목 ID
+     * @param processId 공정 ID
+     * @return 활성화된 검사 기준 엔티티 목록
+     */
+    public List<InspectionStandard> findActiveByItemAndProcess(Long itemId, Long processId) {
+        return inspectionStandardRepository
+                .findByItem_IdAndProcess_IdAndIsActiveTrueOrderBySortOrderAsc(itemId, processId);
+    }
+
+    /**
      * ID로 검사 기준을 단건 조회합니다.
      *
      * @param id 검사 기준 ID

@@ -2,6 +2,8 @@ package com.mymes.backend.production.service;
 
 import com.mymes.backend.common.exception.BusinessException;
 import com.mymes.backend.common.exception.ErrorCode;
+import com.mymes.backend.inspectionstandard.entity.InspectionStandard;
+import com.mymes.backend.inspectionstandard.service.InspectionStandardService;
 import com.mymes.backend.process.entity.MfgProcess;
 import com.mymes.backend.production.dto.ProductionCreateRequest;
 import com.mymes.backend.production.dto.ProductionResponse;
@@ -9,6 +11,10 @@ import com.mymes.backend.production.dto.ProductionUpdateRequest;
 import com.mymes.backend.production.entity.ProductionRecord;
 import com.mymes.backend.production.mapper.ProductionMapper;
 import com.mymes.backend.production.repository.ProductionRepository;
+import com.mymes.backend.quality.dto.request.QualityInspectionCreateRequest;
+import com.mymes.backend.quality.dto.response.QualityInspectionResponse;
+import com.mymes.backend.quality.entity.QualityInspectionType;
+import com.mymes.backend.quality.service.QualityInspectionService;
 import com.mymes.backend.workorder.entity.WorkOrderStatus;
 import com.mymes.backend.workorder.entity.WorkOrder;
 import com.mymes.backend.workorder.service.WorkOrderService;
@@ -17,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -28,17 +35,41 @@ public class ProductionService {
     private final ProductionRepository productionRepository;
     private final WorkOrderService workOrderService;
     private final ProductionMapper productionMapper;
+    private final InspectionStandardService inspectionStandardService;
+    private final QualityInspectionService qualityInspectionService;
 
+    /**
+     * 작업지시별 생산실적 목록을 등록일시 오름차순으로 조회합니다.
+     *
+     * @param workOrderId 작업지시 ID
+     * @return 생산실적 응답 목록
+     */
     public List<ProductionResponse> findByWorkOrder(Long workOrderId) {
         return productionRepository.findByWorkOrderIdOrderByCreatedAtAsc(workOrderId).stream()
                 .map(productionMapper::toResponse)
                 .toList();
     }
 
+    /**
+     * ID로 생산실적을 단건 조회합니다.
+     *
+     * @param id 생산실적 ID
+     * @return 생산실적 응답 DTO
+     * @throws BusinessException 생산실적이 존재하지 않을 경우 (PRODUCTION_NOT_FOUND)
+     */
     public ProductionResponse findById(Long id) {
         return productionMapper.toResponse(getRecord(id));
     }
 
+    /**
+     * 생산실적을 등록합니다. 해당 공정에 활성화된 검사 기준이 존재하면 공정검사를 자동으로 생성합니다.
+     *
+     * @param workOrderId 작업지시 ID
+     * @param request     생산실적 생성 요청 DTO
+     * @return 생성된 생산실적 응답 DTO (자동 생성된 검사 ID 포함)
+     * @throws BusinessException 작업지시가 진행 중이 아닌 경우 (PRODUCTION_WORK_ORDER_NOT_IN_PROGRESS)
+     * @throws BusinessException 수량 합계가 투입수량을 초과한 경우 (PRODUCTION_QTY_EXCEEDED)
+     */
     @Transactional
     public ProductionResponse create(Long workOrderId, ProductionCreateRequest request) {
         WorkOrder workOrder = workOrderService.getWorkOrder(workOrderId);
@@ -65,9 +96,64 @@ public class ProductionService {
 
         ProductionRecord saved = productionRepository.save(record);
         log.info("생산실적 등록 완료: id={}, workOrderId={}", saved.getId(), workOrderId);
-        return productionMapper.toResponse(saved);
+
+        int count = createInspectionIfRequired(workOrder, saved, request.getCompletedQty());
+        ProductionResponse response = productionMapper.toResponse(saved);
+        if (count > 0) {
+            response = response.toBuilder().autoCreatedInspectionCount(count).build();
+        }
+        return response;
     }
 
+    /**
+     * 공정에 활성화된 검사 기준마다 공정검사를 자동 생성하고 생산실적과 연결합니다.
+     * 검사 기준이 N건이면 QualityInspection N건을 생성합니다.
+     *
+     * @param workOrder      작업지시 (품목·공정 정보 포함)
+     * @param productionRecord 방금 저장된 생산실적 엔티티
+     * @param completedQty   생산실적의 완료수량 (검사수량으로 사용)
+     * @return 생성된 품질검사 건수 (검사 기준 없으면 0)
+     */
+    private int createInspectionIfRequired(WorkOrder workOrder, ProductionRecord productionRecord, int completedQty) {
+        Long itemId = workOrder.getItem().getId();
+        Long processId = workOrder.getProcess().getId();
+
+        List<InspectionStandard> standards =
+                inspectionStandardService.findActiveByItemAndProcess(itemId, processId);
+        if (standards.isEmpty()) {
+            return 0;
+        }
+
+        for (InspectionStandard standard : standards) {
+            QualityInspectionCreateRequest inspReq = QualityInspectionCreateRequest.builder()
+                    .itemId(itemId)
+                    .processId(processId)
+                    .workOrderId(workOrder.getId())
+                    .inspectionStandardId(standard.getId())
+                    .inspectionType(QualityInspectionType.IN_PROCESS)
+                    .inspectionDate(LocalDate.now())
+                    .inspectionQty(completedQty)
+                    .passQty(0)
+                    .defectQty(0)
+                    .build();
+            Long inspectionId = qualityInspectionService.create(inspReq).getId();
+            qualityInspectionService.linkProductionRecord(inspectionId, productionRecord);
+        }
+
+        log.info("공정검사 자동 생성: {}건, workOrderId={}, itemId={}, processId={}",
+                standards.size(), workOrder.getId(), itemId, processId);
+        return standards.size();
+    }
+
+    /**
+     * 생산실적을 수정합니다.
+     *
+     * @param id      생산실적 ID
+     * @param request 생산실적 수정 요청 DTO
+     * @return 수정된 생산실적 응답 DTO
+     * @throws BusinessException 생산실적이 존재하지 않을 경우 (PRODUCTION_NOT_FOUND)
+     * @throws BusinessException 수량 합계가 투입수량을 초과한 경우 (PRODUCTION_QTY_EXCEEDED)
+     */
     @Transactional
     public ProductionResponse update(Long id, ProductionUpdateRequest request) {
         ProductionRecord record = getRecord(id);
@@ -83,6 +169,13 @@ public class ProductionService {
         return productionMapper.toResponse(record);
     }
 
+    /**
+     * ID로 생산실적 엔티티를 조회합니다.
+     *
+     * @param id 생산실적 ID
+     * @return 생산실적 엔티티
+     * @throws BusinessException 생산실적이 존재하지 않을 경우 (PRODUCTION_NOT_FOUND)
+     */
     public ProductionRecord getRecord(Long id) {
         return productionRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCTION_NOT_FOUND, String.valueOf(id)));

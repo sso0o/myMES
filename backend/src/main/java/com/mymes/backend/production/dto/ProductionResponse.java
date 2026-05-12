@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 public class ProductionResponse {
     private Long id;
     private Long workOrderId;
@@ -19,4 +19,5 @@ public class ProductionResponse {
     private Integer completedQty;
     private Integer defectQty;
     private LocalDateTime createdAt;
+    private Integer autoCreatedInspectionCount;
 }

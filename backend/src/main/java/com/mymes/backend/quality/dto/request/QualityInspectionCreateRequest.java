@@ -36,6 +36,8 @@ public class QualityInspectionCreateRequest {
 
     private Long workOrderId;
 
+    private Long inspectionStandardId;
+
     @NotNull(message = "검사수량은 필수입니다.")
     @PositiveOrZero(message = "검사수량은 0 이상이어야 합니다.")
     private Integer inspectionQty;

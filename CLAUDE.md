@@ -102,26 +102,33 @@ types/        # 전역 공통 타입 (ApiResponse<T> 등)
 ```
 
 **실제 사용 중인 라우트** (`router/index.tsx`):
+
+모든 인증 필요 라우트는 `PrivateRoute` → `MainLayout` 래퍼 아래에 위치. 미매칭 경로(`*`)는 `/login`으로 리다이렉트.
+
 ```
-/dashboard                      → DashboardPage
-/planning                       → PlanningManagementPage
-/work-orders                    → WorkOrderTimelinePage
-/production                     → ProductionRecordPage
-/quality/inspections            → QualityInspectionPage
-/quality/defects                → DefectManagementPage
-/master/items                   → ItemManagementPage
-/master/common-codes            → CommonCodeManagementPage
-/prod-basic/processes           → ProcessManagementPage
-/prod-basic/equipment           → EquipmentManagementPage
-/prod-basic/item-processes      → ItemProcessManagementPage
-/prod-basic/boms                → BomManagementPage
-/prod-basic/process-equipment   → ProcessEquipmentManagementPage
-/operation/workers              → WorkerManagementPage
+/dashboard                                   → DashboardPage
+/planning                                    → PlanningManagementPage
+/work-orders                                 → WorkOrderTimelinePage
+/production                                  → ProductionRecordPage
+/quality                                     → /quality/inspections 리다이렉트
+/quality/inspections                         → QualityInspectionPage
+/quality/defects                             → DefectManagementPage
+/quality/standards/inspection-items          → InspectionItemManagementPage
+/quality/standards/inspection-standards      → InspectionStandardManagementPage
+/master/items                                → ItemManagementPage
+/master/common-codes                         → CommonCodeManagementPage
+/prod-basic/processes                        → ProcessManagementPage
+/prod-basic/equipment                        → EquipmentManagementPage
+/prod-basic/item-processes                   → ItemProcessManagementPage
+/prod-basic/boms                             → BomManagementPage
+/prod-basic/process-equipment               → ProcessEquipmentManagementPage
+/operation/workers                           → WorkerManagementPage
 ```
 
-- `lib/axios.ts` — baseURL `/api`, 401 응답 시 자동 로그아웃 및 `/login` 리다이렉트
+- `lib/axios.ts` — baseURL `/api`, 401 응답 시 자동 로그아웃 및 `/login` 리다이렉트; named export `api` 사용
 - `store/authStore.ts` — Zustand 스토어; `initialize()` 앱 시작 시 호출 필요
 - `hooks/useSupabaseRealtime.ts` — PostgreSQL 테이블 변경사항 실시간 구독 훅
+- `common/utils/apiError.ts` — `getApiErrorMessage(error, fallback)`: Mutation 에러 토스트에서 백엔드 `ApiResponse.message` 우선 추출
 
 **핵심 규칙 요약** (상세는 [frontend/docs/](frontend/docs/)):
 - 서버 데이터는 React Query로 관리; Zustand는 인증·UI 클라이언트 상태만 담당

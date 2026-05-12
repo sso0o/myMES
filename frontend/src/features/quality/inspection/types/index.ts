@@ -37,6 +37,11 @@ export interface QualityInspectionResponse {
   processName: string | null
   workOrderId: number | null
   workOrderNo: string | null
+  inspectionStandardId: number | null
+  inspectionItemId: number | null
+  inspectionItemCode: string | null
+  inspectionItemName: string | null
+  productionRecordId: number | null
   inspectionQty: number
   passQty: number
   defectQty: number

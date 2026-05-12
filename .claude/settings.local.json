@@ -36,7 +36,9 @@
       "Bash(Get-ChildItem -Path \"C:\\\\IDEAWorkspace\\\\SYCHOI\\\\myMES\\\\frontend\\\\src\\\\features\\\\prod-management\\\\production-record\" -File -Recurse)",
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(xargs grep -l \"ItemProcessDataGrid\\\\|ItemProcessTable\")",
-      "Bash(xargs grep -l \"ItemProcessDataGrid\\\\|ItemProcessTable\\\\|item-process\")"
+      "Bash(xargs grep -l \"ItemProcessDataGrid\\\\|ItemProcessTable\\\\|item-process\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\IDEAWorkspace\\\\SYCHOI\\\\myMES\\\\backend\\\\src\\\\main\\\\java\\\\com\\\\mymes\\\\backend\\\\production\\\\\" -Recurse -Include \"*.java\" | Select-Object -ExpandProperty FullName)",
+      "Bash(xargs grep -l \"inspection-items\\\\|inspection-standards\")"
     ]
   }
 }

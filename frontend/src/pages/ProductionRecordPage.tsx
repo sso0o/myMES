@@ -172,8 +172,12 @@ const ProductionRecordPage = () => {
     createRecord.mutate(
       { workOrderId: selectedWorkOrder.id, data },
       {
-        onSuccess: () => {
-          showToast({ title: '생산실적을 등록했습니다.', variant: 'success' })
+        onSuccess: (result) => {
+          const count = result?.autoCreatedInspectionCount ?? 0
+          const message = count > 0
+            ? `생산실적을 등록했습니다. 공정검사 ${count}건이 자동으로 생성되었습니다.`
+            : '생산실적을 등록했습니다.'
+          showToast({ title: message, variant: 'success' })
           handleClose()
         },
         onError: (error) =>
